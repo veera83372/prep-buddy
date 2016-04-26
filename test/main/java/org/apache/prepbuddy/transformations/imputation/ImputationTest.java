@@ -1,5 +1,6 @@
 package org.apache.prepbuddy.transformations.imputation;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -7,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -17,6 +19,7 @@ public class ImputationTest implements Serializable{
 
     @Before
     public void setUp() throws Exception {
+        FileUtils.deleteDirectory(new File("data/transformed"));
         sparkConf = new SparkConf().setAppName("Test").setMaster("local");
         ctx = new JavaSparkContext(sparkConf);
         imputation = new ImputationTransformation();

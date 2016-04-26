@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Remover implements Serializable {
-    private List<Integer> columns = new ArrayList<>();
+    private List<Integer> columns = new ArrayList<Integer>();
     public void onColumn(int columnIndex) {
             columns.add(columnIndex);
     }

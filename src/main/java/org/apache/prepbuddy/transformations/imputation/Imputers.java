@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Imputers implements Serializable{
-    private Map<Integer, HandlerFunction> handlerFunctions = new HashMap<>();
+    private Map<Integer, HandlerFunction> handlerFunctions = new HashMap<Integer, HandlerFunction>();
 
     public void add(int columnNumber, HandlerFunction function) {
         handlerFunctions.put(columnNumber, function);
