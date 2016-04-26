@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.transformations.deduplication;
+package main.java.org.apache.prepbuddy.transformations;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;

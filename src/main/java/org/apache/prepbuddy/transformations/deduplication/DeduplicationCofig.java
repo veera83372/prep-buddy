@@ -1,4 +1,4 @@
 package org.apache.prepbuddy.transformations.deduplication;
 
-public class DeduplicationInput {
+public class DeduplicationCofig {
 }
