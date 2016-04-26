@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.transformations;
 
-import org.apache.prepbuddy.transformations.deduplication.DeduplicationInput;
+import org.apache.prepbuddy.transformations.deduplication.DeduplicationConfig;
 
 public interface DataTransformation {
-    void apply(DeduplicationInput input);
+    void apply(DeduplicationConfig input);
 }

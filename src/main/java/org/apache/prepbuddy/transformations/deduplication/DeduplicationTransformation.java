@@ -18,7 +18,7 @@ public class DeduplicationTransformation implements DataTransformation {
     }
 
     @Override
-    public void apply(DeduplicationInput input) {
+    public void apply(DeduplicationConfig input) {
         SparkConf sparkConf = new SparkConf().setAppName("Deduplication Transformation");
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
         SQLContext sqlContext = new SQLContext(ctx);
