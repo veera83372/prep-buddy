@@ -3,6 +3,7 @@ package org.apache.prepbuddy.transformations.imputation;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class ImputationTest implements Serializable{
 
     @Before
     public void setUp() throws Exception {
-        sparkConf = new SparkConf().setAppName("Sample");
+        sparkConf = new SparkConf().setAppName("Test").setMaster("local");
         ctx = new JavaSparkContext(sparkConf);
         imputation = new ImputationTransformation();
     }
@@ -42,4 +43,18 @@ public class ImputationTest implements Serializable{
         transformed.saveAsTextFile("data/transformed");
     }
 
+    @Test
+    public void shouldRemoveTheEntireRowWhenDataIsMissing() {
+        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,,4,5","3,5,6"));
+        Remover remover = new Remover();
+        remover.onColumn(0);
+        remover.onColumn(1);
+        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover);
+        transformed.saveAsTextFile("data/transformed");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        ctx.stop();
+    }
 }

@@ -21,4 +21,12 @@ public class ImputationTransformation implements Serializable {
         return transformedRDD;
     }
 
+    public JavaRDD<String> removeIfNull(JavaRDD<String> initialDataset, final Remover remover) {
+        return initialDataset.filter(new Function<String, Boolean>() {
+            @Override
+            public Boolean call(String row) throws Exception {
+                return remover.hasFieldsValue(row);
+            }
+        });
+    }
 }

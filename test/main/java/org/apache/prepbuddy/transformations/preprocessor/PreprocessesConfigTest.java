@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.transformations.preprocessor;
 
+import org.apache.prepbuddy.preprocessor.FileTypes;
+import org.apache.prepbuddy.preprocessor.PreprocessesConfig;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -7,7 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
