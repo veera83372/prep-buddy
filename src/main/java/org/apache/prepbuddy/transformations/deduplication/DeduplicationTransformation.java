@@ -19,7 +19,7 @@ public class DeduplicationTransformation implements DataTransformation, Serializ
             @Override
             public Tuple2<String, String> call(String record) throws Exception {
                 String fingerprint = generateFingerprint(record.toLowerCase());
-                return new Tuple2<>(fingerprint, record);
+                return new Tuple2<String, String>(fingerprint, record);
             }
         });
         JavaPairRDD uniqueRecordsWithKeys = fingerprintedRecords.reduceByKey(new Function2<String, String, String>() {
