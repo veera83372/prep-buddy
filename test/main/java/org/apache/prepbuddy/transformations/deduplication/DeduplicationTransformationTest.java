@@ -20,9 +20,8 @@ public class DeduplicationTransformationTest {
 
     @Before
     public void setUp() throws Exception {
-        SparkConf sparkConf = new SparkConf().setAppName("Deduplication Transformation").setMaster("local");
+        SparkConf sparkConf = new SparkConf().setAppName("Deduplication Transformation Test").setMaster("local");
         context = new JavaSparkContext(sparkConf);
-
         getLogger("org").setLevel(Level.OFF);
     }
 
@@ -32,7 +31,7 @@ public class DeduplicationTransformationTest {
     }
     
     @Test
-    public void shouldGiveAnRddWithNoDuplicateRow() throws NoSuchAlgorithmException {
+    public void shouldGiveAnRddWithNoDuplicateRows() throws NoSuchAlgorithmException {
         JavaRDD<String> csvInput = context.parallelize(
                 Arrays.asList(
                         "07110730864,07209670163,Outgoing,0,Thu Sep 09 18:16:47 +0100 2010",
@@ -48,9 +47,9 @@ public class DeduplicationTransformationTest {
                 )
         );
         DeduplicationTransformation deduplicationTransformation = new DeduplicationTransformation();
-        List result = deduplicationTransformation.apply(csvInput).collect();
+        List results = deduplicationTransformation.apply(csvInput).collect();
 
-        assertEquals(5, result.size());
+        assertEquals(5, results.size());
     }
 
     @Test
