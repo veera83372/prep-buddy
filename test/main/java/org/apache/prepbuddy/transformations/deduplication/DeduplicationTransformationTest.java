@@ -1,5 +1,6 @@
 package org.apache.prepbuddy.transformations.deduplication;
 
+import org.apache.log4j.Level;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -11,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.log4j.Logger.*;
 import static org.junit.Assert.assertEquals;
 
 public class DeduplicationTransformationTest {
@@ -20,6 +22,8 @@ public class DeduplicationTransformationTest {
     public void setUp() throws Exception {
         SparkConf sparkConf = new SparkConf().setAppName("Deduplication Transformation").setMaster("local");
         context = new JavaSparkContext(sparkConf);
+
+        getLogger("org").setLevel(Level.OFF);
     }
 
     @After
@@ -47,5 +51,25 @@ public class DeduplicationTransformationTest {
         List result = deduplicationTransformation.apply(csvInput).collect();
 
         assertEquals(5, result.size());
+    }
+
+    @Test
+    public void shouldGiveAnRddWithNoDuplicateForOtherLanguageTextAlso() throws NoSuchAlgorithmException {
+        JavaRDD<String> csvInput = context.parallelize(
+                Arrays.asList(
+                        "07607124303,2327，性格外向，0，周一9月13日十三点54分40秒+01002010",
+                        "07110730864,07209670163，性格外向，0，周五9月10日6时04分43秒+01002010",
+                        "07784425582,07981267897，传入，474，周四9月9日18时44分34秒+01002010",
+                        "07607124303,2327，性格外向，0，周一9月13日十三点54分40秒+01002010",
+                        "07110730864,07209670163，性格外向，0，周五9月10日6时04分43秒+01002010",
+                        "07607124303,2327，性格外向，0，周一9月13日十三点54分40秒+01002010",
+                        "07110730864,07209670163，性格外向，0，周五9月10日6时04分43秒+01002010",
+                        "07784425582,07981267897，传入，474，周四9月9日18时44分34秒+01002010"
+                )
+        );
+        DeduplicationTransformation deduplicationTransformation = new DeduplicationTransformation();
+        List result = deduplicationTransformation.apply(csvInput).collect();
+
+        assertEquals(3, result.size());
     }
 }

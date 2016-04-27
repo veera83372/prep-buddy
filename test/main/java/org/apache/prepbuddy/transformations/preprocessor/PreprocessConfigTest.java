@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.transformations.preprocessor;
 
 import org.apache.prepbuddy.preprocessor.FileTypes;
-import org.apache.prepbuddy.preprocessor.PreprocessesConfig;
+import org.apache.prepbuddy.preprocessor.PreprocessConfig;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -13,7 +13,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class PreprocessesConfigTest {
+public class PreprocessConfigTest {
     private JavaSparkContext context;
 
     @Before
@@ -54,8 +54,8 @@ public class PreprocessesConfigTest {
                 "07607124303,07167454533,Outgoing,2,Tue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessesConfig preprocessesConfig = new PreprocessesConfig(FileTypes.CSV);
-        List<String> result = preprocessesConfig
+        PreprocessConfig preprocessConfig = new PreprocessConfig(FileTypes.CSV);
+        List<String> result = preprocessConfig
                                     .trimEachColumn()
                                     .performTask(csvInput)
                                     .collect();
@@ -82,8 +82,8 @@ public class PreprocessesConfigTest {
                 "07607124303\t07167454533\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessesConfig preprocessesConfig = new PreprocessesConfig(FileTypes.TSV);
-        List<String> result = preprocessesConfig
+        PreprocessConfig preprocessConfig = new PreprocessConfig(FileTypes.TSV);
+        List<String> result = preprocessConfig
                 .trimEachColumn()
                 .performTask(tsvInput)
                 .collect();
