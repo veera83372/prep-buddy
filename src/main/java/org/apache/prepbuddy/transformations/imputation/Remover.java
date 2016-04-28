@@ -5,17 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Remover implements Serializable {
-    private List<Integer> columns = new ArrayList<Integer>();
-    public void onColumn(int columnIndex) {
-            columns.add(columnIndex);
-    }
-
-    public Boolean hasFieldsValue(String row) {
-        String[] columnValues = row.split(",");
-        for (Integer columnIndex : columns) {
-            if(columnValues[columnIndex] == null || columnValues[columnIndex].trim().isEmpty())
+    List<Integer> columnIndexes = new ArrayList<Integer>();
+    public Boolean hasFieldsValue(String[] column) {
+        for (Integer columnIndex : columnIndexes) {
+            if (columnIndex >= column.length || columnIndex < 0)
+                throw new ColumnIndexOutOfBoundsException("No column found on index:: " + columnIndex);
+            if (column[columnIndex] == null || column[columnIndex].trim().isEmpty())
                 return false;
         }
         return true;
+    }
+
+    public void onColumn(int columnIndex) {
+        columnIndexes.add(columnIndex);
     }
 }

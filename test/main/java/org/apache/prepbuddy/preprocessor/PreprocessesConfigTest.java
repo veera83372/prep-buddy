@@ -1,7 +1,5 @@
-package org.apache.prepbuddy.transformations.preprocessor;
+package org.apache.prepbuddy.preprocessor;
 
-import org.apache.prepbuddy.preprocessor.FileTypes;
-import org.apache.prepbuddy.preprocessor.PreprocessesConfig;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;

@@ -4,7 +4,7 @@ public enum FileTypes {
     CSV(","),
     TSV("\t");
 
-    private String delimiter;
+    private final String delimiter;
 
     FileTypes(String delimiter) {
         this.delimiter = delimiter;

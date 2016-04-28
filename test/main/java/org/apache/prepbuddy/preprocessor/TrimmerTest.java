@@ -1,9 +1,9 @@
-package org.apache.prepbuddy.transformations.preprocessor;
+package org.apache.prepbuddy.preprocessor;
 
-import org.apache.prepbuddy.preprocessor.Trimmer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
 public class TrimmerTest {
 
     private JavaRDD<String> inputData;
-
+    private static JavaSparkContext sc;
     @Before
     public void setUp() throws Exception {
         SparkConf sparkConf = new SparkConf().setAppName("Deduplication Transformation").setMaster("local");
-        JavaSparkContext sc = new JavaSparkContext(sparkConf);
+        sc = new JavaSparkContext(sparkConf);
         inputData = sc.parallelize(
                 Arrays.asList(
                         "  07110730864,07209670163,Outgoing,0,Thu Sep 09 18:16:47 +0100 2010 ",
@@ -47,5 +47,10 @@ public class TrimmerTest {
         for (String record : result) {
             assertEquals(expected.get(counter++), record);
         }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        sc.close();
     }
 }
