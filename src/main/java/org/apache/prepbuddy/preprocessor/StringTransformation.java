@@ -1,10 +1,12 @@
 package org.apache.prepbuddy.preprocessor;
 
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class StringTransformation {
+public class StringTransformation implements Serializable{
 
     private FileTypes fileType;
     private final ArrayList<PreprocessTask> preprocessTasks;
@@ -21,11 +23,20 @@ public class StringTransformation {
         return this;
     }
 
-    public JavaRDD<String> apply(JavaRDD<String> inputDataset) {
-        JavaRDD<String> resultRDD = inputDataset;
-        for (PreprocessTask preprocessTask : preprocessTasks)
-             resultRDD = preprocessTask.apply(resultRDD);
+    public JavaRDD<String> apply(JavaRDD<String> dataset) {
+        return dataset.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                return applyAllPreprocessTasks(record);
+            }
+        });
+    }
 
-        return resultRDD;
+    private String applyAllPreprocessTasks(String record) {
+        String transformedRecord = record;
+        for (PreprocessTask preprocessTask : preprocessTasks) {
+            transformedRecord = preprocessTask.apply(transformedRecord);
+        }
+        return transformedRecord;
     }
 }

@@ -5,6 +5,7 @@ import org.apache.prepbuddy.preprocessor.FileTypes;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,11 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         imputation = new ImputationTransformation(FileTypes.CSV);
         imputationOfTSV = new ImputationTransformation(FileTypes.TSV);
         getLogger("org").setLevel(Level.OFF);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -120,28 +126,4 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         String actual = transformed.first();
         Assert.assertEquals(expected, actual);
     }
-
-//    @Test
-//    public void replaceWith_shouldReplaceColumnValueWithTheGivenValue() {
-//        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,2,4,5"));
-//        Imputers imputers = new Imputers();
-//        imputers.add(0, new Imputers.HandlerFunction() {
-//            @Override
-//            public Object handleMissingField() {
-//                return "10";
-//            }
-//        },"1");
-//        imputers.add(1, new Imputers.HandlerFunction() {
-//            @Override
-//            public Object handleMissingField() {
-//                return "100";
-//            }
-//        },"5");
-
-//        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers);
-//        String expected = "10,2,4,5";
-//        String actual = transformed.first();
-//        Assert.assertEquals(expected, actual);
-//    }
-
 }

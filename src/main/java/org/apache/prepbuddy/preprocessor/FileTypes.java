@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.preprocessor;
 
-public enum FileTypes {
+public enum FileTypes{
     CSV(","),
     TSV("\t");
 

@@ -8,7 +8,7 @@ import org.junit.Before;
 import java.io.Serializable;
 
 public class SparkTestCase implements Serializable {
-    protected JavaSparkContext context;
+    protected transient JavaSparkContext context;
 
 
     @Before
