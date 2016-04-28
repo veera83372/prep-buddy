@@ -19,14 +19,12 @@ public class ReplacerTest implements Serializable {
     private static SparkConf sparkConf;
     private static JavaSparkContext ctx;
     private static ImputationTransformation imputation;
-    private static ImputationTransformation imputationOfTSV;
 
     @Before
     public void setUp() throws Exception {
         sparkConf = new SparkConf().setAppName("Test").setMaster("local");
         ctx = new JavaSparkContext(sparkConf);
-        imputation = new ImputationTransformation(FileTypes.CSV);
-        imputationOfTSV = new ImputationTransformation(FileTypes.TSV);
+        imputation = new ImputationTransformation();
         getLogger("org").setLevel(Level.OFF);
     }
     @Test
@@ -41,14 +39,15 @@ public class ReplacerTest implements Serializable {
             }
         });
 
-        ReplaceProcessor replaceProcessor = new ReplaceProcessor(FileTypes.CSV);
-        JavaRDD<String> replacedDataset = replaceProcessor.replace(initialDataset, replacer);
+        ReplaceProcessor replaceProcessor = new ReplaceProcessor();
+        JavaRDD<String> replacedDataset = replaceProcessor.replace(initialDataset, replacer, FileTypes.CSV);
 
         String expected = "10,2,3,4";
         String actual = replacedDataset.first();
         System.out.printf(String.valueOf(replacedDataset.collect()));
         assertEquals(expected, actual);
     }
+
 
     @After
     public void tearDown() throws Exception {

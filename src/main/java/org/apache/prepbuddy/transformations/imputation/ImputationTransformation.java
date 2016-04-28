@@ -10,13 +10,7 @@ import static org.apache.commons.lang.StringUtils.join;
 
 public class ImputationTransformation implements Serializable {
 
-    private FileTypes fileType;
-
-    public ImputationTransformation(FileTypes fileType) {
-        this.fileType = fileType;
-    }
-
-    public JavaRDD<String> handleMissingFields(JavaRDD<String> dataset, final Imputers imputers) {
+    public JavaRDD<String> handleMissingFields(JavaRDD<String> dataset, final Imputers imputers, final FileTypes fileType) {
         JavaRDD<String> transformedRDD = dataset.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -29,7 +23,7 @@ public class ImputationTransformation implements Serializable {
     }
 
 
-    public JavaRDD<String> removeIfNull(JavaRDD<String> initialDataset, final Remover remover) {
+    public JavaRDD<String> removeIfNull(JavaRDD<String> initialDataset, final Remover remover, final FileTypes fileType) {
         return initialDataset.filter(new Function<String, Boolean>() {
             @Override
             public Boolean call(String row) throws Exception {
