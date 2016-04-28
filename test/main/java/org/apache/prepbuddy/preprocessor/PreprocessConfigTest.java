@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class PreprocessesConfigTest {
+public class PreprocessConfigTest {
     private JavaSparkContext context;
 
     @Before
@@ -53,7 +53,7 @@ public class PreprocessesConfigTest {
                 "07607124303,07167454533,Outgoing,2,Tue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessesConfig preprocessesConfig = new PreprocessesConfig(FileTypes.CSV);
+        PreprocessConfig preprocessesConfig = new PreprocessConfig(FileTypes.CSV);
         List<String> result = preprocessesConfig
                                     .trimEachColumn()
                                     .performTask(csvInput)
@@ -81,7 +81,7 @@ public class PreprocessesConfigTest {
                 "07607124303\t07167454533\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessesConfig preprocessesConfig = new PreprocessesConfig(FileTypes.TSV);
+        PreprocessConfig preprocessesConfig = new PreprocessConfig(FileTypes.TSV);
         List<String> result = preprocessesConfig
                 .trimEachColumn()
                 .performTask(tsvInput)

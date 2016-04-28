@@ -1,7 +1,9 @@
 package org.apache.prepbuddy.transformations;
 
-import org.apache.prepbuddy.transformations.deduplication.DeduplicationConfig;
+import org.apache.spark.api.java.JavaRDD;
+
+import java.security.NoSuchAlgorithmException;
 
 public interface DataTransformation {
-    void apply(DeduplicationConfig input);
+    JavaRDD apply(JavaRDD inputData) throws NoSuchAlgorithmException;
 }
