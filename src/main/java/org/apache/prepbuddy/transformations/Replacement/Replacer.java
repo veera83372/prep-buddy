@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.preprocessor;
+package org.apache.prepbuddy.transformations.Replacement;
 
 import java.io.Serializable;
 import java.util.HashMap;

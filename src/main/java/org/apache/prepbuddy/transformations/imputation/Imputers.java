@@ -17,7 +17,8 @@ public class Imputers implements Serializable{
                 throw new ColumnIndexOutOfBoundsException("No column found on index:: " + columnIndex);
             String value = columnValues[columnIndex];
             if (value == null || value.trim().isEmpty()) {
-                Object imputedValue = handlers.get(columnIndex).handleMissingField();
+                RowRecord rowRecord = new RowRecord(columnValues);
+                Object imputedValue = handlers.get(columnIndex).handleMissingField(rowRecord);
                 columnValues[columnIndex] = imputedValue.toString();
             }
         }
@@ -26,6 +27,7 @@ public class Imputers implements Serializable{
 
 
     interface HandlerFunction extends Serializable {
-        Object handleMissingField();
+        String handleMissingField(RowRecord rowRecord);
     }
+
 }

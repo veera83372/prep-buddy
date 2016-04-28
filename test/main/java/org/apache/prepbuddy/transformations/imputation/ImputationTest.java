@@ -5,31 +5,22 @@ import org.apache.prepbuddy.preprocessor.FileTypes;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import static org.apache.log4j.Logger.getLogger;
 
-public class ImputationTest extends SparkTestCase implements Serializable {
-    private static ImputationTransformation imputation;
-    private static ImputationTransformation imputationOfTSV;
+public class ImputationTest extends SparkTestCase {
+    private ImputationTransformation imputation;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        imputation = new ImputationTransformation(FileTypes.CSV);
-        imputationOfTSV = new ImputationTransformation(FileTypes.TSV);
+        imputation = new ImputationTransformation();
         getLogger("org").setLevel(Level.OFF);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Test
@@ -38,18 +29,18 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         Imputers imputers = new Imputers();
         imputers.add(0, new Imputers.HandlerFunction() {
             @Override
-            public Object handleMissingField() {
+            public String handleMissingField(RowRecord rowRecord) {
                 return "1234567890";
             }
         });
         imputers.add(1, new Imputers.HandlerFunction() {
             @Override
-            public Object handleMissingField() {
+            public String handleMissingField(RowRecord rowRecord) {
                 return "000000";
             }
         });
 
-        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers,FileTypes.CSV);
 
         String expected = "1234567890,000000,4,5";
         String actual = transformed.first();
@@ -62,12 +53,13 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         Imputers imputers = new Imputers();
         imputers.add(6, new Imputers.HandlerFunction() {
             @Override
-            public Object handleMissingField() {
+            public String handleMissingField(RowRecord rowRecord) {
                 return "1";
             }
+
         });
 
-        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileTypes.CSV);
         String expected = "1,1,4,5";
         String actual = transformed.first();
         Assert.assertEquals(expected, actual);
@@ -80,7 +72,7 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         remover.onColumn(0);
         remover.onColumn(1);
 
-        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover);
+        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileTypes.CSV);
 
         String expected = "3,5,6";
         String actual = transformed.first();
@@ -95,7 +87,7 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         remover.onColumn(10);
         remover.onColumn(1);
 
-        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover);
+        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileTypes.CSV);
         transformed.first();
     }
 
@@ -106,7 +98,7 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         remover.onColumn(-1);
         remover.onColumn(1);
 
-        imputation.removeIfNull(initialDataset, remover).first();
+        imputation.removeIfNull(initialDataset, remover,FileTypes.CSV).first();
     }
 
     @Test
@@ -115,14 +107,14 @@ public class ImputationTest extends SparkTestCase implements Serializable {
         Imputers imputers = new Imputers();
         imputers.add(1, new Imputers.HandlerFunction() {
             @Override
-            public Object handleMissingField() {
-                return "000000";
+            public String handleMissingField(RowRecord rowRecord) {
+                return rowRecord.get(0);
             }
         });
 
-        JavaRDD<String> transformed = imputationOfTSV.handleMissingFields(initialDataset, imputers);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileTypes.TSV);
 
-        String expected = "2\t000000\t5";
+        String expected = "2\t2\t5";
         String actual = transformed.first();
         Assert.assertEquals(expected, actual);
     }

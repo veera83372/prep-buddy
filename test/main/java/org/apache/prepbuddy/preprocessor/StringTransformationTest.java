@@ -1,30 +1,16 @@
 package org.apache.prepbuddy.preprocessor;
 
-import org.apache.spark.SparkConf;
+import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class StringTransformationTest {
-    private JavaSparkContext context;
-
-    @Before
-    public void setUp() throws Exception {
-        SparkConf sparkConf = new SparkConf().setAppName("Preprocessing").setMaster("local");
-        context = new JavaSparkContext(sparkConf);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        context.close();
-    }
+public class StringTransformationTest extends SparkTestCase implements Serializable{
 
     private void assertStringList(List<String> expected, List<String> resultFound){
         int counter = 0;
