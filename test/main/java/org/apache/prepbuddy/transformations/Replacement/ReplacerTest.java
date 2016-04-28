@@ -1,6 +1,6 @@
-package org.apache.prepbuddy.preprocessor;
+package org.apache.prepbuddy.transformations.Replacement;
 
-import org.apache.log4j.Level;
+import org.apache.prepbuddy.preprocessor.FileTypes;
 import org.apache.prepbuddy.transformations.imputation.ImputationTransformation;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static org.apache.log4j.Logger.getLogger;
 import static org.junit.Assert.assertEquals;
 
 public class ReplacerTest implements Serializable {
@@ -25,7 +24,6 @@ public class ReplacerTest implements Serializable {
         sparkConf = new SparkConf().setAppName("Test").setMaster("local");
         ctx = new JavaSparkContext(sparkConf);
         imputation = new ImputationTransformation();
-        getLogger("org").setLevel(Level.OFF);
     }
     @Test
     public void shouldCallbackTheMissingDataHandler() {
@@ -39,8 +37,8 @@ public class ReplacerTest implements Serializable {
             }
         });
 
-        ReplaceProcessor replaceProcessor = new ReplaceProcessor();
-        JavaRDD<String> replacedDataset = replaceProcessor.replace(initialDataset, replacer, FileTypes.CSV);
+        ReplaceTransformation replaceTransformation = new ReplaceTransformation();
+        JavaRDD<String> replacedDataset = replaceTransformation.replace(initialDataset, replacer, FileTypes.CSV);
 
         String expected = "10,2,3,4";
         String actual = replacedDataset.first();
