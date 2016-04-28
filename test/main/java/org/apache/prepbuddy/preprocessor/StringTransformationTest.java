@@ -7,12 +7,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class PreprocessConfigTest {
+public class StringTransformationTest implements Serializable{
     private JavaSparkContext context;
 
     @Before
@@ -53,10 +54,10 @@ public class PreprocessConfigTest {
                 "07607124303,07167454533,Outgoing,2,Tue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessConfig preprocessesConfig = new PreprocessConfig(FileTypes.CSV);
+        StringTransformation preprocessesConfig = new StringTransformation(FileTypes.CSV);
         List<String> result = preprocessesConfig
                                     .trimEachColumn()
-                                    .performTask(csvInput)
+                .apply(csvInput)
                                     .collect();
 
         assertStringList(expected,result);
@@ -81,10 +82,10 @@ public class PreprocessConfigTest {
                 "07607124303\t07167454533\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
         );
 
-        PreprocessConfig preprocessesConfig = new PreprocessConfig(FileTypes.TSV);
+        StringTransformation preprocessesConfig = new StringTransformation(FileTypes.TSV);
         List<String> result = preprocessesConfig
                 .trimEachColumn()
-                .performTask(tsvInput)
+                .apply(tsvInput)
                 .collect();
 
         assertStringList(expected,result);

@@ -1,33 +1,19 @@
 package org.apache.prepbuddy.transformations.Replacement;
 
 import org.apache.prepbuddy.preprocessor.FileTypes;
-import org.apache.prepbuddy.transformations.imputation.ImputationTransformation;
-import org.apache.spark.SparkConf;
+import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class ReplacerTest implements Serializable {
-    private static SparkConf sparkConf;
-    private static JavaSparkContext ctx;
-    private static ImputationTransformation imputation;
+public class ReplacerTest extends SparkTestCase {
 
-    @Before
-    public void setUp() throws Exception {
-        sparkConf = new SparkConf().setAppName("Test").setMaster("local");
-        ctx = new JavaSparkContext(sparkConf);
-        imputation = new ImputationTransformation();
-    }
     @Test
     public void shouldCallbackTheMissingDataHandler() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,2,3,4"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,2,3,4"));
 
         Replacer replacer = new Replacer();
         replacer.add(0, new Replacer.ReplaceHandler<String, String>() {
@@ -46,9 +32,4 @@ public class ReplacerTest implements Serializable {
         assertEquals(expected, actual);
     }
 
-
-    @After
-    public void tearDown() throws Exception {
-        ctx.stop();
-    }
 }

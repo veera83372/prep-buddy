@@ -2,10 +2,9 @@ package org.apache.prepbuddy.transformations.imputation;
 
 import org.apache.log4j.Level;
 import org.apache.prepbuddy.preprocessor.FileTypes;
-import org.apache.spark.SparkConf;
+import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,21 +15,25 @@ import java.util.Arrays;
 
 import static org.apache.log4j.Logger.getLogger;
 
-public class ImputationTest implements Serializable{
-    private static SparkConf sparkConf;
-    private static JavaSparkContext ctx;
-    private static ImputationTransformation imputation;
+public class ImputationTest extends SparkTestCase {
+    private ImputationTransformation imputation;
 
     @Before
     public void setUp() throws Exception {
-        sparkConf = new SparkConf().setAppName("Test").setMaster("local");
-        ctx = new JavaSparkContext(sparkConf);
+        super.setUp();
         imputation = new ImputationTransformation();
         getLogger("org").setLevel(Level.OFF);
     }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     @Test
     public void shouldCallbackTheMissingDataHandler() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList(",,4,5"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList(",,4,5"));
         Imputers imputers = new Imputers();
         imputers.add(0, new Imputers.HandlerFunction() {
             @Override
@@ -54,7 +57,7 @@ public class ImputationTest implements Serializable{
 
     @Test(expected = SparkException.class)
     public void shouldThrowExceptionIfIndexIsInvalid() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,,4,5"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,,4,5"));
         Imputers imputers = new Imputers();
         imputers.add(6, new Imputers.HandlerFunction() {
             @Override
@@ -72,7 +75,7 @@ public class ImputationTest implements Serializable{
 
     @Test
     public void shouldRemoveTheEntireRowWhenDataIsMissing() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,,4,5","3,5,6"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,,4,5", "3,5,6"));
         Remover remover = new Remover();
         remover.onColumn(0);
         remover.onColumn(1);
@@ -85,11 +88,9 @@ public class ImputationTest implements Serializable{
     }
 
 
-
-
     @Test(expected = SparkException.class)
     public void shouldThrowExceptionWhenInvalidColumnIndexIsGivenToRemover() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,,4,5","3,5,6"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,,4,5", "3,5,6"));
         Remover remover = new Remover();
         remover.onColumn(10);
         remover.onColumn(1);
@@ -100,7 +101,7 @@ public class ImputationTest implements Serializable{
 
     @Test(expected = SparkException.class)
     public void shouldThrowExceptionWhenLessThenZeroColumnIndexIsGivenToRemover() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("1,,4,5","3,5,6"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("1,,4,5", "3,5,6"));
         Remover remover = new Remover();
         remover.onColumn(-1);
         remover.onColumn(1);
@@ -110,7 +111,7 @@ public class ImputationTest implements Serializable{
 
     @Test
     public void shouldCallbackForTSVData() {
-        JavaRDD<String> initialDataset = ctx.parallelize(Arrays.asList("2\t \t5"));
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("2\t \t5"));
         Imputers imputers = new Imputers();
         imputers.add(1, new Imputers.HandlerFunction() {
             @Override
@@ -126,9 +127,4 @@ public class ImputationTest implements Serializable{
         Assert.assertEquals(expected, actual);
     }
 
-
-    @After
-    public void tearDown() throws Exception {
-        ctx.stop();
-    }
 }
