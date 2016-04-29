@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.preprocessor;
 
+import org.apache.prepbuddy.preprocessor.Replacement.ReplaceHandler;
+import org.apache.prepbuddy.preprocessor.Replacement.Replacer;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
@@ -23,13 +25,16 @@ public class StringTransformation implements Serializable{
         return this;
     }
 
+    public StringTransformation addReplaceHandlers(ReplaceHandler... replaceHandler){
+        Replacer replacer = new Replacer(fileType.getDelimiter());
+        for (ReplaceHandler handler : replaceHandler) {
+            replacer.add(handler);
+        }
+        preprocessTasks.add(replacer);
+        return this;
+    }
     public JavaRDD<String> apply(JavaRDD<String> dataset) {
-        return dataset.map(new Function<String, String>() {
-            @Override
-            public String call(String record) throws Exception {
-                return applyAllPreprocessTasks(record);
-            }
-        });
+        return dataset.map((Function<String, String>) record -> applyAllPreprocessTasks(record));
     }
 
     private String applyAllPreprocessTasks(String record) {

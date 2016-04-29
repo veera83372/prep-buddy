@@ -1,16 +1,17 @@
 package org.apache.prepbuddy.preprocessor;
 
+import org.apache.prepbuddy.preprocessor.Replacement.ReplaceHandler;
+import org.apache.prepbuddy.preprocessor.Replacement.Replacer;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class StringTransformationTest extends SparkTestCase implements Serializable{
+public class StringTransformationTest extends SparkTestCase {
 
     private void assertStringList(List<String> expected, List<String> resultFound){
         int counter = 0;
@@ -42,14 +43,14 @@ public class StringTransformationTest extends SparkTestCase implements Serializa
         StringTransformation preprocessesConfig = new StringTransformation(FileTypes.CSV);
         List<String> result = preprocessesConfig
                                     .trimEachColumn()
-                .apply(csvInput)
+                                    .apply(csvInput)
                                     .collect();
 
         assertStringList(expected,result);
     }
 
     @Test
-    public void performsAllTheGivenPreprocessForTheGivenTsvTypeOfData() {
+    public void performsTrimmingAndReplacementTaskForTheGivenTsvTypeOfData() {
         JavaRDD<String> tsvInput = context.parallelize(
                 Arrays.asList(
                         "  07110730864\t07209670163 \tOutgoing  \t0\t   Thu Sep 09 18:16:47 +0100 2010 ",
@@ -60,16 +61,21 @@ public class StringTransformationTest extends SparkTestCase implements Serializa
                 )
         );
         List<String> expected = Arrays.asList(
-                "07110730864\t07209670163\tOutgoing\t0\tThu Sep 09 18:16:47 +0100 2010",
-                "07110730864\t07209670163\tOutgoing\t0\tFri Sep 10 06:04:43 +0100 2010",
-                "07784425582\t07981267897\tIncoming\t474\tThu Sep 09 18:44:34 +0100 2010",
-                "07607124303\t2327\tOutgoing\t0\tMon Sep 13 13:54:40 +0100 2010",
-                "07607124303\t07167454533\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
+                "10\t123\tOutgoing\t0\tThu Sep 09 18:16:47 +0100 2010",
+                "10\t123\tOutgoing\t0\tFri Sep 10 06:04:43 +0100 2010",
+                "10\t123\tIncoming\t474\tThu Sep 09 18:44:34 +0100 2010",
+                "10\t123\tOutgoing\t0\tMon Sep 13 13:54:40 +0100 2010",
+                "10\t123\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
         );
 
         StringTransformation preprocessesConfig = new StringTransformation(FileTypes.TSV);
+
         List<String> result = preprocessesConfig
                 .trimEachColumn()
+                .addReplaceHandlers(
+                        new ReplaceHandler(0, (Replacer.ReplaceFunction<String, String>) value -> "10"),
+                        new ReplaceHandler(1, (Replacer.ReplaceFunction<String, String>) value -> "123")
+                )
                 .apply(tsvInput)
                 .collect();
 
