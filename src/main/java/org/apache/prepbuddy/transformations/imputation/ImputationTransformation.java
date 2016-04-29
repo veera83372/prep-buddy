@@ -14,9 +14,10 @@ public class ImputationTransformation implements Serializable {
         JavaRDD<String> transformedRDD = dataset.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
-                String[] columns = row.split(fileType.getDelimiter());
+                String delimiter = fileType.getDelimiter();
+                String[] columns = row.split(delimiter);
                 String[] transformedColumns = imputers.handle(columns);
-                return join(transformedColumns, fileType.getDelimiter());
+                return join(transformedColumns, delimiter);
             }
         });
         return transformedRDD;

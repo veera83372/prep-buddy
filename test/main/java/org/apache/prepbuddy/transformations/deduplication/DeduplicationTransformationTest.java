@@ -1,32 +1,16 @@
 package org.apache.prepbuddy.transformations.deduplication;
 
-import org.apache.log4j.Level;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.apache.log4j.Logger.getLogger;
 import static org.junit.Assert.assertEquals;
 
 public class DeduplicationTransformationTest extends SparkTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        getLogger("org").setLevel(Level.OFF);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Test
     public void shouldGiveAnRddWithNoDuplicateRows() throws NoSuchAlgorithmException {

@@ -5,7 +5,6 @@ import org.apache.prepbuddy.preprocessor.FileType;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,12 +21,6 @@ public class ImputationTest extends SparkTestCase {
         super.setUp();
         imputation = new ImputationTransformation();
         getLogger("org").setLevel(Level.OFF);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     @Test
@@ -125,5 +118,4 @@ public class ImputationTest extends SparkTestCase {
         String actual = transformed.first();
         Assert.assertEquals(expected, actual);
     }
-
 }
