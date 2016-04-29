@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.transformations.imputation;
 
 import org.apache.log4j.Level;
-import org.apache.prepbuddy.preprocessor.FileTypes;
+import org.apache.prepbuddy.preprocessor.FileType;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import static org.apache.log4j.Logger.getLogger;
@@ -48,7 +47,7 @@ public class ImputationTest extends SparkTestCase {
             }
         });
 
-        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers,FileTypes.CSV);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileType.CSV);
 
         String expected = "1234567890,000000,4,5";
         String actual = transformed.first();
@@ -67,7 +66,7 @@ public class ImputationTest extends SparkTestCase {
 
         });
 
-        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileTypes.CSV);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileType.CSV);
         String expected = "1,1,4,5";
         String actual = transformed.first();
         Assert.assertEquals(expected, actual);
@@ -80,7 +79,7 @@ public class ImputationTest extends SparkTestCase {
         remover.onColumn(0);
         remover.onColumn(1);
 
-        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileTypes.CSV);
+        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileType.CSV);
 
         String expected = "3,5,6";
         String actual = transformed.first();
@@ -95,7 +94,7 @@ public class ImputationTest extends SparkTestCase {
         remover.onColumn(10);
         remover.onColumn(1);
 
-        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileTypes.CSV);
+        JavaRDD<String> transformed = imputation.removeIfNull(initialDataset, remover, FileType.CSV);
         transformed.first();
     }
 
@@ -106,7 +105,7 @@ public class ImputationTest extends SparkTestCase {
         remover.onColumn(-1);
         remover.onColumn(1);
 
-        imputation.removeIfNull(initialDataset, remover,FileTypes.CSV).first();
+        imputation.removeIfNull(initialDataset, remover, FileType.CSV).first();
     }
 
     @Test
@@ -120,7 +119,7 @@ public class ImputationTest extends SparkTestCase {
             }
         });
 
-        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileTypes.TSV);
+        JavaRDD<String> transformed = imputation.handleMissingFields(initialDataset, imputers, FileType.TSV);
 
         String expected = "2\t2\t5";
         String actual = transformed.first();

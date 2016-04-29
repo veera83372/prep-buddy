@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.transformations.Replacement;
 
-import org.apache.prepbuddy.preprocessor.FileTypes;
+import org.apache.prepbuddy.preprocessor.FileType;
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class ReplacerTest extends SparkTestCase {
         });
 
         ReplaceTransformation replaceTransformation = new ReplaceTransformation();
-        JavaRDD<String> replacedDataset = replaceTransformation.replace(initialDataset, replacer, FileTypes.CSV);
+        JavaRDD<String> replacedDataset = replaceTransformation.replace(initialDataset, replacer, FileType.CSV);
 
         String expected = "10,2,3,4";
         String actual = replacedDataset.first();

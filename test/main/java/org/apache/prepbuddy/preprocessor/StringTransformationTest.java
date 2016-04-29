@@ -54,7 +54,7 @@ public class StringTransformationTest implements Serializable{
                 "07607124303,07167454533,Outgoing,2,Tue Sep 14 14:48:37 +0100 2010"
         );
 
-        StringTransformation preprocessesConfig = new StringTransformation(FileTypes.CSV);
+        StringTransformation preprocessesConfig = new StringTransformation(FileType.CSV);
         List<String> result = preprocessesConfig
                                     .trimEachColumn()
                 .apply(csvInput)
@@ -82,7 +82,7 @@ public class StringTransformationTest implements Serializable{
                 "07607124303\t07167454533\tOutgoing\t2\tTue Sep 14 14:48:37 +0100 2010"
         );
 
-        StringTransformation preprocessesConfig = new StringTransformation(FileTypes.TSV);
+        StringTransformation preprocessesConfig = new StringTransformation(FileType.TSV);
         List<String> result = preprocessesConfig
                 .trimEachColumn()
                 .apply(tsvInput)
