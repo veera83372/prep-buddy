@@ -3,7 +3,6 @@ package org.apache.prepbuddy.transformations.encryption;
 import com.n1analytics.paillier.EncryptedNumber;
 import junit.framework.Assert;
 import org.apache.prepbuddy.transformations.SparkTestCase;
-import org.apache.prepbuddy.transformations.imputation.ColumnIndexOutOfBoundsException;
 import org.apache.spark.SparkException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function2;

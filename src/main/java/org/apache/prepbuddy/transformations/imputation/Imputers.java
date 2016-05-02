@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.transformations.imputation;
 
+import org.apache.prepbuddy.exception.ColumnIndexOutOfBoundsException;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

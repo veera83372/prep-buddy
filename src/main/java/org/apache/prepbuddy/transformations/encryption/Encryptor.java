@@ -4,7 +4,7 @@ import com.n1analytics.paillier.EncryptedNumber;
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPrivateKey;
 import com.n1analytics.paillier.PaillierPublicKey;
-import org.apache.prepbuddy.transformations.imputation.ColumnIndexOutOfBoundsException;
+import org.apache.prepbuddy.exception.ColumnIndexOutOfBoundsException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 

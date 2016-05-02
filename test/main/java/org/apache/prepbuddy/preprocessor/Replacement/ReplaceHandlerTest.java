@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.preprocessor.Replacement;
+package org.apache.prepbuddy.preprocessor.replacement;
 
 import org.junit.Assert;
 import org.junit.Test;

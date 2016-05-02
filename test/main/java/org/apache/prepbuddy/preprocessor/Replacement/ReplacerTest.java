@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.preprocessor.Replacement;
+package org.apache.prepbuddy.preprocessor.replacement;
 
 import org.apache.prepbuddy.transformations.SparkTestCase;
 import org.junit.Test;

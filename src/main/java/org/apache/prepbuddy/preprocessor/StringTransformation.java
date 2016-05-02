@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.preprocessor;
 
-import org.apache.prepbuddy.preprocessor.Replacement.ReplaceHandler;
-import org.apache.prepbuddy.preprocessor.Replacement.Replacer;
+import org.apache.prepbuddy.preprocessor.replacement.ReplaceHandler;
+import org.apache.prepbuddy.preprocessor.replacement.Replacer;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
