@@ -3,7 +3,6 @@ package org.apache.prepbuddy.transformations.encryption;
 import com.n1analytics.paillier.EncryptedNumber;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.sql.execution.columnar.ObjectColumnStats;
 
 import java.io.Serializable;
 

@@ -10,10 +10,10 @@ import java.util.ArrayList;
 
 public class StringTransformation implements Serializable{
 
-    private FileTypes fileType;
+    private FileType fileType;
     private final ArrayList<PreprocessTask> preprocessTasks;
 
-    public StringTransformation(FileTypes fileType) {
+    public StringTransformation(FileType fileType) {
         this.fileType = fileType;
         preprocessTasks = new ArrayList<PreprocessTask>();
     }
