@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.transformations;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.junit.After;
@@ -15,6 +17,8 @@ public class SparkTestCase implements Serializable {
     public void setUp() throws Exception {
         SparkConf sparkConf = new SparkConf().setAppName(getClass().getName()).setMaster("local");
         context = new JavaSparkContext(sparkConf);
+        Logger.getLogger("org").setLevel(Level.OFF);
+        Logger.getLogger("akka").setLevel(Level.OFF);
     }
 
     @After
