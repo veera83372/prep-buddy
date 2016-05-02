@@ -7,7 +7,7 @@ import java.util.List;
 public class ColumnTransformations implements Serializable {
 
     private int columnNumber;
-    private List<TransformerFunction> transformerFunctions = new ArrayList<TransformerFunction>();
+    private List<TransformationFunction> transformationFunctions = new ArrayList<TransformationFunction>();
 
     public ColumnTransformations(int columnNumber) {
         this.columnNumber = columnNumber;
@@ -16,19 +16,18 @@ public class ColumnTransformations implements Serializable {
     public String[] applyRules(String[] row) {
         String transformedColumn = row[columnNumber];
 
-        for (TransformerFunction rule : transformerFunctions) {
-            transformedColumn = rule.apply(transformedColumn);
+        for (TransformationFunction rule : transformationFunctions) {
+            transformedColumn = rule.apply(transformedColumn,row);
         }
         row[columnNumber] = transformedColumn;
         return row;
     }
 
-//    public void addRule(TransformerFunction transformerFunction) {
-//        transformerFunctions.add(transformerFunction);
-//    }
-
     public void setupNominalToNumeric(final DefaultValue defaultt, final Replacement... pairs) {
-        transformerFunctions.add(new NominalToNumericTransformation(defaultt, pairs));
+        transformationFunctions.add(new NominalToNumericTransformation(defaultt, pairs));
     }
 
+    public void setupImputation(ImputationTransformation transformation) {
+        transformationFunctions.add(transformation);
+    }
 }

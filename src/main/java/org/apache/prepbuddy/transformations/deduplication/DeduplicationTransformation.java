@@ -1,5 +1,6 @@
 package org.apache.prepbuddy.transformations.deduplication;
 
+import org.apache.prepbuddy.reformatters.RowTransformation;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function2;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class DeduplicationTransformation implements Serializable {
+public class DeduplicationTransformation implements Serializable, RowTransformation {
 
     public JavaRDD apply(JavaRDD inputRecords) {
         final JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, String, String>() {

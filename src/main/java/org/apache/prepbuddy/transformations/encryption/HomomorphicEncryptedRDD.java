@@ -7,6 +7,7 @@ import org.apache.spark.api.java.function.Function2;
 import java.io.Serializable;
 
 public class HomomorphicEncryptedRDD<T extends EncryptedNumber> implements Serializable {
+
     protected HomomorphicEncryptedRDD(JavaRDD<T> rdd) {
         this.rdd = rdd;
     }

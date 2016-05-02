@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.transformations.imputation;
+package org.apache.prepbuddy.reformatters;
 
 public class RowRecord {
     private final String[] columnValues;

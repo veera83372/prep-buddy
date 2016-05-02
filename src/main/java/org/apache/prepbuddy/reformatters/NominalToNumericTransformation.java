@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.reformatters;
 
-class NominalToNumericTransformation implements TransformerFunction {
+class NominalToNumericTransformation implements TransformationFunction {
     private final Replacement[] pairs;
     private final DefaultValue defaultt;
 
@@ -10,9 +10,9 @@ class NominalToNumericTransformation implements TransformerFunction {
     }
 
     @Override
-    public String apply(String existing) {
+    public String apply(String existingValue, String[] row) {
         for (Replacement pair : pairs) {
-            if (pair.matches(existing)) {
+            if (pair.matches(existingValue)) {
                 return pair.replacementValue();
             }
         }

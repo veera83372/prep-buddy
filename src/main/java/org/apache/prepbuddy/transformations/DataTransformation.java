@@ -11,13 +11,16 @@ public class DataTransformation implements Serializable{
     public JavaRDD<String> apply(JavaRDD<String> initialDataset,
                                  final DatasetTransformations datasetTransformations, final FileType type) {
 
-        return initialDataset.map(new Function<String, String>() {
+        JavaRDD<String> deduplicateDataset = datasetTransformations.applyRowTransforms(initialDataset);
+
+        JavaRDD<String> finalDataset = deduplicateDataset.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] untransformedColumns = type.parseRecord(record);
-                String[] transformedColumns = datasetTransformations.apply(untransformedColumns);
+                String[] transformedColumns = datasetTransformations.applyColumnTransforms(untransformedColumns);
                 return type.join(transformedColumns);
             }
         });
+        return finalDataset;
     }
 }

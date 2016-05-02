@@ -7,7 +7,7 @@ public enum FileType {
     CSV(",") {
         @Override
         public String[] parseRecord(String record) {
-            return record.split(",");
+            return record.split(",",-1);
         }
 
         @Override
@@ -19,7 +19,7 @@ public enum FileType {
     TSV("\t") {
         @Override
         public String[] parseRecord(String record) {
-            return record.split("\t");
+            return record.split("\t",-1);
         }
 
         @Override
