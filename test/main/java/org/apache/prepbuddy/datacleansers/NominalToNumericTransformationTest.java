@@ -1,10 +1,10 @@
-package org.apache.prepbuddy;
+package org.apache.prepbuddy.datacleansers;
 
+import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.coreops.ColumnTransformation;
 import org.apache.prepbuddy.coreops.DataTransformation;
 import org.apache.prepbuddy.coreops.DatasetTransformations;
 import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -15,24 +15,15 @@ import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
 
-public class SystemTest extends SparkTestCase {
+
+public class NominalToNumericTransformationTest extends SparkTestCase {
+
 
     @Test
-    public void shouldExecuteASeriesOfTransformsOnADataset() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
+    public void shouldTransformABinaryNominalToNumeric() {
+        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "A,B,Female"));
 
         DatasetTransformations datasetTransformations = new DatasetTransformations();
-        datasetTransformations.deduplicateRows();
-
-        datasetTransformations.removeRows(new RowPurger.Predicate() {
-            @Override
-            public Boolean evaluate(String record) {
-                return record.split(",")[1].equals("YY");
-            }
-        });
-
-//        datasetTransformations.appendRows("new file", "existing file");
-
         ColumnTransformation columnTransformation = new ColumnTransformation(2);
 
         columnTransformation.setupImputation(new Imputation() {
@@ -42,7 +33,8 @@ public class SystemTest extends SparkTestCase {
             }
         });
         columnTransformation.setupNominalToNumeric(new DefaultValue(1),
-                new Replacement<>("Male", 0), new Replacement<>("Female", 1));
+                new Replacement<String, Integer>("Male", 0),
+                new Replacement<String, Integer>("Female", 1));
 
 
         datasetTransformations.addColumnTransformations(columnTransformation);
@@ -51,9 +43,7 @@ public class SystemTest extends SparkTestCase {
         DataTransformation transformation = new DataTransformation();
         JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
         String expected = "X,Y,0";
-        assertEquals(1, transformed.count());
         String actual = transformed.first();
         assertEquals(expected, actual);
-
     }
 }
