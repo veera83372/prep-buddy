@@ -17,7 +17,7 @@ public class Encryptor implements Serializable {
     private PaillierPublicKey publicKey = privateKey.getPublicKey();
     private PaillierContext signedContext = publicKey.createSignedContext();
 
-    HomomorphicEncryptedRDD encrypt(final JavaRDD dataSet, int columnIndex){
+    HomomorphicEncryptedRDD encrypt(final JavaRDD dataSet, final int columnIndex){
         JavaRDD encryptedRDD = dataSet.map(new Function<String ,EncryptedNumber>() {
             @Override
             public EncryptedNumber call(String record) throws Exception {
