@@ -14,7 +14,7 @@ public class DeduplicationTest extends SparkTestCase {
 
     @Test
     public void shouldGiveAnRddWithNoDuplicateRows() throws NoSuchAlgorithmException {
-        JavaRDD<String> csvInput = context.parallelize(
+        JavaRDD<String> csvInput = javaSparkContext.parallelize(
                 Arrays.asList(
                         "07110730864,07209670163,Outgoing,0,Thu Sep 09 18:16:47 +0100 2010",
                         "07110730864,07209670163,Outgoing,0,Fri Sep 10 06:04:43 +0100 2010",
@@ -36,7 +36,7 @@ public class DeduplicationTest extends SparkTestCase {
 
     @Test
     public void shouldGiveAnRddWithNoDuplicateForOtherLanguageTextAlso() throws NoSuchAlgorithmException {
-        JavaRDD<String> csvInput = context.parallelize(
+        JavaRDD<String> csvInput = javaSparkContext.parallelize(
                 Arrays.asList(
                         "07607124303,2327，性格外向，0，周一9月13日十三点54分40秒+01002010",
                         "07110730864,07209670163，性格外向，0，周五9月10日6时04分43秒+01002010",

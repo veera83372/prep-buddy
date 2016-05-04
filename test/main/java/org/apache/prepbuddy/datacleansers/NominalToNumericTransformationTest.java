@@ -21,7 +21,7 @@ public class NominalToNumericTransformationTest extends SparkTestCase {
 
     @Test
     public void shouldTransformABinaryNominalToNumeric() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "A,B,Female"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "A,B,Female"));
 
         DatasetTransformations datasetTransformations = new DatasetTransformations();
         ColumnTransformation columnTransformation = new ColumnTransformation(2);
