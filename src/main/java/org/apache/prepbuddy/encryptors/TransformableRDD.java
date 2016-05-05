@@ -13,31 +13,26 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNumeric;
 
-public class TransformableRDD<T> extends JavaRDD<T>  {
+public class TransformableRDD extends JavaRDD  {
     private FileType fileType;
 
-    public TransformableRDD(JavaRDD<T> rdd, FileType fileType) {
+    public TransformableRDD(JavaRDD rdd, FileType fileType) {
         super(rdd.rdd(),rdd.rdd().elementClassTag());
         this.fileType = fileType;
     }
 
     public HomomorphicallyEncryptedRDD encryptHomomorphically(EncryptionKeyPair keyPair, int columnIndex) {
-        PaillierPublicKey publicKey = new PaillierPublicKey(new BigInteger(keyPair.getPublicKeyAsString()));
+        PaillierPublicKey publicKey = keyPair.getPublicKey();
         PaillierContext signedContext = publicKey.createSignedContext();
-        JavaRDD<List> map = wrapRDD(rdd()).map(new Function<T, List>() {
+        JavaRDD<String> map = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
-            public List call(T value) throws Exception {
-                String[] values = fileType.parseRecord(value.toString());
-                String numericValue = values[columnIndex].split("\\.",2)[0];
-                List <Object> list = new ArrayList<Object>(values.length);
-                for (String s : values)  list.add(s);
-                if (isNumeric(numericValue)) {
-                    list.remove(columnIndex);
-                    list.add(columnIndex, signedContext.encrypt(Double.parseDouble(numericValue)));
-                }
-                return list;
+            public String call(String row) throws Exception {
+                String[] values = fileType.parseRecord(row.toString());
+                String numericValue = values[columnIndex];
+                values[columnIndex] = signedContext.encrypt(Double.parseDouble(numericValue)).toString();
+                return fileType.join(values);
             }
         });
-        return new HomomorphicallyEncryptedRDD(map.rdd(),map.classTag(),keyPair,fileType);
+        return new HomomorphicallyEncryptedRDD(map.rdd(),keyPair,fileType);
     }
 }
