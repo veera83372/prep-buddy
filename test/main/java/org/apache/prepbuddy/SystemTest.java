@@ -19,7 +19,7 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldExecuteASeriesOfTransformsOnADataset() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
 
         DatasetTransformations datasetTransformations = new DatasetTransformations();
         datasetTransformations.deduplicateRows();

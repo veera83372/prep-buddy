@@ -3,15 +3,15 @@ package org.apache.prepbuddy.transformation;
 import java.io.Serializable;
 import java.util.List;
 
-public class ColumnJoin implements Serializable {
+public class ColumnJoiner implements Serializable {
     private List<Integer> combinationOrder;
     private String separator;
 
-    public ColumnJoin(List<Integer> combinationOrder) {
+    public ColumnJoiner(List<Integer> combinationOrder) {
         this(combinationOrder, " ");
     }
 
-    public ColumnJoin(List<Integer> combinationOrder, String separator) {
+    public ColumnJoiner(List<Integer> combinationOrder, String separator) {
         this.combinationOrder = combinationOrder;
         this.separator = separator;
     }
