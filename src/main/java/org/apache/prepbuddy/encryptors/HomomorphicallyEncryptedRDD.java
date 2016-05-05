@@ -24,8 +24,8 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
         this.fileType = fileType;
     }
 
-    public JavaRDD<String> decrypt(int columnIndex) {
-        PaillierPrivateKey privateKey = keyPair.getPrivateKey();
+    public JavaRDD<String> decrypt(final int columnIndex) {
+        final PaillierPrivateKey privateKey = keyPair.getPrivateKey();
         JavaRDD<String> javaRDD = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -39,7 +39,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
         return javaRDD;
     }
 
-    public BigInteger sum(int columnIndex) {
+    public BigInteger sum(final int columnIndex) {
         String sum = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
             @Override
             public String call(String firstRow, String secondRow) throws Exception {
