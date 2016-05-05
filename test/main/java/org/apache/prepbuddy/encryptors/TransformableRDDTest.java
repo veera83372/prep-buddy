@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.encryptors;
 
+import com.n1analytics.paillier.EncryptedNumber;
+import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
@@ -7,8 +9,14 @@ import org.apache.spark.api.java.JavaRDD;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 public class TransformableRDDTest extends SparkTestCase {
     @Test
@@ -23,13 +31,13 @@ public class TransformableRDDTest extends SparkTestCase {
 
     @Test
     public void shouldBeAbleToGetSumOfTheEncryptedColumn() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("5,X","2,Y","13,Z","4,A"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("5,d,","2,43","13,re","4,42"));
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset, FileType.CSV);
         EncryptionKeyPair keyPair = new  EncryptionKeyPair(1024);
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair,0);
         BigInteger sum = encryptedRDD.sum(0);
 
-        Assert.assertEquals(sum,new BigInteger("24"));
+        Assert.assertEquals(new BigInteger("24"),sum);
     }
 
     @Test
@@ -40,7 +48,7 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair,1);
         double average = encryptedRDD.average(1);
 
-        Assert.assertEquals(average,1.75,0.01);
+        Assert.assertEquals(1.75,average,0.01);
     }
 
     @Test
@@ -51,6 +59,22 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair,0);
         BigInteger sum = encryptedRDD.sum(0);
 
-        Assert.assertEquals(sum,new BigInteger("22"));
+        Assert.assertEquals(new BigInteger("22"),sum);
+    }
+
+    @Test
+    public void shouldBeAbleToReadAndWrite() throws IOException {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("3,X","2,Y","13,Z","4,A"));
+        TransformableRDD transformableRDD = new TransformableRDD(initialDataset, FileType.CSV);
+        EncryptionKeyPair keyPair = new  EncryptionKeyPair(1024);
+        HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair,0);
+
+        FileUtils.deleteDirectory(new File("data/somePlace"));
+        encryptedRDD.saveAsTextFile("data/somePlace");
+        JavaRDD<String> stringJavaRDD = javaSparkContext.textFile("data/somePlace");
+        HomomorphicallyEncryptedRDD rdd = new HomomorphicallyEncryptedRDD(stringJavaRDD.rdd(), keyPair, FileType.CSV);
+        JavaRDD<String> decrypt = rdd.decrypt(0);
+
+        Assert.assertEquals(decrypt.collect(),initialDataset.collect());
     }
 }

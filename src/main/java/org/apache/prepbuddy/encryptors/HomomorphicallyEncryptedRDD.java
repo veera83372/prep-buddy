@@ -14,48 +14,45 @@ import scala.reflect.ClassTag;
 import java.math.BigInteger;
 import java.util.List;
 
-public class HomomorphicallyEncryptedRDD<T> extends JavaRDD<T>  {
+public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     private final EncryptionKeyPair keyPair;
     private final FileType fileType;
 
-    protected HomomorphicallyEncryptedRDD(RDD<T> rdd, ClassTag<T> classTag, EncryptionKeyPair keyPair, FileType fileType) {
-        super(rdd, classTag);
+    public HomomorphicallyEncryptedRDD(RDD rdd,EncryptionKeyPair keyPair, FileType fileType) {
+        super(rdd, rdd.elementClassTag());
         this.keyPair = keyPair;
         this.fileType = fileType;
     }
 
-    public JavaRDD<Object> decrypt(int columnIndex) {
+    public JavaRDD<String> decrypt(int columnIndex) {
         PaillierPrivateKey privateKey = keyPair.getPrivateKey();
-        JavaRDD<Object> javaRDD = wrapRDD(rdd()).map(new Function<T, Object>() {
+        JavaRDD<String> javaRDD = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
-            public Object call(T value) throws Exception {
-                List list = (List) value;
-                EncryptedNumber encryptedNumber = (EncryptedNumber) list.get(columnIndex);
-                BigInteger bigInteger = privateKey.decrypt(encryptedNumber).decodeBigInteger();
-                list.remove(columnIndex);
-                list.add(columnIndex,bigInteger);
-                return StringUtils.join(list,fileType.getDelimiter());
+            public String call(String row) throws Exception {
+                String[] values = fileType.parseRecord(row.toString());
+                EncryptedNumber encryptedNumber = EncryptedNumber.create(values[columnIndex],keyPair.getPrivateKey());
+                BigInteger bigInteger = privateKey.decrypt(encryptedNumber).decodeApproximateBigInteger();
+                values[columnIndex] = bigInteger.toString();
+                return fileType.join(values);
             }
         });
         return javaRDD;
     }
 
     public BigInteger sum(int columnIndex) {
-        T reduce = wrapRDD(rdd()).reduce(new Function2<T, T, T>() {
+        String sum = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
             @Override
-            public T call(T firstValue, T secondValue) throws Exception {
-                List firstList = (List) firstValue;
-                List secondList = (List) secondValue;
-                //TODO exceptionHandling for Casting
-                EncryptedNumber firstNumber = (EncryptedNumber) firstList.get(columnIndex);
-                EncryptedNumber secondNumber = (EncryptedNumber)secondList.get(columnIndex);
-                secondList.remove(columnIndex);
-                secondList.add(columnIndex,firstNumber.add(secondNumber));
-                return (T)secondList;
+            public String call(String firstRow, String secondRow) throws Exception {
+                String[] firstRecord = fileType.parseRecord(firstRow);
+                String[] secondRecord = fileType.parseRecord(secondRow);
+                EncryptedNumber firstNumber = EncryptedNumber.create(firstRecord[columnIndex], keyPair.getPrivateKey());
+                EncryptedNumber secondNumber = EncryptedNumber.create(secondRecord[columnIndex], keyPair.getPrivateKey());
+                firstRecord[columnIndex] = firstNumber.add(secondNumber).toString();
+                return fileType.join(firstRecord);
             }
         });
-        Object value = ((List) reduce).get(columnIndex);
-        EncryptedNumber result = (EncryptedNumber)value;
+        String s = fileType.parseRecord(sum)[columnIndex];
+        EncryptedNumber result = EncryptedNumber.create(s, keyPair.getPrivateKey());
         return result.decrypt(keyPair.getPrivateKey()).decodeApproximateBigInteger();
     }
 
