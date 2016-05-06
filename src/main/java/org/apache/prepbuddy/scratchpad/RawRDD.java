@@ -4,7 +4,6 @@ import org.apache.spark.Dependency;
 import org.apache.spark.Partition;
 import org.apache.spark.SparkContext;
 import org.apache.spark.TaskContext;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.rdd.RDD;
 import scala.collection.Iterator;
 import scala.collection.Seq;

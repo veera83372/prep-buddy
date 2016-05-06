@@ -6,7 +6,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class DeduplicationMain implements Serializable {
     public static void main(String[] args) {
