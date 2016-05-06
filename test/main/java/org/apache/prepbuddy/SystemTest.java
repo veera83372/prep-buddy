@@ -7,7 +7,6 @@ import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class SystemTest extends SparkTestCase {
 
         columnTransformation.setupImputation(new Imputation() {
             @Override
-            protected String handleMissingData(RowRecord record) {
+            protected String handleMissingData(String[] record) {
                 return "Male";
             }
         });

@@ -21,7 +21,7 @@ public class DatasetTransformations implements Serializable {
         String[] transformedRow = untransformedRow;
 
         for (ColumnTransformation columnRules : allColumnRules) {
-            transformedRow = columnRules.applyRules(transformedRow);
+            transformedRow = columnRules.apply(transformedRow);
         }
         return transformedRow;
     }

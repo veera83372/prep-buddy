@@ -2,17 +2,14 @@ package org.apache.prepbuddy.encryptors;
 
 import com.n1analytics.paillier.EncryptedNumber;
 import com.n1analytics.paillier.PaillierPrivateKey;
-import org.apache.commons.lang.StringUtils;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.rdd.RDD;
-import scala.reflect.ClassTag;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     private final EncryptionKeyPair keyPair;
@@ -24,8 +21,8 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
         this.fileType = fileType;
     }
 
-    public JavaRDD<String> decrypt(int columnIndex) {
-        PaillierPrivateKey privateKey = keyPair.getPrivateKey();
+    public JavaRDD<String> decrypt(final int columnIndex) {
+        final PaillierPrivateKey privateKey = keyPair.getPrivateKey();
         JavaRDD<String> javaRDD = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -39,7 +36,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
         return javaRDD;
     }
 
-    public BigInteger sum(int columnIndex) {
+    public BigInteger sum(final int columnIndex) {
         String sum = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
             @Override
             public String call(String firstRow, String secondRow) throws Exception {

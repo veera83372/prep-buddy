@@ -5,8 +5,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-import java.util.List;
-
 public class DeduplicationMain {
     public static void main(String[] args) {
         if(args.length == 0) {
@@ -27,14 +25,6 @@ public class DeduplicationMain {
         long eleminationCount = numberOfRecordsInInput - numberOfRecordInTransformed;
         System.out.println("-->>> Total " + eleminationCount + " duplicate records are removed");
 
-        List<String> sampleRecord = transformedRecord
-                .sample(false,0.001)
-                .collect();
-
-        System.out.println("Sample Dataset: ");
-        for (String record : sampleRecord) {
-            System.out.println(record);
-        }
         sc.close();
     }
 }

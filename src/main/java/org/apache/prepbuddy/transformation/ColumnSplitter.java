@@ -1,10 +1,6 @@
 package org.apache.prepbuddy.transformation;
 
-import org.apache.prepbuddy.coreops.TransformationFunction;
-
-import java.io.Serializable;
-
-public class ColumnSplitter implements Serializable, TransformationFunction {
+public class ColumnSplitter implements TransformationOperation {
     private int columnIndex;
     private String separator;
     private Integer maxPartition;
@@ -15,7 +11,7 @@ public class ColumnSplitter implements Serializable, TransformationFunction {
         this.maxPartition = maxPartition;
     }
 
-    public ColumnSplitter(int columnIndex) {
+    protected ColumnSplitter(int columnIndex) {
         this.columnIndex = columnIndex;
     }
 
@@ -48,10 +44,5 @@ public class ColumnSplitter implements Serializable, TransformationFunction {
         }
 
         return resultHolder;
-    }
-
-    @Override
-    public String apply(String existingValue, String[] row) {
-        return null;
     }
 }
