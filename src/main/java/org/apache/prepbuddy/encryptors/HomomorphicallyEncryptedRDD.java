@@ -37,7 +37,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     }
 
     public BigInteger sum(final int columnIndex) {
-        String sum = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
+        String finalRecord = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
             @Override
             public String call(String firstRow, String secondRow) throws Exception {
                 String[] firstRecord = fileType.parseRecord(firstRow);
@@ -48,8 +48,8 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
                 return fileType.join(firstRecord);
             }
         });
-        String s = fileType.parseRecord(sum)[columnIndex];
-        EncryptedNumber result = EncryptedNumber.create(s, keyPair.getPrivateKey());
+        String sum = fileType.parseRecord(finalRecord)[columnIndex];
+        EncryptedNumber result = EncryptedNumber.create(sum, keyPair.getPrivateKey());
         return result.decrypt(keyPair.getPrivateKey()).decodeApproximateBigInteger();
     }
 

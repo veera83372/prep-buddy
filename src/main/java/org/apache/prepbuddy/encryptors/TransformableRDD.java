@@ -15,8 +15,8 @@ public class TransformableRDD extends JavaRDD  {
         this.fileType = fileType;
     }
 
-    public HomomorphicallyEncryptedRDD encryptHomomorphically(EncryptionKeyPair keyPair, final int columnIndex) {
-        PaillierPublicKey publicKey = keyPair.getPublicKey();
+    public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair,final int columnIndex) {
+        final PaillierPublicKey publicKey = keyPair.getPublicKey();
         final PaillierContext signedContext = publicKey.createSignedContext();
         JavaRDD<String> map = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override

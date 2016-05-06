@@ -5,11 +5,14 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-public class DeduplicationMain {
+
+import java.io.Serializable;
+
+public class DeduplicationMain implements Serializable {
     public static void main(String[] args) {
         if(args.length == 0) {
             System.out.println("--> File Path Need To Be Specified");
-            System.exit(1);
+            System.exit(0);
         }
         SparkConf conf = new SparkConf().setAppName("Deduplication");
         JavaSparkContext sc = new JavaSparkContext(conf);
@@ -22,8 +25,8 @@ public class DeduplicationMain {
         JavaRDD transformedRecord = deduplication.apply(csvInput);
         long numberOfRecordInTransformed = transformedRecord.count();
 
-        long eleminationCount = numberOfRecordsInInput - numberOfRecordInTransformed;
-        System.out.println("-->>> Total " + eleminationCount + " duplicate records are removed");
+        long elimination = numberOfRecordsInInput - numberOfRecordInTransformed;
+        System.out.println("-->>> Total " + elimination + " duplicate records are removed");
 
         sc.close();
     }

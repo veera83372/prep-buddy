@@ -1,6 +1,5 @@
 package org.apache.prepbuddy.encryptors;
 
-import com.n1analytics.paillier.EncryptedNumber;
 import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.filetypes.FileType;
@@ -12,11 +11,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 
 public class TransformableRDDTest extends SparkTestCase {
     @Test
