@@ -16,14 +16,14 @@ import static junit.framework.Assert.assertTrue;
 public class GroupingOpsTest extends SparkTestCase{
     @Test
     public void _TextFacetShouldGiveCountOfPair() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
         TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
         assertEquals(2, textFacets.count());
     }
 
     @Test
     public void _TextFacets_highestShouldGiveOneHighestPairIfOnlyOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
         TextFacets textFaceted = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
 
         Tuple2<String, Integer> expected = new Tuple2<>("A", 3);
@@ -38,7 +38,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void _TextFacet_highestShouldGiveListOfHighestPairsIfMoreThanOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","X,P"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","X,P"));
 
         TextFacets textFaceted = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
         List<Tuple2> listOfHighest = textFaceted.highest();
@@ -54,7 +54,7 @@ public class GroupingOpsTest extends SparkTestCase{
     }
     @Test
     public void _TextFacet_lowestShouldGiveOnePairInListIfOnlyOneLowestPairIsFound() throws Exception {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
 
         TextFacets textFaceted = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
 
@@ -71,7 +71,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void _TextFacet_lowestShouldGiveListOfLowestPairsIfMoreThanOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R"));
 
         TextFacets textFaceted = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
 
@@ -88,7 +88,7 @@ public class GroupingOpsTest extends SparkTestCase{
     }
     @Test
     public void _TextFacet_getFacetsBetweenShouldGiveListOfFacetedPairInGivenRange() throws Exception {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R","W,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R","W,E"));
 
         TextFacets textFaceted = GroupingOps.listTextFacets(initialDataset, 0, FileType.CSV);
 
@@ -108,7 +108,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void shouldGiveClusterOfSimilarColumnValues() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
         Clusters clusters = GroupingOps.clusterUsingSimpleFingerprint(initialDataset, 0, FileType.CSV);
 
         Tuple2<String, Integer> expected1 = new Tuple2<>("CLUSTER Of Finger print", 1);
@@ -124,7 +124,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void shouldGiveNumberOfClusters() {
-        JavaRDD<String> dataset = context.textFile("data/phm_collection.txt");
+        JavaRDD<String> dataset = javaSparkContext.textFile("data/phm_collection.txt");
         Clusters clusters = GroupingOps.clusterUsingSimpleFingerprint(dataset, 8, FileType.TSV);
 
         List<Cluster> duplicateClusters = clusters.getClustersWithSizeGreaterThan(1);
@@ -133,7 +133,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void clusterByNGramFingerPrintShouldGiveClustersByNGramMethod() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
         Clusters clusters = GroupingOps.clusterUsingNGramFingerprint(initialDataset, 0, FileType.CSV,1);
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(2);
@@ -144,7 +144,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void clusterByNGramFingerPrintShouldGiveNumberOfClusters() {
-        JavaRDD<String> dataset = context.textFile("data/newCollection.txt");
+        JavaRDD<String> dataset = javaSparkContext.textFile("data/newCollection.txt");
         Clusters clusters = GroupingOps.clusterUsingNGramFingerprint(dataset, 8, FileType.TSV,2);
 
         List<Cluster> duplicateClusters = clusters.getClustersWithSizeGreaterThan(1);
@@ -153,7 +153,7 @@ public class GroupingOpsTest extends SparkTestCase{
 
     @Test
     public void clusterUsingLevenshteinDistanceShouldGiveClustersByDistanceMethod() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("cluster Of Finger print", "finger print of cluster", "finger print for cluster"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("cluster Of Finger print", "finger print of cluster", "finger print for cluster"));
         Clusters clusters = GroupingOps.clusterUsingLevenshteinDistance(initialDataset, 0, FileType.CSV);
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(1);
