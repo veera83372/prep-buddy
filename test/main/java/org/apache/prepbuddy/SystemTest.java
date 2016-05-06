@@ -8,7 +8,6 @@ import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldExecuteASeriesOfTransformsOnADataset() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
 
         DatasetTransformations datasetTransformations = new DatasetTransformations();
         datasetTransformations.deduplicateRows();
@@ -38,7 +37,7 @@ public class SystemTest extends SparkTestCase {
 
         columnTransformation.setupImputation(new Imputation() {
             @Override
-            protected String handleMissingData(RowRecord record) {
+            protected String handleMissingData(String[] record) {
                 return "Male";
             }
         });

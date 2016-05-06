@@ -7,7 +7,6 @@ import org.apache.prepbuddy.coreops.DatasetTransformations;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -21,14 +20,14 @@ public class NominalToNumericTransformationTest extends SparkTestCase {
 
     @Test
     public void shouldTransformABinaryNominalToNumeric() {
-        JavaRDD<String> initialDataset = context.parallelize(Arrays.asList("X,Y,", "A,B,Female"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "A,B,Female"));
 
         DatasetTransformations datasetTransformations = new DatasetTransformations();
         ColumnTransformation columnTransformation = new ColumnTransformation(2);
 
         columnTransformation.setupImputation(new Imputation() {
             @Override
-            protected String handleMissingData(RowRecord record) {
+            protected String handleMissingData(String[] record) {
                 return "Male";
             }
         });
