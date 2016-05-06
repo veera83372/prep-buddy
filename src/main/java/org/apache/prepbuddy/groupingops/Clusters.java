@@ -10,7 +10,7 @@ public class Clusters {
 
     public void add(String key, Tuple2<String, Integer> recordTuple) {
         Cluster cluster = getClusterOf(key);
-        if (cluster == null){
+        if (cluster == null) {
             cluster = new Cluster(key);
             clusters.add(cluster);
         }
@@ -33,7 +33,7 @@ public class Clusters {
     public List<Cluster> getClustersExactlyOfSize(int size) {
         List<Cluster> list = new ArrayList<>();
         for (Cluster cluster : clusters) {
-            if (cluster.size() == size){
+            if (cluster.size() == size) {
                 list.add(cluster);
             }
         }
@@ -43,7 +43,7 @@ public class Clusters {
     public List<Cluster> getClustersWithSizeGreaterThan(int threshold) {
         List<Cluster> list = new ArrayList<>();
         for (Cluster cluster : clusters) {
-            if (cluster.size() > threshold){
+            if (cluster.size() > threshold) {
                 list.add(cluster);
             }
         }

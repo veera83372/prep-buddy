@@ -24,7 +24,7 @@ public class FingerprintingAlgorithms {
         TreeSet<String> set = new TreeSet<>();
         Collections.addAll(set, fragments);
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         Iterator<String> iterator = set.iterator();
 
         while (iterator.hasNext()) {
@@ -45,17 +45,15 @@ public class FingerprintingAlgorithms {
         someString = removeAllPunctuations(someString);
 
         TreeSet<String> set = getNGramSetOf(someString, nGram);
-        StringBuffer buffer = new StringBuffer();
-        Iterator<String> iterator = set.iterator();
+        StringBuilder buffer = new StringBuilder();
 
-        while (iterator.hasNext())
-            buffer.append(iterator.next());
+        set.forEach(buffer::append);
 
         return buffer.toString();
     }
 
     private static TreeSet<String> getNGramSetOf(String someString, int nGram) {
-        TreeSet<String> set = new TreeSet<String>();
+        TreeSet<String> set = new TreeSet<>();
         char[] chars = someString.toCharArray();
         for (int i = 0; i + nGram <= chars.length; i++) {
             set.add(new String(chars, i, nGram));

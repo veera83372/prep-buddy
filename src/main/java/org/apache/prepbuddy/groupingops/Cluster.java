@@ -6,15 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cluster {
+
     private final String key;
     private List<Tuple2> tuples = new ArrayList<>();
 
     public Cluster(String key) {
         this.key = key;
-    }
-
-    public boolean isOfKey(String key) {
-        return this.key.equals(key);
     }
 
     public void add(Tuple2<String, Integer> recordTuple) {
@@ -33,10 +30,8 @@ public class Cluster {
         return tuples.size();
     }
 
-    public void show() {
-        for (int i = 0; i < tuples.size(); i++) {
-            Tuple2 tuple = tuples.get(i);
-            System.out.println("tuple = " + i +" " + tuple);
-        }
+
+    public boolean isOfKey(String key) {
+        return this.key.equals(key);
     }
 }
