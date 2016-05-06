@@ -7,7 +7,6 @@ import scala.Tuple2;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class TextFacets implements Serializable {
     private final JavaPairRDD<String, Integer> facets;

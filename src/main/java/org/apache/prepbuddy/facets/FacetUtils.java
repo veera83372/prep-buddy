@@ -11,12 +11,12 @@ import java.io.Serializable;
 
 public class FacetUtils implements Serializable {
 
-    public TextFacets listTextFacets(JavaRDD<String> initialDataset, int columnIndex, FileType fileType) {
+    public static TextFacets listTextFacets(JavaRDD<String> initialDataset, int columnIndex, FileType fileType) {
         JavaPairRDD<String, Integer> columnValuePair = initialDataset.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
                 String[] columnValues = fileType.parseRecord(record);
-                return new Tuple2<String, Integer>(columnValues[columnIndex], 1);
+                return new Tuple2<>(columnValues[columnIndex], 1);
             }
         });
         JavaPairRDD<String, Integer> facets = columnValuePair.reduceByKey(new Function2<Integer, Integer, Integer>() {
@@ -25,8 +25,10 @@ public class FacetUtils implements Serializable {
                 return accumulator + currentValue;
             }
         });
+
         return new TextFacets(facets);
     }
+
 
 
 }

@@ -3,8 +3,9 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.coreops.ColumnTransformation;
 import org.apache.prepbuddy.coreops.DataTransformation;
 import org.apache.prepbuddy.coreops.DatasetTransformations;
+import org.apache.prepbuddy.datacleansers.Imputation;
+import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -54,6 +55,5 @@ public class SystemTest extends SparkTestCase {
         assertEquals(1, transformed.count());
         String actual = transformed.first();
         assertEquals(expected, actual);
-
     }
 }

@@ -22,4 +22,5 @@ public class NominalToNumericTransformation implements TransformationFunction {
         }
         return defaultt.asString();
     }
+
 }
