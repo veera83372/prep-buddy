@@ -21,7 +21,7 @@ public class TransformableRDD extends JavaRDD  {
         JavaRDD<String> map = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
-                String[] values = fileType.parseRecord(row.toString());
+                String[] values = fileType.parseRecord(row);
                 String numericValue = values[columnIndex];
                 values[columnIndex] = signedContext.encrypt(Double.parseDouble(numericValue)).toString();
                 return fileType.join(values);

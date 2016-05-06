@@ -28,12 +28,6 @@ public class DeduplicationMain implements Serializable {
         long elimination = numberOfRecordsInInput - numberOfRecordInTransformed;
         System.out.println("-->>> Total " + elimination + " duplicate records are removed");
 
-        List<String> sampleRecord = transformedRecord
-                .sample(false,0.001)
-                .collect();
-
-        System.out.println("Sample Dataset: ");
-        for (String record : sampleRecord) System.out.println(record);
         sc.close();
     }
 }

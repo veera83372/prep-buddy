@@ -2,17 +2,14 @@ package org.apache.prepbuddy.encryptors;
 
 import com.n1analytics.paillier.EncryptedNumber;
 import com.n1analytics.paillier.PaillierPrivateKey;
-import org.apache.commons.lang.StringUtils;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.rdd.RDD;
-import scala.reflect.ClassTag;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     private final EncryptionKeyPair keyPair;
@@ -40,7 +37,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     }
 
     public BigInteger sum(final int columnIndex) {
-        String sum = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
+        String finalRecord = wrapRDD(rdd()).reduce(new Function2<String, String, String>() {
             @Override
             public String call(String firstRow, String secondRow) throws Exception {
                 String[] firstRecord = fileType.parseRecord(firstRow);
@@ -51,8 +48,8 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
                 return fileType.join(firstRecord);
             }
         });
-        String s = fileType.parseRecord(sum)[columnIndex];
-        EncryptedNumber result = EncryptedNumber.create(s, keyPair.getPrivateKey());
+        String sum = fileType.parseRecord(finalRecord)[columnIndex];
+        EncryptedNumber result = EncryptedNumber.create(sum, keyPair.getPrivateKey());
         return result.decrypt(keyPair.getPrivateKey()).decodeApproximateBigInteger();
     }
 
