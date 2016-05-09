@@ -1,15 +1,15 @@
 package org.apache.prepbuddy.coreops;
 
-import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.datacleansers.Imputation;
 import org.apache.prepbuddy.datacleansers.NominalToNumericTransformation;
+import org.apache.prepbuddy.transformation.TransformationOperation;
+import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColumnTransformation implements Serializable {
+public class ColumnTransformation implements TransformationOperation {
 
     private int columnNumber;
     private List<TransformationFunction> transformationFunctions = new ArrayList<TransformationFunction>();
@@ -18,11 +18,11 @@ public class ColumnTransformation implements Serializable {
         this.columnNumber = columnNumber;
     }
 
-    public String[] applyRules(String[] row) {
+    public String[] apply(String[] row) {
         String transformedColumn = row[columnNumber];
 
         for (TransformationFunction rule : transformationFunctions) {
-            transformedColumn = rule.apply(transformedColumn,row);
+            transformedColumn = rule.apply(transformedColumn, row);
         }
         row[columnNumber] = transformedColumn;
         return row;

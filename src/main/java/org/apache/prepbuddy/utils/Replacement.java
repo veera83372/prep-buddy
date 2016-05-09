@@ -1,21 +1,16 @@
 package org.apache.prepbuddy.utils;
 
-import java.io.Serializable;
-
-public class Replacement<O, N> implements Serializable{
-    private O oldValue;
-    private N newValue;
+public class Replacement<O, N> extends Pair<O,N> {
 
     public Replacement(O oldValue, N newValue) {
-        this.oldValue = oldValue;
-        this.newValue = newValue;
+        super(oldValue, newValue);
     }
 
     public String replacementValue() {
-        return newValue.toString();
+        return secondValue.toString();
     }
 
     public boolean matches(O existing) {
-        return existing != null && existing.equals(oldValue);
+        return existing != null && existing.equals(firstValue);
     }
 }

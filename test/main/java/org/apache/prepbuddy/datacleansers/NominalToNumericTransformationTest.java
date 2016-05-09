@@ -7,7 +7,6 @@ import org.apache.prepbuddy.coreops.DatasetTransformations;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -28,7 +27,7 @@ public class NominalToNumericTransformationTest extends SparkTestCase {
 
         columnTransformation.setupImputation(new Imputation() {
             @Override
-            protected String handleMissingData(RowRecord record) {
+            protected String handleMissingData(String[] record) {
                 return "Male";
             }
         });

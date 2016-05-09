@@ -1,9 +1,8 @@
 package org.apache.prepbuddy.transformation;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class ColumnJoiner implements Serializable {
+public class ColumnJoiner implements TransformationOperation {
     private List<Integer> combinationOrder;
     private String separator;
 

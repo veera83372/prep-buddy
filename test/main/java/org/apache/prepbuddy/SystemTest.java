@@ -3,11 +3,11 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.coreops.ColumnTransformation;
 import org.apache.prepbuddy.coreops.DataTransformation;
 import org.apache.prepbuddy.coreops.DatasetTransformations;
+import org.apache.prepbuddy.datacleansers.Imputation;
+import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class SystemTest extends SparkTestCase {
 
         columnTransformation.setupImputation(new Imputation() {
             @Override
-            protected String handleMissingData(RowRecord record) {
+            protected String handleMissingData(String[] record) {
                 return "Male";
             }
         });
@@ -54,6 +54,5 @@ public class SystemTest extends SparkTestCase {
         assertEquals(1, transformed.count());
         String actual = transformed.first();
         assertEquals(expected, actual);
-
     }
 }
