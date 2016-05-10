@@ -46,8 +46,11 @@ public class FingerprintingAlgorithms {
 
         TreeSet<String> set = getNGramSetOf(someString, nGram);
         StringBuilder buffer = new StringBuilder();
+        Iterator<String> iterator = set.iterator();
 
-        set.forEach(buffer::append);
+        while (iterator.hasNext()) {
+            buffer.append(iterator.next());
+        }
 
         return buffer.toString();
     }

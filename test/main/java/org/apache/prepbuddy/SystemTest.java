@@ -6,6 +6,8 @@ import org.apache.prepbuddy.coreops.DatasetTransformations;
 import org.apache.prepbuddy.datacleansers.Imputation;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
+import org.apache.prepbuddy.groupingops.GroupingOps;
+import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.spark.api.java.JavaRDD;
@@ -54,5 +56,16 @@ public class SystemTest extends SparkTestCase {
         assertEquals(1, transformed.count());
         String actual = transformed.first();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void _TextFacetShouldGiveCountOfPair() {
+        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/highGenerated.csv");
+        TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 4, FileType.CSV);
+        System.out.printf("Total facetes are count is::  " + textFacets.count());
+
+
+
+//        assertEquals(2, textFacets.count());
     }
 }
