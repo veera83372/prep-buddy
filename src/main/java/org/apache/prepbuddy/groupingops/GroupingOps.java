@@ -37,7 +37,7 @@ public class GroupingOps implements Serializable {
         Clusters clusters = new Clusters();
         TextFacets textFacets = GroupingOps.listTextFacets(dataset, columnIndex, type);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
-        List<Tuple2<String, Integer>> tuples = rdd.take((int) rdd.count());
+        List<Tuple2<String, Integer>> tuples = rdd.collect();
 
         for (Tuple2<String, Integer> tuple : tuples) {
             String key = generateSimpleFingerprint(tuple._1());
@@ -75,7 +75,7 @@ public class GroupingOps implements Serializable {
                 String otherTupleKey = otherTuple._1();
                 int distance = StringUtils.getLevenshteinDistance(tupleKey, otherTupleKey);
                 if (distance < 4 && !(indexes.contains(j))) {
-                    clusters.add(tupleKey, otherTuple);
+                       clusters.add(tupleKey, otherTuple);
                     indexes.add(j);
                 }
             }

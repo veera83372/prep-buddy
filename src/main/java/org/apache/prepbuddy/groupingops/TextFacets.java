@@ -20,11 +20,21 @@ public class TextFacets implements Serializable {
     }
 
     public List<Tuple2> highest() throws Exception {
-        return getPeakListFor((Function2<Integer, Integer, Boolean>) (currentTupleValue, peakTupleValue) -> currentTupleValue > peakTupleValue);
+        return  getPeakListFor(new Function2<Integer, Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer currentTupleValue, Integer peakTupleValue) throws Exception {
+                return currentTupleValue > peakTupleValue;
+            }
+        });
     }
 
     public List<Tuple2> lowest() throws Exception {
-        return getPeakListFor((Function2<Integer, Integer, Boolean>) (currentTupleValue, peakTupleVale) -> currentTupleValue < peakTupleVale);
+        return  getPeakListFor(new Function2<Integer, Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer currentTupleValue, Integer peakTupleValue) throws Exception {
+                return currentTupleValue < peakTupleValue;
+            }
+        });
     }
 
     private List<Tuple2> getPeakListFor(Function2<Integer, Integer, Boolean> compareFunction) throws Exception {
