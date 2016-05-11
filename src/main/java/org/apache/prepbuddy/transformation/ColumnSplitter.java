@@ -23,26 +23,10 @@ public class ColumnSplitter implements TransformationFunction {
 
     public String[] apply(String[] record, int columnIndex) {
         String[] splittedColumn = getSplittedRecord(record[columnIndex]);
-//        if (retainColumn)
-//            return arrangeRecordByRetainingColumn(splittedColumn, record, columnIndex);
+        if (retainColumn)
+            return arrangeRecordByKeepingColumn(splittedColumn, record, columnIndex);
         return arrangeRecordByRemovingColumn(splittedColumn, record, columnIndex);
     }
-
-//    private String[] arrangeRecordByRetainingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
-//        int newRecordLength = getNewRecordLength(splittedColumn, oldRecord);
-//        String[] resultHolder = new String[newRecordLength];
-//
-//        int resultHolderIndex = 0;
-//        for (int index = 0; index < oldRecord.length; index++) {
-//            if (index == columnIndex+1)
-//                for (String value : splittedColumn)
-//                    resultHolder[resultHolderIndex++] = value;
-//            else
-//                resultHolder[resultHolderIndex++] = oldRecord[index];
-//        }
-//
-//        return resultHolder;
-//    }
 
     protected String[] getSplittedRecord(String columnValue) {
         if (maxPartition == null)
@@ -50,8 +34,25 @@ public class ColumnSplitter implements TransformationFunction {
         return columnValue.split(separator, maxPartition);
     }
 
+    private String[] arrangeRecordByKeepingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
+        int newRecordLength = splittedColumn.length + oldRecord.length;
+        String[] resultHolder = new String[newRecordLength];
+
+        int resultHolderIndex = 0;
+        for (int index = 0; index < oldRecord.length; index++) {
+            if (index == columnIndex && retainColumn) {
+                resultHolder[resultHolderIndex++] = oldRecord[index];
+                for (String value : splittedColumn)
+                    resultHolder[resultHolderIndex++] = value;
+            } else
+                resultHolder[resultHolderIndex++] = oldRecord[index];
+        }
+
+        return resultHolder;
+    }
+
     String[] arrangeRecordByRemovingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
-        int newRecordLength = getNewRecordLength(splittedColumn, oldRecord);
+        int newRecordLength = splittedColumn.length + oldRecord.length - 1;
         String[] resultHolder = new String[newRecordLength];
 
         int resultHolderIndex = 0;
@@ -66,11 +67,4 @@ public class ColumnSplitter implements TransformationFunction {
         return resultHolder;
     }
 
-    private int getNewRecordLength(String[] splittedColumn, String[] oldRecord) {
-        int newRecordLength = splittedColumn.length + oldRecord.length;
-        if (retainColumn)
-            return newRecordLength;
-
-        return newRecordLength - 1;
-    }
 }

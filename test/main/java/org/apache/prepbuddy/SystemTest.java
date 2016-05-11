@@ -1,12 +1,8 @@
 package org.apache.prepbuddy;
 
-import org.apache.prepbuddy.coreops.ColumnTransformation;
-import org.apache.prepbuddy.coreops.DataTransformation;
-import org.apache.prepbuddy.coreops.DatasetTransformations;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
-import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.Replacement;
@@ -59,45 +55,19 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldBeAbleToSplitTheGivenColumn() {
-        DatasetTransformations datasetTransformations = new DatasetTransformations();
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName MiddleName,850"));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        ColumnTransformation columnTransformation = new ColumnTransformation(0);
+        TransformableRDD splitColumnRDD = initialRDD.split(0, " ", false);
+        assertEquals("FirstName,LastName,MiddleName,850", splitColumnRDD.first());
 
-        columnTransformation.splitBy(" ", false);
+        TransformableRDD splitColumnRDDByKeepingColumn = initialRDD.split(0, " ", true);
+        assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", splitColumnRDDByKeepingColumn.first());
 
-        datasetTransformations.addColumnTransformations(columnTransformation);
+        TransformableRDD splitColumnByLengthRDD = initialRDD.split(0, Arrays.asList(9, 9), false);
+        assertEquals("FirstName, LastName,850", splitColumnByLengthRDD.first());
 
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName,MiddleName"));
-
-        DataTransformation transformation = new DataTransformation();
-        JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
-
-        String expected = "FirstName,LastName,MiddleName";
-
-        assertEquals(1, transformed.count());
-        String actual = transformed.first();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldBeAbleToSplitTheGivenColumnWithTheGivenNumberOfLengths() {
-        DatasetTransformations datasetTransformations = new DatasetTransformations();
-
-        ColumnTransformation columnTransformation = new ColumnTransformation(0);
-
-        columnTransformation.splitBy(" ", false);
-
-        datasetTransformations.addColumnTransformations(columnTransformation);
-
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName,MiddleName"));
-
-        DataTransformation transformation = new DataTransformation();
-        JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
-
-        String expected = "FirstName,LastName,MiddleName";
-
-        assertEquals(1, transformed.count());
-        String actual = transformed.first();
-        assertEquals(expected, actual);
+        TransformableRDD splitColumnByLengthRDDByKeepingColumn = initialRDD.split(0, Arrays.asList(9, 9), true);
+        assertEquals("FirstName LastName MiddleName,FirstName, LastName,850", splitColumnByLengthRDDByKeepingColumn.first());
     }
 }

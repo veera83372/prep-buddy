@@ -26,13 +26,13 @@ public class ColumnSplitterTest {
         assertEquals("FirstName,LastName MiddleName,850", StringUtils.join(actualValue, ","));
     }
 
-//    @Test
-//    public void shouldSplitTheGivenColumnToGivenNumberOfPartitionByRetainingTheGivenColumn() {
-//        String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
-//
-//        ColumnSplitter columnSplitter = new ColumnSplitter(" ", true);
-//        String[] actualValue = columnSplitter.apply(inputRecord, 0);
-//
-//        assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", StringUtils.join(actualValue, ","));
-//    }
+    @Test
+    public void shouldSplitTheGivenColumnToGivenNumberOfPartitionByRetainingTheGivenColumn() {
+        String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
+
+        ColumnSplitter columnSplitter = new ColumnSplitter(" ", true);
+        String[] actualValue = columnSplitter.apply(inputRecord, 0);
+
+        assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", StringUtils.join(actualValue, ","));
+    }
 }
