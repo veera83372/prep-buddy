@@ -7,7 +7,7 @@ import org.apache.spark.api.java.function.Function;
 
 import java.io.Serializable;
 
-public class RowPurger implements RowTransformation, Serializable {
+public class RowPurger implements RowTransformation, Serializable{
 
     private final Predicate condition;
 
@@ -24,7 +24,6 @@ public class RowPurger implements RowTransformation, Serializable {
                 return !condition.evaluate(record);
             }
         });
-
     }
 
 

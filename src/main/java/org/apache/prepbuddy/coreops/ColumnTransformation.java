@@ -2,6 +2,7 @@ package org.apache.prepbuddy.coreops;
 
 import org.apache.prepbuddy.datacleansers.Imputation;
 import org.apache.prepbuddy.datacleansers.NominalToNumericTransformation;
+import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.TransformationOperation;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
@@ -19,13 +20,12 @@ public class ColumnTransformation implements TransformationOperation {
     }
 
     public String[] apply(String[] row) {
-        String transformedColumn = row[columnNumber];
+        String[] transformedColumn = row;
 
         for (TransformationFunction rule : transformationFunctions) {
-            transformedColumn = rule.apply(transformedColumn, row);
+            transformedColumn = rule.apply(row,columnNumber);
         }
-        row[columnNumber] = transformedColumn;
-        return row;
+        return transformedColumn;
     }
 
     public void setupNominalToNumeric(final DefaultValue defaultt, final Replacement... pairs) {
@@ -34,5 +34,9 @@ public class ColumnTransformation implements TransformationOperation {
 
     public void setupImputation(Imputation transformation) {
         transformationFunctions.add(transformation);
+    }
+
+    public void splitBy(String splitter, boolean retainColumn) {
+        transformationFunctions.add(new ColumnSplitter(splitter, retainColumn));
     }
 }

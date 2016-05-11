@@ -5,19 +5,34 @@ import java.util.List;
 public class ColumnJoiner implements TransformationOperation {
     private List<Integer> combinationOrder;
     private String separator;
+    private boolean retainColumns;
 
-    public ColumnJoiner(List<Integer> combinationOrder) {
-        this(combinationOrder, " ");
-    }
-
-    public ColumnJoiner(List<Integer> combinationOrder, String separator) {
+    public ColumnJoiner(List<Integer> combinationOrder, String separator, boolean retainColumns) {
         this.combinationOrder = combinationOrder;
         this.separator = separator;
+        this.retainColumns = retainColumns;
+    }
+
+    public ColumnJoiner(List<Integer> combinationOrder, boolean retainColumns) {
+        this(combinationOrder," ", retainColumns);
     }
 
     public String[] apply(String[] record) {
         String margedValue = margeColumns(record);
-        return arrangeRecord(margedValue, record);
+        if(retainColumns)
+            return arrangeRecordByRetainingColumns(margedValue, record);
+        return arrangeRecordByRemovingColumns(margedValue, record);
+    }
+
+    private String[] arrangeRecordByRetainingColumns(String margedValue, String[] oldRecord) {
+        int newRecordLength = oldRecord.length + 1;
+        String[] resultRecordHolder = new String[newRecordLength];
+
+        for (int index = 0; index < oldRecord.length; index++)
+            resultRecordHolder[index] = oldRecord[index];
+
+        resultRecordHolder[newRecordLength - 1] = margedValue;
+        return resultRecordHolder;
     }
 
     private String margeColumns(String[] record) {
@@ -28,7 +43,7 @@ public class ColumnJoiner implements TransformationOperation {
         return margedRecord.substring(1);
     }
 
-    private String[] arrangeRecord(String margedValue, String[] oldRecord) {
+    private String[] arrangeRecordByRemovingColumns(String margedValue, String[] oldRecord) {
         int newRecordLength = oldRecord.length - combinationOrder.size() + 1;
 
         String[] resultRecordHolder = new String[newRecordLength];

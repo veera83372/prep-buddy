@@ -12,8 +12,8 @@ public class ColumnSplitterByFieldLengthsTest {
     public void shouldSplitTheGivenColumnByTheGivenLengths() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
 
-        ColumnSplitterByFieldLengths splitColumn = new ColumnSplitterByFieldLengths(0, Arrays.asList(9, 9));
-        String[] actualValue = splitColumn.apply(inputRecord);
+        ColumnSplitterByFieldLengths splitColumn = new ColumnSplitterByFieldLengths(Arrays.asList(9, 9), false);
+        String[] actualValue = splitColumn.apply(inputRecord, 0);
 
         assertEquals("FirstName, LastName,850", StringUtils.join(actualValue, ","));
     }

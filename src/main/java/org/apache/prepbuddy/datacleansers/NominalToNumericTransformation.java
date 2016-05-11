@@ -14,13 +14,16 @@ public class NominalToNumericTransformation implements TransformationFunction {
     }
 
     @Override
-    public String apply(String existingValue, String[] row) {
+    public String[] apply(String[] row, int columnIndex) {
+        String existingValue = row[columnIndex];
         for (Replacement pair : pairs) {
             if (pair.matches(existingValue)) {
-                return pair.replacementValue();
+                row[columnIndex] = pair.replacementValue();
+                return row;
             }
         }
-        return defaultt.asString();
+        row[columnIndex] = defaultt.asString();
+        return row;
     }
 
 }

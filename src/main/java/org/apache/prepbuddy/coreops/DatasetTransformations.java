@@ -39,8 +39,9 @@ public class DatasetTransformations implements Serializable {
 
     }
 
-    public void deduplicateRows() {
+    public DatasetTransformations deduplicateRows() {
         allRowRules.add(new Deduplication());
+        return this;
     }
 
     public void removeRows(RowPurger.Predicate condition) {
