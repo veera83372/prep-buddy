@@ -12,8 +12,8 @@ import org.apache.prepbuddy.groupingops.Algorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.transformation.ColumnJoiner;
-import org.apache.prepbuddy.transformation.ColumnSplitter;
-import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
+import org.apache.prepbuddy.transformation.SplitByDelimiter;
+import org.apache.prepbuddy.transformation.SplitByFieldLength;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -118,26 +118,26 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    private JavaRDD<String> performSplitTransformation(final int columnIndex, final ColumnSplitter columnSplitter) {
+    private JavaRDD<String> splitColumn(final int columnIndex, final SplitByDelimiter splitByDelimiter) {
         return this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = columnSplitter.apply(recordAsArray, columnIndex);
+                String[] transformedRow = splitByDelimiter.apply(recordAsArray, columnIndex);
                 return fileType.join(transformedRow);
             }
         });
     }
 
-    public TransformableRDD splitColumn(int columnIndex, String splitter, boolean retainColumn) {
-        ColumnSplitter columnSplitter = new ColumnSplitter(splitter, retainColumn);
-        JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
+    public TransformableRDD splitColumn(int columnIndex, String delimiter, boolean retainColumn) {
+        SplitByDelimiter splitByDelimiter = new SplitByDelimiter(delimiter, retainColumn);
+        JavaRDD<String> transformed = splitColumn(columnIndex, splitByDelimiter);
         return new TransformableRDD(transformed, fileType);
     }
 
     public TransformableRDD splitColumn(int columnIndex, List fieldLengths, boolean retainColumn){
-        ColumnSplitter columnSplitter = new ColumnSplitterByFieldLengths(fieldLengths,retainColumn);
-        JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
+        SplitByDelimiter splitByDelimiter = new SplitByFieldLength(fieldLengths, retainColumn);
+        JavaRDD<String> transformed = splitColumn(columnIndex, splitByDelimiter);
         return new TransformableRDD(transformed, fileType);
     }
 

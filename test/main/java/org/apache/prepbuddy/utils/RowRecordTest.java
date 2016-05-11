@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.utils;
 
-import org.apache.prepbuddy.transformation.ColumnSplitter;
+import org.apache.prepbuddy.transformation.SplitByDelimiter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -10,7 +10,7 @@ public class RowRecordTest {
     @Test
     public void ShouldReturnsBackANewRowRecordAfterSplittingThePreviousRecordAtGivenPosition() {
 //        RowRecord record = new RowRecord("FirstName LastName,Something Else".splitColumn(","));
-        ColumnSplitter splitBySpace = new ColumnSplitter(" ", false);
+        SplitByDelimiter splitBySpace = new SplitByDelimiter(" ", false);
 
 //        RowRecord expected = new RowRecord("FirstName,LastName,Something Else".splitColumn(","));
 //        RowRecord actual = record.getModifiedRecord(splitBySpace, 0);

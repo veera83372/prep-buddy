@@ -2,7 +2,7 @@ package org.apache.prepbuddy.coreops;
 
 import org.apache.prepbuddy.datacleansers.Imputation;
 import org.apache.prepbuddy.datacleansers.NominalToNumericTransformation;
-import org.apache.prepbuddy.transformation.ColumnSplitter;
+import org.apache.prepbuddy.transformation.SplitByDelimiter;
 import org.apache.prepbuddy.transformation.TransformationOperation;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
@@ -37,6 +37,6 @@ public class ColumnTransformation implements TransformationOperation {
     }
 
     public void splitBy(String splitter, boolean retainColumn) {
-        transformationFunctions.add(new ColumnSplitter(splitter, retainColumn));
+        transformationFunctions.add(new SplitByDelimiter(splitter, retainColumn));
     }
 }

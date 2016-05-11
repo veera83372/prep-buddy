@@ -3,10 +3,10 @@ package org.apache.prepbuddy.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColumnSplitterByFieldLengths extends ColumnSplitter {
+public class SplitByFieldLength extends SplitByDelimiter {
     private final List<Integer> fieldLengths;
 
-    public ColumnSplitterByFieldLengths(List<Integer> fieldLengths, boolean retainColumn) {
+    public SplitByFieldLength(List<Integer> fieldLengths, boolean retainColumn) {
         super(retainColumn);
         this.fieldLengths = fieldLengths;
     }
