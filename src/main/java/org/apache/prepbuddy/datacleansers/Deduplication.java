@@ -15,13 +15,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class Deduplication extends JavaSerializer implements RowTransformation {
 
-<<<<<<< HEAD
-    public JavaRDD apply(JavaRDD inputRecords, FileType type) {
-        final JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, String, String>() {
-=======
-    public JavaRDD<String> apply(JavaRDD inputRecords) {
+    public JavaRDD<String> apply(JavaRDD inputRecords, FileType type) {
         JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {
->>>>>>> 110da91c6309bd05aec2ad62bfd9e1005bbb5911
             @Override
             public Tuple2<Long, String> call(String record) throws Exception {
                 long fingerprint = generateFingerprint(record.toLowerCase());

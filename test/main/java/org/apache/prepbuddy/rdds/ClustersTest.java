@@ -1,8 +1,7 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.groupingops.Cluster;
-import org.apache.prepbuddy.groupingops.Clusters;
+import org.apache.prepbuddy.groupingops.*;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 import scala.Tuple2;
@@ -17,7 +16,7 @@ public class ClustersTest extends SparkTestCase {
     public void shouldGiveClusterOfSimilarColumnValues() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
             TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-            Clusters clusters = initialRDD.clusterUsingSimpleFingerprint(0);
+            Clusters clusters = initialRDD.clusters(0, new SimpleFingerPrint());
 
         Tuple2<String, Integer> expected1 = new Tuple2<>("CLUSTER Of Finger print", 1);
         Tuple2<String, Integer> expected2 = new Tuple2<>("finger print of cluster", 1);
@@ -34,7 +33,7 @@ public class ClustersTest extends SparkTestCase {
     public void clusterByNGramFingerPrintShouldGiveClustersByNGramMethod() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        Clusters clusters = initialRDD.clusterUsingNGramFingerprint(0,1);
+        Clusters clusters = initialRDD.clusters(0, new NGramFingerPrint(1));
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(2);
         assertEquals(1, clustersWithSizeGreaterThanOne.size());
@@ -48,7 +47,7 @@ public class ClustersTest extends SparkTestCase {
     public void clusterUsingLevenshteinDistanceShouldGiveClustersByDistanceMethod() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("cluster Of Finger print", "finger print of cluster", "finger print for cluster"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        Clusters clusters = initialRDD.clusterUsingLevenshteinDistance(0);
+        Clusters clusters = initialRDD.clusters(0, new LevenshteinDistance());
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(1);
         assertEquals(1, clustersWithSizeGreaterThanOne.size());
