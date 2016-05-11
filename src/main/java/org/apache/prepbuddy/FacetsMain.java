@@ -9,19 +9,18 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 public class FacetsMain {
     public static void main(String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             System.out.println("--> File Path Need To Be Specified");
             System.exit(0);
         }
-        SparkConf conf = new SparkConf().setAppName("Deduplication");
+        SparkConf conf = new SparkConf().setAppName("Facets");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         String filePath = args[0];
-        JavaRDD<String> csvInput = sc.textFile(filePath);
+        JavaRDD<String> csvInput = sc.textFile(filePath, Integer.parseInt(args[1]));
 
         TextFacets textFacets = GroupingOps.listTextFacets(csvInput, 4, FileType.CSV);
         long count = textFacets.count();
-
         System.out.println("-->>> Total " + count);
 
         sc.close();

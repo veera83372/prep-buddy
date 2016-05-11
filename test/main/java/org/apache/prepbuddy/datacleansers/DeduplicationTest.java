@@ -1,6 +1,7 @@
 package org.apache.prepbuddy.datacleansers;
 
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class DeduplicationTest extends SparkTestCase {
                 )
         );
         Deduplication deduplication = new Deduplication();
-        List results = deduplication.apply(csvInput).collect();
+        List results = deduplication.apply(csvInput, FileType.CSV).collect();
 
         assertEquals(5, results.size());
     }
@@ -49,7 +50,7 @@ public class DeduplicationTest extends SparkTestCase {
                 )
         );
         Deduplication deduplication = new Deduplication();
-        List result = deduplication.apply(csvInput).collect();
+        List result = deduplication.apply(csvInput, FileType.CSV).collect();
 
         assertEquals(3, result.size());
     }

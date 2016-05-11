@@ -8,9 +8,11 @@ import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.GroupingOps;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.transformation.MarkingTransformation;
 import org.apache.prepbuddy.utils.DefaultValue;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -35,6 +37,19 @@ public class SystemTest extends SparkTestCase {
 
 //        datasetTransformations.appendRows("new file", "existing file");
 
+        datasetTransformations.mark("*", new MarkingTransformation.MarkerPredicate() {
+            @Override
+            public boolean evaluate(String row) {
+                return true;
+            }
+        });
+
+        datasetTransformations.addMapByMark("*",3, new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                return "Star " + row;
+            }
+        });
         ColumnTransformation columnTransformation = new ColumnTransformation(2);
 
         columnTransformation.setupImputation(new Imputation() {
@@ -49,10 +64,9 @@ public class SystemTest extends SparkTestCase {
 
         datasetTransformations.addColumnTransformations(columnTransformation);
 
-
         DataTransformation transformation = new DataTransformation();
         JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
-        String expected = "X,Y,0";
+        String expected = "Star X,Y,0,*";
         assertEquals(1, transformed.count());
         String actual = transformed.first();
         assertEquals(expected, actual);
@@ -60,11 +74,9 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void _TextFacetShouldGiveCountOfPair() {
-        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/highGenerated.csv");
-        TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 4, FileType.CSV);
+        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/calls.csv");
+        TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 3, FileType.CSV);
         System.out.printf("Total facetes are count is::  " + textFacets.count());
-
-
 
 //        assertEquals(2, textFacets.count());
     }

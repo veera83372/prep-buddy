@@ -12,11 +12,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.prepbuddy.groupingops.FingerprintingAlgorithms.*;
+import static org.apache.prepbuddy.groupingops.FingerprintingAlgorithms.generateSimpleFingerprint;
 
 public class GroupingOps implements Serializable {
 
-    public static TextFacets listTextFacets(JavaRDD<String> initialDataset, int columnIndex, FileType fileType) {
+    public static TextFacets listTextFacets(JavaRDD<String> initialDataset, final int columnIndex,final FileType fileType) {
         JavaPairRDD<String, Integer> columnValuePair = initialDataset.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -33,7 +33,7 @@ public class GroupingOps implements Serializable {
         return new TextFacets(facets);
     }
 
-    public static Clusters clusterUsingSimpleFingerprint(JavaRDD<String> dataset, int columnIndex, FileType type) {
+    public static Clusters clusterUsingSimpleFingerprint(JavaRDD<String> dataset, final int columnIndex, final FileType type) {
         Clusters clusters = new Clusters();
         TextFacets textFacets = GroupingOps.listTextFacets(dataset, columnIndex, type);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
@@ -46,7 +46,7 @@ public class GroupingOps implements Serializable {
         return clusters;
     }
 
-    public static Clusters clusterUsingNGramFingerprint(JavaRDD<String> dataset, int columnIndex, FileType type, int nGram) {
+    public static Clusters clusterUsingNGramFingerprint(JavaRDD<String> dataset, final int columnIndex, final FileType type, int nGram) {
         Clusters clusters = new Clusters();
         TextFacets textFacets = GroupingOps.listTextFacets(dataset, columnIndex, type);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
@@ -59,7 +59,7 @@ public class GroupingOps implements Serializable {
         return clusters;
     }
 
-    public static Clusters clusterUsingLevenshteinDistance(JavaRDD<String> dataset, int columnIndex, FileType type) {
+    public static Clusters clusterUsingLevenshteinDistance(JavaRDD<String> dataset, final int columnIndex, final FileType type) {
         Clusters clusters = new Clusters();
         TextFacets textFacets = GroupingOps.listTextFacets(dataset, columnIndex, type);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();

@@ -122,15 +122,6 @@ public class GroupingOpsTest extends SparkTestCase{
         assertFalse(listOfCluster.get(0).contain(expected3));
     }
 
-//    @Test
-//    public void shouldGiveNumberOfClusters() {
-//        JavaRDD<String> dataset = javaSparkContext.textFile("data/phm_collection.txt");
-//        Clusters clusters = GroupingOps.clusterUsingSimpleFingerprint(dataset, 8, FileType.TSV);
-//
-//        List<Cluster> duplicateClusters = clusters.getClustersWithSizeGreaterThan(1);
-//        assertEquals(35, duplicateClusters.size());
-//    }
-
     @Test
     public void clusterByNGramFingerPrintShouldGiveClustersByNGramMethod() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
@@ -142,14 +133,6 @@ public class GroupingOpsTest extends SparkTestCase{
 
     }
 
-//    @Test
-//    public void clusterByNGramFingerPrintShouldGiveNumberOfClusters() {
-//        JavaRDD<String> dataset = javaSparkContext.textFile("data/newCollection.txt");
-//        Clusters clusters = GroupingOps.clusterUsingNGramFingerprint(dataset, 8, FileType.TSV,2);
-//
-//        List<Cluster> duplicateClusters = clusters.getClustersWithSizeGreaterThan(1);
-//        assertEquals(114, duplicateClusters.size());
-//    }
 
     @Test
     public void clusterUsingLevenshteinDistanceShouldGiveClustersByDistanceMethod() {

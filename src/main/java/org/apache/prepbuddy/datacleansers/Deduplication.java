@@ -1,6 +1,7 @@
 package org.apache.prepbuddy.datacleansers;
 
 import org.apache.prepbuddy.coreops.RowTransformation;
+import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function2;
@@ -13,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Deduplication implements Serializable, RowTransformation {
 
-    public JavaRDD apply(JavaRDD inputRecords) {
+    public JavaRDD apply(JavaRDD inputRecords, FileType type) {
         final JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, String, String>() {
             @Override
             public Tuple2<String, String> call(String record) throws Exception {

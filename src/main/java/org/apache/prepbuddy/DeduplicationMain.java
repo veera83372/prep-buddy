@@ -1,6 +1,7 @@
 package org.apache.prepbuddy;
 
 import org.apache.prepbuddy.datacleansers.Deduplication;
+import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -22,7 +23,7 @@ public class DeduplicationMain implements Serializable {
         long numberOfRecordsInInput = csvInput.count();
 
         Deduplication deduplication = new Deduplication();
-        JavaRDD transformedRecord = deduplication.apply(csvInput);
+        JavaRDD transformedRecord = deduplication.apply(csvInput, FileType.CSV);
         long numberOfRecordInTransformed = transformedRecord.count();
 
         long elimination = numberOfRecordsInInput - numberOfRecordInTransformed;
