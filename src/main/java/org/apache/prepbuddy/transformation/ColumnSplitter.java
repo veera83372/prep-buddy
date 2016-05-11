@@ -1,37 +1,57 @@
 package org.apache.prepbuddy.transformation;
 
-public class ColumnSplitter implements TransformationOperation {
-    private int columnIndex;
+import org.apache.prepbuddy.coreops.TransformationFunction;
+
+public class ColumnSplitter implements TransformationFunction {
     private String separator;
     private Integer maxPartition;
+    private boolean retainColumn;
 
-    public ColumnSplitter(int columnIndex, String separator, Integer maxPartition) {
-        this.columnIndex = columnIndex;
+    public ColumnSplitter(String separator, Integer maxPartition, boolean retainColumn) {
         this.separator = separator;
         this.maxPartition = maxPartition;
+        this.retainColumn = retainColumn;
     }
 
-    protected ColumnSplitter(int columnIndex) {
-        this.columnIndex = columnIndex;
+    public ColumnSplitter(String separator, boolean retainColumn) {
+        this(separator, null, retainColumn);
     }
 
-    public ColumnSplitter(int columnIndex, String separator) {
-        this(columnIndex, separator, null);
+    protected ColumnSplitter(boolean retainColumn) {
+        this.retainColumn = retainColumn;
     }
 
-    public String[] apply(String[] record) {
+    public String[] apply(String[] record, int columnIndex) {
         String[] splittedColumn = getSplittedRecord(record[columnIndex]);
-        return arrangeRecord(splittedColumn, record);
+//        if (retainColumn)
+//            return arrangeRecordByRetainingColumn(splittedColumn, record, columnIndex);
+        return arrangeRecordByRemovingColumn(splittedColumn, record, columnIndex);
     }
+
+//    private String[] arrangeRecordByRetainingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
+//        int newRecordLength = getNewRecordLength(splittedColumn, oldRecord);
+//        String[] resultHolder = new String[newRecordLength];
+//
+//        int resultHolderIndex = 0;
+//        for (int index = 0; index < oldRecord.length; index++) {
+//            if (index == columnIndex+1)
+//                for (String value : splittedColumn)
+//                    resultHolder[resultHolderIndex++] = value;
+//            else
+//                resultHolder[resultHolderIndex++] = oldRecord[index];
+//        }
+//
+//        return resultHolder;
+//    }
 
     protected String[] getSplittedRecord(String columnValue) {
-        if(maxPartition == null)
+        if (maxPartition == null)
             return columnValue.split(separator);
-        return columnValue.split(separator,maxPartition);
+        return columnValue.split(separator, maxPartition);
     }
 
-    String[] arrangeRecord(String[] splittedColumn, String[] oldRecord) {
-        int newRecordLength = splittedColumn.length + oldRecord.length - 1;
+    String[] arrangeRecordByRemovingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
+        int newRecordLength = getNewRecordLength(splittedColumn, oldRecord);
         String[] resultHolder = new String[newRecordLength];
 
         int resultHolderIndex = 0;
@@ -44,5 +64,13 @@ public class ColumnSplitter implements TransformationOperation {
         }
 
         return resultHolder;
+    }
+
+    private int getNewRecordLength(String[] splittedColumn, String[] oldRecord) {
+        int newRecordLength = splittedColumn.length + oldRecord.length;
+        if (retainColumn)
+            return newRecordLength;
+
+        return newRecordLength - 1;
     }
 }

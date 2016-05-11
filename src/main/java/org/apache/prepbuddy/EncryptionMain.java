@@ -1,7 +1,7 @@
 package org.apache.prepbuddy;
 
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
-import org.apache.prepbuddy.encryptors.TransformableRDD;
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.SparkConf;
@@ -9,7 +9,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 public class EncryptionMain implements Serializable {
 

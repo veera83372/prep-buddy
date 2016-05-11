@@ -3,12 +3,13 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.coreops.ColumnTransformation;
 import org.apache.prepbuddy.coreops.DataTransformation;
 import org.apache.prepbuddy.coreops.DatasetTransformations;
-import org.apache.prepbuddy.datacleansers.Imputation;
+import org.apache.prepbuddy.datacleansers.MissingDataHandler;
+import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.GroupingOps;
 import org.apache.prepbuddy.groupingops.TextFacets;
-import org.apache.prepbuddy.utils.DefaultValue;
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
@@ -22,40 +23,31 @@ public class SystemTest extends SparkTestCase {
     @Test
     public void shouldExecuteASeriesOfTransformsOnADataset() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset, FileType.CSV);
+        TransformableRDD deduplicated = initialRDD.deduplicate();
+        assertEquals(2, deduplicated.count());
 
-        DatasetTransformations datasetTransformations = new DatasetTransformations();
-        datasetTransformations.deduplicateRows();
-
-        datasetTransformations.removeRows(new RowPurger.Predicate() {
+        TransformableRDD purged = deduplicated.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(String record) {
                 return record.split(",")[1].equals("YY");
             }
         });
+        assertEquals(1, purged.count());
 
-//        datasetTransformations.appendRows("new file", "existing file");
-
-        ColumnTransformation columnTransformation = new ColumnTransformation(2);
-
-        columnTransformation.setupImputation(new Imputation() {
+        TransformableRDD imputedRDD = purged.impute(2, new MissingDataHandler() {
             @Override
-            protected String handleMissingData(String[] record) {
+            public String handleMissingData(String[] record) {
                 return "Male";
             }
         });
-        columnTransformation.setupNominalToNumeric(new DefaultValue(1),
-                new Replacement<>("Male", 0), new Replacement<>("Female", 1));
+        assertEquals("X,Y,Male", imputedRDD.first());
 
+        TransformableRDD numericRDD = imputedRDD.replace(2, new ReplacementFunction(new Replacement<>("Male", 0),
+                new Replacement<>("Female", 1)));
 
-        datasetTransformations.addColumnTransformations(columnTransformation);
-
-
-        DataTransformation transformation = new DataTransformation();
-        JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
-        String expected = "X,Y,0";
-        assertEquals(1, transformed.count());
-        String actual = transformed.first();
-        assertEquals(expected, actual);
+        assertEquals(1, numericRDD.count());
+        assertEquals("X,Y,0", numericRDD.first());
     }
 
     @Test
@@ -64,8 +56,50 @@ public class SystemTest extends SparkTestCase {
         TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 4, FileType.CSV);
         System.out.printf("Total facetes are count is::  " + textFacets.count());
 
-
-
 //        assertEquals(2, textFacets.count());
+    }
+
+    @Test
+    public void shouldBeAbleToSplitTheGivenColumn() {
+        DatasetTransformations datasetTransformations = new DatasetTransformations();
+
+        ColumnTransformation columnTransformation = new ColumnTransformation(0);
+
+        columnTransformation.splitBy(" ", false);
+
+        datasetTransformations.addColumnTransformations(columnTransformation);
+
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName,MiddleName"));
+
+        DataTransformation transformation = new DataTransformation();
+        JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
+
+        String expected = "FirstName,LastName,MiddleName";
+
+        assertEquals(1, transformed.count());
+        String actual = transformed.first();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldBeAbleToSplitTheGivenColumnWithTheGivenNumberOfLengths() {
+        DatasetTransformations datasetTransformations = new DatasetTransformations();
+
+        ColumnTransformation columnTransformation = new ColumnTransformation(0);
+
+        columnTransformation.splitBy(" ", false);
+
+        datasetTransformations.addColumnTransformations(columnTransformation);
+
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName,MiddleName"));
+
+        DataTransformation transformation = new DataTransformation();
+        JavaRDD<String> transformed = transformation.apply(initialDataset, datasetTransformations, FileType.CSV);
+
+        String expected = "FirstName,LastName,MiddleName";
+
+        assertEquals(1, transformed.count());
+        String actual = transformed.first();
+        assertEquals(expected, actual);
     }
 }

@@ -6,8 +6,8 @@ import java.util.List;
 public class ColumnSplitterByFieldLengths extends ColumnSplitter {
     private final List<Integer> fieldLengths;
 
-    public ColumnSplitterByFieldLengths(int columnIndex, List<Integer> fieldLengths) {
-        super(columnIndex);
+    public ColumnSplitterByFieldLengths(List<Integer> fieldLengths, boolean retainColumn) {
+        super(retainColumn);
         this.fieldLengths = fieldLengths;
     }
 
