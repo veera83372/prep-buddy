@@ -1,10 +1,8 @@
 package org.apache.prepbuddy.datacleansers;
 
-import org.apache.prepbuddy.coreops.TransformationFunction;
 
-public abstract class Imputation implements TransformationFunction {
+public abstract class Imputation {
 
-    @Override
     public String[] apply(String[] row, int columnIndex) {
         String columnValue = row[columnIndex];
         if (columnValue == null || columnValue.trim().isEmpty())

@@ -12,8 +12,7 @@ import org.apache.prepbuddy.groupingops.Algorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.transformation.ColumnJoiner;
-import org.apache.prepbuddy.transformation.SplitByDelimiter;
-import org.apache.prepbuddy.transformation.SplitByFieldLength;
+import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -118,43 +117,44 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    private JavaRDD<String> splitColumn(final int columnIndex, final SplitByDelimiter splitByDelimiter) {
-        return this.map(new Function<String, String>() {
-            @Override
-            public String call(String record) throws Exception {
-                String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = splitByDelimiter.apply(recordAsArray, columnIndex);
-                return fileType.join(transformedRow);
-            }
-        });
-    }
-
-    public TransformableRDD splitColumn(int columnIndex, String delimiter, boolean retainColumn) {
-        SplitByDelimiter splitByDelimiter = new SplitByDelimiter(delimiter, retainColumn);
-        JavaRDD<String> transformed = splitColumn(columnIndex, splitByDelimiter);
-        return new TransformableRDD(transformed, fileType);
-    }
-
-    public TransformableRDD splitColumn(int columnIndex, List fieldLengths, boolean retainColumn){
-        SplitByDelimiter splitByDelimiter = new SplitByFieldLength(fieldLengths, retainColumn);
-        JavaRDD<String> transformed = splitColumn(columnIndex, splitByDelimiter);
-        return new TransformableRDD(transformed, fileType);
-    }
-
-    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, String separator, boolean retainColumns) {
-        ColumnJoiner joinConfig = new ColumnJoiner(columnsToBeJoined, separator, retainColumns);
+    public TransformableRDD splitColumn(final int columnIndex, final ColumnSplitter columnSplitter) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = joinConfig.apply(recordAsArray);
+                String[] transformedRow = columnSplitter.apply(recordAsArray, columnIndex);
                 return fileType.join(transformedRow);
             }
         });
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, boolean retainColumns) {
-        return joinColumns(columnsToBeJoined, " ", retainColumns);
+//    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, String separator, boolean retainColumns) {
+//        ColumnJoiner joinConfig = new ColumnJoiner(columnsToBeJoined, separator, retainColumns);
+//        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+//            @Override
+//            public String call(String record) throws Exception {
+//                String[] recordAsArray = fileType.parseRecord(record);
+//                String[] transformedRow = joinConfig.apply(recordAsArray);
+//                return fileType.join(transformedRow);
+//            }
+//        });
+//        return new TransformableRDD(transformed, fileType);
+//    }
+//
+//    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, boolean retainColumns) {
+//        return joinColumns(columnsToBeJoined, " ", retainColumns);
+//    }
+
+    public TransformableRDD joinColumns(ColumnJoiner columnJoiner) {
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(record);
+                String[] transformedRow = columnJoiner.apply(recordAsArray);
+                return fileType.join(transformedRow);
+            }
+        });
+        return new TransformableRDD(transformed, fileType);
     }
 }

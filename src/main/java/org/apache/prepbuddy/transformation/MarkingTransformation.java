@@ -1,13 +1,12 @@
 package org.apache.prepbuddy.transformation;
 
-import org.apache.prepbuddy.coreops.RowTransformation;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
 import java.io.Serializable;
 
-public class MarkingTransformation implements RowTransformation, Serializable {
+public class MarkingTransformation implements Serializable {
     private final MarkerPredicate condition;
     private final String symbol;
 
@@ -16,7 +15,6 @@ public class MarkingTransformation implements RowTransformation, Serializable {
         this.symbol = symbol;
     }
 
-    @Override
     public JavaRDD<String> apply(JavaRDD<String> dataset, FileType type) {
         return dataset.map(new Function<String, String>() {
             @Override
