@@ -7,7 +7,6 @@ import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.groupingops.GroupingOps;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.Replacement;
@@ -23,7 +22,7 @@ public class SystemTest extends SparkTestCase {
     @Test
     public void shouldExecuteASeriesOfTransformsOnADataset() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
-        TransformableRDD initialRDD = new TransformableRDD(initialDataset, FileType.CSV);
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TransformableRDD deduplicated = initialRDD.deduplicate();
         assertEquals(2, deduplicated.count());
 
@@ -52,11 +51,10 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void _TextFacetShouldGiveCountOfPair() {
-        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/highGenerated.csv");
-        TextFacets textFacets = GroupingOps.listTextFacets(initialDataset, 4, FileType.CSV);
-        System.out.printf("Total facetes are count is::  " + textFacets.count());
-
-//        assertEquals(2, textFacets.count());
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        TransformableRDD rdd = new TransformableRDD(initialDataset);
+        TextFacets facets = rdd.listFacets(0);
+        assertEquals(2, facets.count());
     }
 
     @Test

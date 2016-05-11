@@ -1,8 +1,7 @@
 package org.apache.prepbuddy;
 
-import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.groupingops.GroupingOps;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -18,8 +17,8 @@ public class FacetsMain {
 
         String filePath = args[0];
         JavaRDD<String> csvInput = sc.textFile(filePath);
-
-        TextFacets textFacets = GroupingOps.listTextFacets(csvInput, 4, FileType.CSV);
+        TransformableRDD inputRdd = new TransformableRDD(csvInput);
+        TextFacets textFacets = inputRdd.listFacets(4);
         long count = textFacets.count();
 
         System.out.println("-->>> Total " + count);
