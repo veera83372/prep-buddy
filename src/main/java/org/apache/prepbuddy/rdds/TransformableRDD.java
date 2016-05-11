@@ -11,6 +11,7 @@ import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.Algorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.transformation.ColumnJoiner;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
@@ -128,16 +129,32 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
-    public TransformableRDD split(int columnIndex, String splitter, boolean retainColumn) {
+    public TransformableRDD splitColumn(int columnIndex, String splitter, boolean retainColumn) {
         ColumnSplitter columnSplitter = new ColumnSplitter(splitter, retainColumn);
         JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD split(int columnIndex, List fieldLengths, boolean retainColumn){
+    public TransformableRDD splitColumn(int columnIndex, List fieldLengths, boolean retainColumn){
         ColumnSplitter columnSplitter = new ColumnSplitterByFieldLengths(fieldLengths,retainColumn);
         JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, String separator, boolean retainColumns) {
+        ColumnJoiner joinConfig = new ColumnJoiner(columnsToBeJoined, separator, retainColumns);
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(record);
+                String[] transformedRow = joinConfig.apply(recordAsArray);
+                return fileType.join(transformedRow);
+            }
+        });
+        return new TransformableRDD(transformed, fileType);
+    }
+
+    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, boolean retainColumns) {
+        return joinColumns(columnsToBeJoined, " ", retainColumns);
+    }
 }

@@ -58,16 +58,31 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName MiddleName,850"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD splitColumnRDD = initialRDD.split(0, " ", false);
+        TransformableRDD splitColumnRDD = initialRDD.splitColumn(0, " ", false);
         assertEquals("FirstName,LastName,MiddleName,850", splitColumnRDD.first());
 
-        TransformableRDD splitColumnRDDByKeepingColumn = initialRDD.split(0, " ", true);
+        TransformableRDD splitColumnRDDByKeepingColumn = initialRDD.splitColumn(0, " ", true);
         assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", splitColumnRDDByKeepingColumn.first());
 
-        TransformableRDD splitColumnByLengthRDD = initialRDD.split(0, Arrays.asList(9, 9), false);
+        TransformableRDD splitColumnByLengthRDD = initialRDD.splitColumn(0, Arrays.asList(9, 9), false);
         assertEquals("FirstName, LastName,850", splitColumnByLengthRDD.first());
 
-        TransformableRDD splitColumnByLengthRDDByKeepingColumn = initialRDD.split(0, Arrays.asList(9, 9), true);
+        TransformableRDD splitColumnByLengthRDDByKeepingColumn = initialRDD.splitColumn(0, Arrays.asList(9, 9), true);
         assertEquals("FirstName LastName MiddleName,FirstName, LastName,850", splitColumnByLengthRDDByKeepingColumn.first());
+    }
+
+    @Test
+    public void shouldBeAbleToJoinMultipleColumns() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName,LastName,732,MiddleName"));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+
+        TransformableRDD joinedColumnRDD = initialRDD.joinColumns(Arrays.asList(3, 1, 0), "_", false);
+        assertEquals("732,MiddleName_LastName_FirstName", joinedColumnRDD.first());
+
+        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.joinColumns(Arrays.asList(3, 1, 0), "_", true);
+        assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", joinedColumnRDDByKeepingOriginals.first());
+
+        TransformableRDD joinedColumnWithDefault = initialRDD.joinColumns(Arrays.asList(3, 1, 0), false);
+        assertEquals("732,MiddleName LastName FirstName", joinedColumnWithDefault.first());
     }
 }

@@ -13,10 +13,6 @@ public class ColumnJoiner implements TransformationOperation {
         this.retainColumns = retainColumns;
     }
 
-    public ColumnJoiner(List<Integer> combinationOrder, boolean retainColumns) {
-        this(combinationOrder," ", retainColumns);
-    }
-
     public String[] apply(String[] record) {
         String margedValue = margeColumns(record);
         if(retainColumns)
