@@ -1,8 +1,8 @@
 package org.apache.prepbuddy.transformation;
 
-import org.apache.prepbuddy.coreops.TransformationFunction;
+import java.io.Serializable;
 
-public class ColumnSplitter implements TransformationFunction {
+public class ColumnSplitter implements Serializable{
     private String separator;
     private Integer maxPartition;
     private boolean retainColumn;

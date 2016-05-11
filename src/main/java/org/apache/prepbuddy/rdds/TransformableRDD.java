@@ -8,11 +8,12 @@ import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.groupingops.Algorithm;
+import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
+import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -109,11 +110,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
-    public Clusters clusters(int columnIndex, Algorithm algorithm) {
+    public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
         List<Tuple2<String, Integer>> tuples = rdd.collect();
-
         return algorithm.getClusters(tuples);
     }
 
@@ -140,4 +140,28 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD flag(String symbol, MarkerPredicate markerPredicate) {
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                String newRow = fileType.appendDelimeter(row);
+                if (markerPredicate.evaluate(newRow))
+                    return newRow + symbol;
+                return newRow;
+            }
+        });
+        return new TransformableRDD(transformed, fileType);
+    }
+
+    public TransformableRDD mapByFlag(String flag, int columnIndex, Function<String, String> mapFunction) {
+        JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                String[] records = fileType.parseRecord(row);
+                String lastColumn = records[columnIndex];
+                return lastColumn.equals(flag) ? (String) mapFunction.call(row) : row;
+            }
+        });
+        return new TransformableRDD(mappedRDD, fileType);
+    }
 }

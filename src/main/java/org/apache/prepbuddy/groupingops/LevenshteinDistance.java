@@ -6,7 +6,7 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevenshteinDistance implements Algorithm {
+public class LevenshteinDistance implements ClusteringAlgorithm {
     @Override
     public Clusters getClusters(List<Tuple2<String, Integer>> tuples) {
         Clusters clusters = new Clusters();

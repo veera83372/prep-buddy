@@ -5,24 +5,24 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-public class NGramFingerPrintTest extends SparkTestCase {
+public class NGramFingerprintTest extends SparkTestCase {
     @Test
     public void generateNGramFingerprintShouldGive_arispari_Of_ParisIn2Gram() {
-        String parisNGramFingerPrint = FingerprintingAlgorithms.generateNGramFingerprint("Paris", 2);
+        String parisNGramFingerPrint = new NGramFingerprint(2).generateNGramFingerprint("Paris");
         String expected ="arispari";
         assertEquals(expected, parisNGramFingerPrint);
     }
     @Test
     public void generateNGramFingerprintShouldGive_aiprs_Of_ParisIn2Gram() {
-        String parisNGramFingerPrint = FingerprintingAlgorithms.generateNGramFingerprint("Paris", 1);
+        String parisNGramFingerPrint = new NGramFingerprint(1).generateNGramFingerprint("Paris");
         String expected ="aiprs";
         assertEquals(expected, parisNGramFingerPrint);
     }
 
     @Test
     public void shouldGiveSameKeyForTwoDifferentStringBtHaveSameAlphabets() {
-        String firstKey = FingerprintingAlgorithms.generateNGramFingerprint("qwertyuiop", 1);
-        String secondKey = FingerprintingAlgorithms.generateNGramFingerprint("poiuytrewQ", 1);
+        String firstKey = new NGramFingerprint(1).generateNGramFingerprint("qwertyuiop");
+        String secondKey = new NGramFingerprint(1).generateNGramFingerprint("poiuytrewQ");
         assertEquals(firstKey, secondKey);
     }
 

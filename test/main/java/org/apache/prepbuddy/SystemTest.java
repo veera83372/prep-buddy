@@ -5,8 +5,10 @@ import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
+import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,6 +31,26 @@ public class SystemTest extends SparkTestCase {
             }
         });
         assertEquals(1, purged.count());
+
+         TransformableRDD marked = purged.flag("*", new MarkerPredicate() {
+             @Override
+             public boolean evaluate(String row) {
+                 return true;
+             }
+         });
+
+        assertEquals(1, marked.count());
+        assertEquals("X,Y,,*", marked.first());
+
+        TransformableRDD mapedRDD = marked.mapByFlag("*",3, new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                return "Star " + row;
+            }
+        });
+
+        assertEquals(1, mapedRDD.count());
+        assertEquals("Star X,Y,,*", mapedRDD.first());
 
         TransformableRDD imputedRDD = purged.impute(2, new MissingDataHandler() {
             @Override

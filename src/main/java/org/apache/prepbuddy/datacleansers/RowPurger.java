@@ -1,13 +1,12 @@
 package org.apache.prepbuddy.datacleansers;
 
-import org.apache.prepbuddy.coreops.RowTransformation;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 
 import java.io.Serializable;
 
-public class RowPurger implements RowTransformation, Serializable{
+public class RowPurger implements Serializable{
 
     private final Predicate condition;
 
@@ -15,7 +14,7 @@ public class RowPurger implements RowTransformation, Serializable{
         this.condition = condition;
     }
 
-    @Override
+
     public JavaRDD<String> apply(JavaRDD<String> dataset, FileType type) {
 
         return dataset.filter(new Function<String, Boolean>() {
