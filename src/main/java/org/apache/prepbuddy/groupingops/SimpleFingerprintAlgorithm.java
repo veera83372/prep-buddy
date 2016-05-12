@@ -1,49 +1,43 @@
 package org.apache.prepbuddy.groupingops;
 
+import org.apache.commons.lang.StringUtils;
 import scala.Tuple2;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-public class NGramFingerprint extends FingerprintAlgorithm {
-
-    private final int nGram;
-
-    public NGramFingerprint(int nGram) {
-        this.nGram = nGram;
-    }
-
-    public String generateNGramFingerprint(String someString) {
+public class SimpleFingerprintAlgorithm extends FingerprintAlgorithm {
+    public static String generateSimpleFingerprint(String someString) {
         someString = someString.trim();
         someString = someString.toLowerCase();
         someString = removeAllPunctuations(someString);
+        String[] fragments = StringUtils.split(someString);
 
-        TreeSet<String> set = getNGramSetOf(someString, nGram);
+        return rearrangeAlphabetically(fragments);
+    }
+
+    private static String rearrangeAlphabetically(String[] fragments) {
+        TreeSet<String> set = new TreeSet<>();
+        Collections.addAll(set, fragments);
+
         StringBuilder buffer = new StringBuilder();
         Iterator<String> iterator = set.iterator();
 
         while (iterator.hasNext()) {
             buffer.append(iterator.next());
+            if (iterator.hasNext())
+                buffer.append(' ');
         }
-
         return buffer.toString();
-    }
-
-    private static TreeSet<String> getNGramSetOf(String someString, int nGram) {
-        TreeSet<String> set = new TreeSet<>();
-        char[] chars = someString.toCharArray();
-        for (int i = 0; i + nGram <= chars.length; i++) {
-            set.add(new String(chars, i, nGram));
-        }
-        return set;
     }
 
     @Override
     public Clusters getClusters(List<Tuple2<String, Integer>> tuples) {
         Clusters clusters = new Clusters();
         for (Tuple2<String, Integer> tuple : tuples) {
-            String key = generateNGramFingerprint(tuple._1());
+            String key = generateSimpleFingerprint(tuple._1());
             clusters.add(key, tuple);
         }
         return clusters;

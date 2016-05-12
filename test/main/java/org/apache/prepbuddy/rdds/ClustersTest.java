@@ -16,7 +16,7 @@ public class ClustersTest extends SparkTestCase {
     public void shouldGiveClusterOfSimilarColumnValues() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
             TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-            Clusters clusters = initialRDD.clusters(0, new SimpleFingerprint());
+            Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
 
         Tuple2<String, Integer> expected1 = new Tuple2<>("CLUSTER Of Finger print", 1);
         Tuple2<String, Integer> expected2 = new Tuple2<>("finger print of cluster", 1);
@@ -33,7 +33,7 @@ public class ClustersTest extends SparkTestCase {
     public void clusterByNGramFingerPrintShouldGiveClustersByNGramMethod() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        Clusters clusters = initialRDD.clusters(0, new NGramFingerprint(1));
+        Clusters clusters = initialRDD.clusters(0, new NGramFingerprintAlgorithm(1));
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(2);
         assertEquals(1, clustersWithSizeGreaterThanOne.size());
