@@ -50,7 +50,7 @@ public class TextFacets implements Serializable {
                 list.add(peakTuple);
             }
 
-            if (tuple._2() == peakTuple._2() && tuple != peakTuple) {
+            if (tuple._2().equals(peakTuple._2())  && tuple != peakTuple) {
                 list.add(tuple);
             }
 

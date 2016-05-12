@@ -11,12 +11,17 @@ import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.transformation.ColumnJoiner;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
-import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
+import org.apache.prepbuddy.transformation.ColumnJoiner;
+import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
+import org.apache.prepbuddy.transformation.MarkerPredicate;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
@@ -54,7 +59,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public TransformableRDD deduplicate() {
-        JavaRDD<String> transformed = new Deduplication().apply(this);
+        JavaRDD transformed = new Deduplication().apply(this);
         return new TransformableRDD(transformed, fileType);
     }
 
@@ -115,11 +120,12 @@ public class TransformableRDD extends JavaRDD<String> {
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
         List<Tuple2<String, Integer>> tuples = rdd.collect();
+
         return algorithm.getClusters(tuples);
     }
 
-    private JavaRDD<String> performSplitTransformation(final int columnIndex, final ColumnSplitter columnSplitter) {
-        return this.map(new Function<String, String>() {
+    public TransformableRDD splitColumn(final int columnIndex, final ColumnSplitter columnSplitter) {
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
@@ -127,17 +133,18 @@ public class TransformableRDD extends JavaRDD<String> {
                 return fileType.join(transformedRow);
             }
         });
-    }
-
-    public TransformableRDD split(int columnIndex, String splitter, boolean retainColumn) {
-        ColumnSplitter columnSplitter = new ColumnSplitter(splitter, retainColumn);
-        JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD split(int columnIndex, List fieldLengths, boolean retainColumn){
-        ColumnSplitter columnSplitter = new ColumnSplitterByFieldLengths(fieldLengths,retainColumn);
-        JavaRDD<String> transformed = performSplitTransformation(columnIndex, columnSplitter);
+    public TransformableRDD joinColumns(final ColumnJoiner columnJoiner) {
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(record);
+                String[] transformedRow = columnJoiner.apply(recordAsArray);
+                return fileType.join(transformedRow);
+            }
+        });
         return new TransformableRDD(transformed, fileType);
     }
 

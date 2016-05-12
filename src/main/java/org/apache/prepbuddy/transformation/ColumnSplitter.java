@@ -2,37 +2,21 @@ package org.apache.prepbuddy.transformation;
 
 import java.io.Serializable;
 
-public class ColumnSplitter implements Serializable{
-    private String separator;
-    private Integer maxPartition;
+public abstract class ColumnSplitter implements Serializable{
     private boolean retainColumn;
 
-    public ColumnSplitter(String separator, Integer maxPartition, boolean retainColumn) {
-        this.separator = separator;
-        this.maxPartition = maxPartition;
-        this.retainColumn = retainColumn;
-    }
-
-    public ColumnSplitter(String separator, boolean retainColumn) {
-        this(separator, null, retainColumn);
-    }
-
-    protected ColumnSplitter(boolean retainColumn) {
+    public ColumnSplitter(boolean retainColumn) {
         this.retainColumn = retainColumn;
     }
 
     public String[] apply(String[] record, int columnIndex) {
-        String[] splittedColumn = getSplittedRecord(record[columnIndex]);
+        String[] splittedColumn = splitColumn(record[columnIndex]);
         if (retainColumn)
             return arrangeRecordByKeepingColumn(splittedColumn, record, columnIndex);
         return arrangeRecordByRemovingColumn(splittedColumn, record, columnIndex);
     }
 
-    protected String[] getSplittedRecord(String columnValue) {
-        if (maxPartition == null)
-            return columnValue.split(separator);
-        return columnValue.split(separator, maxPartition);
-    }
+    abstract String[] splitColumn(String columnValue);
 
     private String[] arrangeRecordByKeepingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
         int newRecordLength = splittedColumn.length + oldRecord.length;
@@ -66,5 +50,4 @@ public class ColumnSplitter implements Serializable{
 
         return resultHolder;
     }
-
 }

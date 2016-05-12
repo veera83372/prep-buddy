@@ -16,7 +16,7 @@ public enum FileType {
         }
 
         @Override
-        public String appendDelimeter(String row) {
+        public String appendDelimiter(String row) {
             return row + ",";
         }
     },
@@ -33,7 +33,7 @@ public enum FileType {
         }
 
         @Override
-        public String appendDelimeter(String row) {
+        public String appendDelimiter(String row) {
             return row + "\t";
         }
     };
@@ -43,5 +43,5 @@ public enum FileType {
     public abstract String join(String[] record);
 
 
-    public abstract String appendDelimeter(String row);
+    public abstract String appendDelimiter(String row);
 }

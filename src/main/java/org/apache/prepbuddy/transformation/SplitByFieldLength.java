@@ -3,16 +3,16 @@ package org.apache.prepbuddy.transformation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColumnSplitterByFieldLengths extends ColumnSplitter {
+public class SplitByFieldLength extends ColumnSplitter {
     private final List<Integer> fieldLengths;
 
-    public ColumnSplitterByFieldLengths(List<Integer> fieldLengths, boolean retainColumn) {
+    public SplitByFieldLength(List<Integer> fieldLengths, boolean retainColumn) {
         super(retainColumn);
         this.fieldLengths = fieldLengths;
     }
 
     @Override
-    protected String[] getSplittedRecord(String columnValue) {
+    String[] splitColumn(String columnValue) {
         int startingIndex = 0;
         ArrayList<String> splittedColumn = new ArrayList<>();
 

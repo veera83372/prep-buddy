@@ -26,10 +26,6 @@ public class EncryptionMain implements Serializable {
         EncryptionKeyPair keyPair = new EncryptionKeyPair(1024);
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair, 0);
 
-
-        JavaRDD<String> decrypt = encryptedRDD.decrypt(0);
-
-
         double average = encryptedRDD.average(0);
         System.out.println("Average of the first column is = " + average);
         sc.close();

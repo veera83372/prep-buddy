@@ -5,13 +5,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ColumnSplitterTest {
+public class SplitByDelimiterTest {
     @Test
     public void shouldSplitTheGivenColumnByRemovingTheGivenColumn() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
 
-        SplitByDelimiter columnSplitter = new SplitByDelimiter(" ", false);
-        String[] actualValue = columnSplitter.apply(inputRecord, 0);
+        SplitByDelimiter splitByDelimiter = new SplitByDelimiter(" ", false);
+        String[] actualValue = splitByDelimiter.apply(inputRecord, 0);
 
         assertEquals("FirstName,LastName,MiddleName,850", StringUtils.join(actualValue, ","));
     }
@@ -20,8 +20,8 @@ public class ColumnSplitterTest {
     public void shouldSplitTheGivenColumnToGivenNumberOfPartitionByRemovingTheGivenColumn() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
 
-        SplitByDelimiter columnSplitter = new SplitByDelimiter(" ", 2, false);
-        String[] actualValue = columnSplitter.apply(inputRecord, 0);
+        SplitByDelimiter splitByDelimiter = new SplitByDelimiter(" ", 2, false);
+        String[] actualValue = splitByDelimiter.apply(inputRecord, 0);
 
         assertEquals("FirstName,LastName MiddleName,850", StringUtils.join(actualValue, ","));
     }
@@ -30,8 +30,8 @@ public class ColumnSplitterTest {
     public void shouldSplitTheGivenColumnToGivenNumberOfPartitionByRetainingTheGivenColumn() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
 
-        SplitByDelimiter columnSplitter = new SplitByDelimiter(" ", true);
-        String[] actualValue = columnSplitter.apply(inputRecord, 0);
+        SplitByDelimiter splitByDelimiter = new SplitByDelimiter(" ", true);
+        String[] actualValue = splitByDelimiter.apply(inputRecord, 0);
 
         assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", StringUtils.join(actualValue, ","));
     }

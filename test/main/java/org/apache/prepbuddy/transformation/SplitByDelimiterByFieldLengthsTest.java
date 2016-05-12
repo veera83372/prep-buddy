@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class ColumnSplitterByFieldLengthsTest {
+public class SplitByDelimiterByFieldLengthsTest {
     @Test
     public void shouldSplitTheGivenColumnByTheGivenLengths() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");

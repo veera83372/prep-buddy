@@ -1,7 +1,6 @@
 package org.apache.prepbuddy;
 
 import org.apache.prepbuddy.datacleansers.Deduplication;
-import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -21,7 +20,7 @@ public class DeduplicationMain {
         String filePath = args[0];
         JavaRDD<String> csvInput = sc.textFile(filePath);
 
-        JavaRDD<String> transformedRdd = new Deduplication().apply(csvInput);
+        JavaRDD transformedRdd = new Deduplication().apply(csvInput);
         transformedRdd.saveAsTextFile("s3://twi-analytics-sandbox/job-output/unique-"+new Date().toString());
 
         sc.close();

@@ -12,14 +12,6 @@ public class EncryptionKeyPair implements Serializable {
         paillierPrivateKey = PaillierPrivateKey.create(seed);
     }
 
-    public String getPrivateKeyAsString() {
-        return String.format("%s/%s",paillierPrivateKey.getPublicKey().getModulus(), paillierPrivateKey.getSecretValue());
-    }
-
-    public String getPublicKeyAsString() {
-        return String.valueOf(paillierPrivateKey.getPublicKey().getModulus());
-    }
-
     public PaillierPrivateKey getPrivateKey(){
         return paillierPrivateKey;
     }

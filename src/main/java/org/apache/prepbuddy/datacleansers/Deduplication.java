@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Deduplication extends JavaSerializer {
 
-    public JavaRDD<String> apply(JavaRDD inputRecords) {
+    public JavaRDD apply(JavaRDD inputRecords) {
         JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {
             @Override
             public Tuple2<Long, String> call(String record) throws Exception {

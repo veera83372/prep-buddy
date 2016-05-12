@@ -14,46 +14,45 @@ public class ColumnJoiner implements TransformationOperation {
     }
 
     public ColumnJoiner(List<Integer> combinationOrder, boolean retainColumns) {
-        this(combinationOrder," ", retainColumns);
+        this(combinationOrder, " ", retainColumns);
     }
 
     public String[] apply(String[] record) {
-        String margedValue = margeColumns(record);
-        if(retainColumns)
-            return arrangeRecordByRetainingColumns(margedValue, record);
-        return arrangeRecordByRemovingColumns(margedValue, record);
+        String mergedValue = margeColumns(record);
+        if (retainColumns)
+            return arrangeRecordByRetainingColumns(mergedValue, record);
+        return arrangeRecordByRemovingColumns(mergedValue, record);
     }
 
-    private String[] arrangeRecordByRetainingColumns(String margedValue, String[] oldRecord) {
+    private String[] arrangeRecordByRetainingColumns(String mergedValue, String[] oldRecord) {
         int newRecordLength = oldRecord.length + 1;
         String[] resultRecordHolder = new String[newRecordLength];
 
-        for (int index = 0; index < oldRecord.length; index++)
-            resultRecordHolder[index] = oldRecord[index];
+        System.arraycopy(oldRecord, 0, resultRecordHolder, 0, oldRecord.length);
 
-        resultRecordHolder[newRecordLength - 1] = margedValue;
+        resultRecordHolder[newRecordLength - 1] = mergedValue;
         return resultRecordHolder;
     }
 
     private String margeColumns(String[] record) {
-        String margedRecord = "";
+        String mergedRecord = "";
         for (Integer columnPosition : combinationOrder)
-            margedRecord += separator + record[columnPosition];
+            mergedRecord += separator + record[columnPosition];
 
-        return margedRecord.substring(1);
+        return mergedRecord.substring(1);
     }
 
-    private String[] arrangeRecordByRemovingColumns(String margedValue, String[] oldRecord) {
+    private String[] arrangeRecordByRemovingColumns(String mergedValue, String[] oldRecord) {
         int newRecordLength = oldRecord.length - combinationOrder.size() + 1;
 
         String[] resultRecordHolder = new String[newRecordLength];
         int resultRecordIndex = 0;
 
-        Integer margedValueIndex = margedValueIndex();
-        resultRecordHolder[margedValueIndex] = margedValue;
+        Integer mergedValueIndex = mergedValueIndex();
+        resultRecordHolder[mergedValueIndex] = mergedValue;
 
         for (int index = 0; index < oldRecord.length; index++) {
-            if (resultRecordIndex == margedValueIndex)
+            if (resultRecordIndex == mergedValueIndex)
                 resultRecordIndex++;
 
             if (!combinationOrder.contains(index))
@@ -62,7 +61,7 @@ public class ColumnJoiner implements TransformationOperation {
         return resultRecordHolder;
     }
 
-    private Integer margedValueIndex() {
+    private Integer mergedValueIndex() {
         Integer destinationIndex = combinationOrder.get(0);
         int count = 0;
         for (Integer index : combinationOrder) {

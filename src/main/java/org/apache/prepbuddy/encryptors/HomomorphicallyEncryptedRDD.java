@@ -26,7 +26,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
         JavaRDD<String> javaRDD = wrapRDD(rdd()).map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
-                String[] values = fileType.parseRecord(row.toString());
+                String[] values = fileType.parseRecord(row);
                 EncryptedNumber encryptedNumber = EncryptedNumber.create(values[columnIndex],keyPair.getPrivateKey());
                 BigInteger bigInteger = privateKey.decrypt(encryptedNumber).decodeApproximateBigInteger();
                 values[columnIndex] = bigInteger.toString();

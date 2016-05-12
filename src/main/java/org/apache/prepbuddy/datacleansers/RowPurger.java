@@ -15,9 +15,7 @@ public class RowPurger implements Serializable{
         this.condition = condition;
     }
 
-
-    public JavaRDD<String> apply(JavaRDD<String> dataset, final FileType type) {
-
+    public JavaRDD<String> apply(JavaRDD<String> dataset, FileType type) {
         return dataset.filter(new Function<String, Boolean>() {
             @Override
             public Boolean call(String record) throws Exception {
