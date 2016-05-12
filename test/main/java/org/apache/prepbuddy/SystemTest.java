@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -32,22 +33,22 @@ public class SystemTest extends SparkTestCase {
         TransformableRDD purged = deduplicated.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                return record.get(1).equals("YY");
+                return record.valueAt(1).equals("YY");
             }
         });
         assertEquals(1, purged.count());
 
-         TransformableRDD marked = purged.flag("*", new MarkerPredicate() {
-             @Override
-             public boolean evaluate(RowRecord row) {
-                 return true;
-             }
-         });
+        TransformableRDD marked = purged.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return true;
+            }
+        });
 
         assertEquals(1, marked.count());
         assertEquals("X,Y,,*", marked.first());
 
-        TransformableRDD mapedRDD = marked.mapByFlag("*",3, new Function<String, String>() {
+        TransformableRDD mapedRDD = marked.mapByFlag("*", 3, new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 return "Star " + row;
@@ -74,7 +75,7 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void _TextFacetShouldGiveCountOfPair() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E"));
         TransformableRDD rdd = new TransformableRDD(initialDataset);
         TextFacets facets = rdd.listFacets(0);
         assertEquals(2, facets.count());
@@ -111,5 +112,47 @@ public class SystemTest extends SparkTestCase {
 
         TransformableRDD joinedColumnWithDefault = initialRDD.joinColumns(new ColumnJoiner(Arrays.asList(3, 1, 0), false));
         assertEquals("732,MiddleName LastName FirstName", joinedColumnWithDefault.first());
+    }
+
+    @Test
+    public void shouldTestAllTheFunctionalityByReadingAFile() {
+        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/systemTestRecord.csv");
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+
+        TransformableRDD cleanRDD = initialRDD
+                .deduplicate()
+                .removeRows(new RowPurger.Predicate() {
+                    @Override
+                    public Boolean evaluate(RowRecord record) {
+                        return record.valueAt(2).equals("Incoming");
+                    }
+                }).impute(1, new MissingDataHandler() {
+                    @Override
+                    public String handleMissingData(RowRecord record) {
+                        return "124567890";
+                    }
+                }).replace(3, new ReplacementFunction(new Replacement("0", "Zero")));
+
+        TransformableRDD flagedRDD = cleanRDD
+                .flag("*", new MarkerPredicate() {
+                    @Override
+                    public boolean evaluate(RowRecord row) {
+                        return row.valueAt(2).equals("Missed");
+                    }
+                }).mapByFlag("*", 0, new Function<String, String>() {
+                    @Override
+                    public String call(String row) throws Exception {
+                        return "loss," + row;
+                    }
+                });
+
+        TransformableRDD splitColumnRDD = flagedRDD
+                .splitColumn(4, new SplitByDelimiter(" ", false))
+                .joinColumns(new ColumnJoiner(Arrays.asList(4, 5, 6, 9, 7, 8), false))
+                .splitColumn(4, new SplitByFieldLength(Arrays.asList(15, 9), false));
+
+        splitColumnRDD.saveAsTextFile("data/transformed "+new Date().toString());
+//        Clusters clustersBySimpleFingerprint = splitColumnRDD.clusters(2, new SimpleFingerprintAlgorithm());
+//        TextFacets facets = splitColumnRDD.listFacets(2);
     }
 }

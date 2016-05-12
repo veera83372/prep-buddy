@@ -156,12 +156,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD mapByFlag(final String flag, final int columnIndex, final Function<String, String> mapFunction) {
+    public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
         JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String[] records = fileType.parseRecord(row);
-                String lastColumn = records[columnIndex];
+                String lastColumn = records[symbolColumnIndex];
                 return lastColumn.equals(flag) ? mapFunction.call(row) : row;
             }
         });
