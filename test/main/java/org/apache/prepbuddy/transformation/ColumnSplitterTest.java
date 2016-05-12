@@ -20,7 +20,7 @@ public class ColumnSplitterTest {
     public void shouldSplitTheGivenColumnToGivenNumberOfPartitionByRemovingTheGivenColumn() {
         String[] inputRecord = "FirstName LastName MiddleName,850".split(",");
 
-        SplitByDelimiter columnSplitter = new SplitByDelimiter(" ", 2, false);
+        SplitByDelimiter columnSplitter = new SplitByDelimiter(" ", false, 2);
         String[] actualValue = columnSplitter.apply(inputRecord, 0);
 
         assertEquals("FirstName,LastName MiddleName,850", StringUtils.join(actualValue, ","));

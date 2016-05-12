@@ -25,7 +25,7 @@ import scala.Tuple2;
 
 import java.util.List;
 
-public class TransformableRDD extends JavaRDD<String> {
+public class TransformableRDD<T1, T2, T3> extends JavaRDD<String> {
     private FileType fileType;
 
     public TransformableRDD(JavaRDD rdd, FileType fileType) {
@@ -72,7 +72,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 String value = recordAsArray[columnIndex];
                 String replacementValue = value;
                 if (value == null || value.trim().isEmpty()) {
-                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray) );
+                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray));
                 }
                 recordAsArray[columnIndex] = replacementValue;
                 return fileType.join(recordAsArray);
