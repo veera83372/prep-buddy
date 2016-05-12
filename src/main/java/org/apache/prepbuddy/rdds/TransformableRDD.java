@@ -17,11 +17,6 @@ import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
-import org.apache.prepbuddy.transformation.ColumnJoiner;
-import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
-import org.apache.prepbuddy.transformation.MarkerPredicate;
-import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
@@ -152,7 +147,7 @@ public class TransformableRDD extends JavaRDD<String> {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
-                String newRow = fileType.appendDelimeter(row);
+                String newRow = fileType.appendDelimiter(row);
                 if (markerPredicate.evaluate(new RowRecord(fileType.parseRecord(row))))
                     return newRow + symbol;
                 return newRow;

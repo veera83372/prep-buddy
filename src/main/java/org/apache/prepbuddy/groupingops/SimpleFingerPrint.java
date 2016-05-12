@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-public class SimpleFingerprint extends FingerprintAlgorithm implements ClusteringAlgorithm {
+public class SimpleFingerprint extends FingerprintAlgorithm {
     public static String generateSimpleFingerprint(String someString) {
         someString = someString.trim();
         someString = someString.toLowerCase();
