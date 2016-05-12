@@ -52,7 +52,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public TransformableRDD deduplicate() {
-        JavaRDD<String> transformed = new Deduplication().apply(this);
+        JavaRDD transformed = new Deduplication().apply(this);
         return new TransformableRDD(transformed, fileType);
     }
 
@@ -61,7 +61,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD impute(int columnIndex, MissingDataHandler handler) {
+    public TransformableRDD impute(final int columnIndex, final MissingDataHandler handler) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -79,7 +79,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD replace(int columnIndex, ReplacementFunction function) {
+    public TransformableRDD replace(final int columnIndex, final ReplacementFunction function) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -92,7 +92,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TextFacets listFacets(int columnIndex) {
+    public TextFacets listFacets(final int columnIndex) {
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -129,24 +129,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-//    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, String separator, boolean retainColumns) {
-//        ColumnJoiner joinConfig = new ColumnJoiner(columnsToBeJoined, separator, retainColumns);
-//        JavaRDD<String> transformed = this.map(new Function<String, String>() {
-//            @Override
-//            public String call(String record) throws Exception {
-//                String[] recordAsArray = fileType.parseRecord(record);
-//                String[] transformedRow = joinConfig.apply(recordAsArray);
-//                return fileType.join(transformedRow);
-//            }
-//        });
-//        return new TransformableRDD(transformed, fileType);
-//    }
-//
-//    public TransformableRDD joinColumns(List<Integer> columnsToBeJoined, boolean retainColumns) {
-//        return joinColumns(columnsToBeJoined, " ", retainColumns);
-//    }
-
-    public TransformableRDD joinColumns(ColumnJoiner columnJoiner) {
+    public TransformableRDD joinColumns(final ColumnJoiner columnJoiner) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {

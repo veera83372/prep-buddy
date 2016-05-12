@@ -15,11 +15,11 @@ public class MarkingTransformation implements Serializable {
         this.symbol = symbol;
     }
 
-    public JavaRDD<String> apply(JavaRDD<String> dataset, FileType type) {
+    public JavaRDD<String> apply(JavaRDD<String> dataset, final FileType type) {
         return dataset.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
-                String newRow = type.appendDelimeter(row);
+                String newRow = type.appendDelimiter(row);
                 if (condition.evaluate(newRow))
                     return newRow + symbol;
                 return newRow;

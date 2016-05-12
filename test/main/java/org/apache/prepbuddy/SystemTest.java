@@ -13,6 +13,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -58,7 +59,7 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldBeAbleToSplitTheGivenColumn() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName LastName MiddleName,850"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName LastName MiddleName,850"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
         TransformableRDD splitColumnRDD = initialRDD.splitColumn(0, new SplitByDelimiter(" ", false));
@@ -76,7 +77,7 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldBeAbleToJoinMultipleColumns() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("FirstName,LastName,732,MiddleName"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName,LastName,732,MiddleName"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
         TransformableRDD joinedColumnRDD = initialRDD.joinColumns(new ColumnJoiner(Arrays.asList(3, 1, 0), "_", false));

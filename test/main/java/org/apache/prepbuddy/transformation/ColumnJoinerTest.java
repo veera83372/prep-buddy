@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ColumnJoinerTest {
     @Test
-    public void shouldMargeTheGivenColumnsWithTheGivenSeperatorByReplacingTheCurrentValues() {
+    public void shouldMargeTheGivenColumnsWithTheGivenSeparatorByReplacingTheCurrentValues() {
         String[] inputRecord = "FirstName,LastName,732,MiddleName".split(",");
 
         ColumnJoiner columnJoiner = new ColumnJoiner(Arrays.asList(3, 1, 0), "_", false);

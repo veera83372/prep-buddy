@@ -17,7 +17,7 @@ public class MapByMark implements Serializable {
         this.columnIndex = columnIndex;
     }
 
-    public JavaRDD<String> apply(JavaRDD<String> dataset, FileType type) {
+    public JavaRDD<String> apply(JavaRDD<String> dataset, final FileType type) {
         return dataset.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
