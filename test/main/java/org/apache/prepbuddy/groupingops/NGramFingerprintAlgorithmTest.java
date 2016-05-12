@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-public class NGramFingerprintTest extends SparkTestCase {
+public class NGramFingerprintAlgorithmTest extends SparkTestCase {
     @Test
     public void generateNGramFingerprintShouldGive_arispari_Of_ParisIn2Gram() {
         String parisNGramFingerPrint = new NGramFingerprintAlgorithm(2).generateNGramFingerprint("Paris");
