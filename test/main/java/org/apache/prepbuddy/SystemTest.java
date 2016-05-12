@@ -7,6 +7,7 @@ import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.Replacement;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
@@ -26,15 +27,15 @@ public class SystemTest extends SparkTestCase {
 
         TransformableRDD purged = deduplicated.removeRows(new RowPurger.Predicate() {
             @Override
-            public Boolean evaluate(String record) {
-                return record.split(",")[1].equals("YY");
+            public Boolean evaluate(RowRecord record) {
+                return record.get(1).equals("YY");
             }
         });
         assertEquals(1, purged.count());
 
          TransformableRDD marked = purged.flag("*", new MarkerPredicate() {
              @Override
-             public boolean evaluate(String row) {
+             public boolean evaluate(RowRecord row) {
                  return true;
              }
          });
@@ -54,7 +55,7 @@ public class SystemTest extends SparkTestCase {
 
         TransformableRDD imputedRDD = purged.impute(2, new MissingDataHandler() {
             @Override
-            public String handleMissingData(String[] record) {
+            public String handleMissingData(RowRecord record) {
                 return "Male";
             }
         });

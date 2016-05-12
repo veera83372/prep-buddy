@@ -15,6 +15,7 @@ import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.ColumnSplitterByFieldLengths;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -62,7 +63,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD impute(int columnIndex, MissingDataHandler handler) {
+    public TransformableRDD impute(final int columnIndex, final MissingDataHandler handler) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -71,7 +72,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 String value = recordAsArray[columnIndex];
                 String replacementValue = value;
                 if (value == null || value.trim().isEmpty()) {
-                    replacementValue = handler.handleMissingData(recordAsArray);
+                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray) );
                 }
                 recordAsArray[columnIndex] = replacementValue;
                 return fileType.join(recordAsArray);
@@ -80,7 +81,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD replace(int columnIndex, ReplacementFunction function) {
+    public TransformableRDD replace(final int columnIndex, final ReplacementFunction function) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -93,7 +94,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TextFacets listFacets(int columnIndex) {
+    public TextFacets listFacets(final int columnIndex) {
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -140,12 +141,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD flag(String symbol, MarkerPredicate markerPredicate) {
+    public TransformableRDD flag(final String symbol, final MarkerPredicate markerPredicate) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String newRow = fileType.appendDelimeter(row);
-                if (markerPredicate.evaluate(newRow))
+                if (markerPredicate.evaluate(new RowRecord(fileType.parseRecord(row))))
                     return newRow + symbol;
                 return newRow;
             }
@@ -153,13 +154,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD mapByFlag(String flag, int columnIndex, Function<String, String> mapFunction) {
+    public TransformableRDD mapByFlag(final String flag, final int columnIndex, final Function<String, String> mapFunction) {
         JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String[] records = fileType.parseRecord(row);
                 String lastColumn = records[columnIndex];
-                return lastColumn.equals(flag) ? (String) mapFunction.call(row) : row;
+                return lastColumn.equals(flag) ? mapFunction.call(row) : row;
             }
         });
         return new TransformableRDD(mappedRDD, fileType);
