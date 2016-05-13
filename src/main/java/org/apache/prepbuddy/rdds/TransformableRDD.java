@@ -11,7 +11,7 @@ import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
-import org.apache.prepbuddy.transformation.ColumnJoiner;
+import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
@@ -25,7 +25,7 @@ import scala.Tuple2;
 
 import java.util.List;
 
-public class TransformableRDD<T1, T2, T3> extends JavaRDD<String> {
+public class TransformableRDD extends JavaRDD<String> {
     private FileType fileType;
 
     public TransformableRDD(JavaRDD rdd, FileType fileType) {
@@ -131,12 +131,12 @@ public class TransformableRDD<T1, T2, T3> extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD joinColumns(final ColumnJoiner columnJoiner) {
+    public TransformableRDD mergeColumns(final ColumnMerger columnMerger) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = columnJoiner.apply(recordAsArray);
+                String[] transformedRow = columnMerger.apply(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });

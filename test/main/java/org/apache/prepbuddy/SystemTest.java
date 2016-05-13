@@ -3,9 +3,11 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
+import org.apache.prepbuddy.groupingops.Clusters;
+import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.transformation.ColumnJoiner;
+import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.transformation.SplitByDelimiter;
 import org.apache.prepbuddy.transformation.SplitByFieldLength;
@@ -17,9 +19,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SystemTest extends SparkTestCase {
 
@@ -104,55 +107,78 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName,LastName,732,MiddleName"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD joinedColumnRDD = initialRDD.joinColumns(new ColumnJoiner(Arrays.asList(3, 1, 0), "_", false));
+        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), false, "_"));
         assertEquals("732,MiddleName_LastName_FirstName", joinedColumnRDD.first());
 
-        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.joinColumns(new ColumnJoiner(Arrays.asList(3, 1, 0), "_", true));
+        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), true, "_"));
         assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", joinedColumnRDDByKeepingOriginals.first());
 
-        TransformableRDD joinedColumnWithDefault = initialRDD.joinColumns(new ColumnJoiner(Arrays.asList(3, 1, 0), false));
+        TransformableRDD joinedColumnWithDefault = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), false));
         assertEquals("732,MiddleName LastName FirstName", joinedColumnWithDefault.first());
     }
 
     @Test
-    public void shouldTestAllTheFunctionalityByReadingAFile() {
+    public void shouldTestAllTheFunctionalityByReadingAFile() throws Exception {
         JavaRDD<String> initialDataset = javaSparkContext.textFile("data/systemTestRecord.csv");
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD cleanRDD = initialRDD
-                .deduplicate()
-                .removeRows(new RowPurger.Predicate() {
-                    @Override
-                    public Boolean evaluate(RowRecord record) {
-                        return record.valueAt(2).equals("Incoming");
-                    }
-                }).impute(1, new MissingDataHandler() {
-                    @Override
-                    public String handleMissingData(RowRecord record) {
-                        return "124567890";
-                    }
-                }).replace(3, new ReplacementFunction(new Replacement("0", "Zero")));
+        TransformableRDD deduplicateRDD = initialRDD.deduplicate();
+        assertEquals(4, deduplicateRDD.count());
 
-        TransformableRDD flagedRDD = cleanRDD
-                .flag("*", new MarkerPredicate() {
-                    @Override
-                    public boolean evaluate(RowRecord row) {
-                        return row.valueAt(2).equals("Missed");
-                    }
-                }).mapByFlag("*", 0, new Function<String, String>() {
-                    @Override
-                    public String call(String row) throws Exception {
-                        return "loss," + row;
-                    }
-                });
+        TransformableRDD removedRowsRDD = deduplicateRDD.removeRows(new RowPurger.Predicate() {
+            @Override
+            public Boolean evaluate(RowRecord record) {
+                return record.valueAt(2).equals("Missed");
+            }
+        });
+        assertEquals(3, removedRowsRDD.count());
+        assertFalse(removedRowsRDD.collect().contains("07641036117,07681546436,Missed,0,Mon Feb 11 08:04:42 +0000 1980"));
 
-        TransformableRDD splitColumnRDD = flagedRDD
-                .splitColumn(4, new SplitByDelimiter(" ", false))
-                .joinColumns(new ColumnJoiner(Arrays.asList(4, 5, 6, 9, 7, 8), false))
-                .splitColumn(4, new SplitByFieldLength(Arrays.asList(15, 9), false));
+        TransformableRDD imputedRDD = removedRowsRDD.impute(1, new MissingDataHandler() {
+            @Override
+            public String handleMissingData(RowRecord record) {
+                return "1234567890";
+            }
+        });
+        assertTrue(imputedRDD.collect().contains("07434677419,1234567890,Incoming,211,Wed Sep 15 19:17:44 +0100 2010"));
 
-        splitColumnRDD.saveAsTextFile("data/transformed "+new Date().toString());
-//        Clusters clustersBySimpleFingerprint = splitColumnRDD.clusters(2, new SimpleFingerprintAlgorithm());
-//        TextFacets facets = splitColumnRDD.listFacets(2);
+        TransformableRDD replacedRDD = imputedRDD.replace(3, new ReplacementFunction(new Replacement("0", "Zero")));
+        assertTrue(replacedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon Feb 11 07:18:23 +0000 1980"));
+        assertTrue(imputedRDD.collect().contains("07434677419,1234567890,Incoming,211,Wed Sep 15 19:17:44 +0100 2010"));
+
+        TransformableRDD flaggedRDD = replacedRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).equals("Incoming");
+            }
+        });
+        assertTrue(flaggedRDD.collect().contains("07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980,*"));
+        assertTrue(flaggedRDD.collect().contains("07434677419,1234567890,Incoming,211,Wed Sep 15 19:17:44 +0100 2010,*"));
+        assertTrue(flaggedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon Feb 11 07:18:23 +0000 1980,"));
+
+        TransformableRDD mappedFlagRDD = flaggedRDD.mapByFlag("*", 5, new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                return "PROFIT:" + row;
+            }
+        });
+        assertTrue(mappedFlagRDD.collect().contains("PROFIT:07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980,*"));
+        assertTrue(mappedFlagRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon Feb 11 07:18:23 +0000 1980,"));
+
+
+        TransformableRDD splitBySpaceRDD = mappedFlagRDD.splitColumn(4, new SplitByDelimiter(" ", false));
+        assertTrue(splitBySpaceRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon,Feb,11,07:18:23,+0000,1980,"));
+
+        TransformableRDD mergedRDD = splitBySpaceRDD.mergeColumns(new ColumnMerger(Arrays.asList(4, 5, 6, 9, 7, 8), false));
+        assertTrue(mergedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980 07:18:23 +0000"));
+
+        TransformableRDD splitByLengthRDD = mergedRDD.splitColumn(5, new SplitByFieldLength(Arrays.asList(15, 9), false));
+        assertTrue(splitByLengthRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980, 07:18:23"));
+
+        Clusters clustersBySimpleFingerprint = splitByLengthRDD.clusters(2, new SimpleFingerprintAlgorithm());
+        assertEquals(2,clustersBySimpleFingerprint.getAllClusters().size());
+
+        TextFacets facets = splitByLengthRDD.listFacets(2);
+        assertEquals(1,facets.highest().size());
     }
 }
