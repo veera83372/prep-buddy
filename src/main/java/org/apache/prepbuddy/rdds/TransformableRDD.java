@@ -3,6 +3,7 @@ package org.apache.prepbuddy.rdds;
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
 import org.apache.prepbuddy.datacleansers.Deduplication;
+import org.apache.prepbuddy.datacleansers.Duplicates;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
@@ -58,6 +59,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD duplicates(){
+        JavaRDD transformed = new Duplicates().apply(this);
+        return new TransformableRDD(transformed);
+    }
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
         JavaRDD<String> transformed = new RowPurger(predicate).apply(this, fileType);
         return new TransformableRDD(transformed, fileType);

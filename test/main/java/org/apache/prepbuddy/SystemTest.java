@@ -129,6 +129,10 @@ public class SystemTest extends SparkTestCase {
         TransformableRDD deduplicateRDD = initialRDD.deduplicate();
         assertEquals(4, deduplicateRDD.count());
 
+        TransformableRDD duplicatesRDD = initialRDD.duplicates();
+        assertEquals(1, duplicatesRDD.count());
+        assertEquals("07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980", duplicatesRDD.first());
+
         TransformableRDD removedRowsRDD = deduplicateRDD.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
