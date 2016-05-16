@@ -117,7 +117,13 @@ public class SystemTest extends SparkTestCase {
 
     @Test
     public void shouldTestAllTheFunctionalityByReadingAFile() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.textFile("data/systemTestRecord.csv");
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+        ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
         TransformableRDD deduplicateRDD = initialRDD.deduplicate();
@@ -174,9 +180,9 @@ public class SystemTest extends SparkTestCase {
         assertTrue(splitByLengthRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980, 07:18:23"));
 
         Clusters clustersBySimpleFingerprint = splitByLengthRDD.clusters(2, new SimpleFingerprintAlgorithm());
-        assertEquals(2,clustersBySimpleFingerprint.getAllClusters().size());
+        assertEquals(2, clustersBySimpleFingerprint.getAllClusters().size());
 
         TextFacets facets = splitByLengthRDD.listFacets(2);
-        assertEquals(1,facets.highest().size());
+        assertEquals(1, facets.highest().size());
     }
 }
