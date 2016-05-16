@@ -7,7 +7,7 @@ public class RowRecord {
         this.columnValues = columnValues;
     }
 
-    public String get(int columnIndex) {
+    public String valueAt(int columnIndex) {
         return columnValues[columnIndex];
     }
 }
