@@ -19,17 +19,15 @@ public class Cluster {
     }
 
     public boolean contain(Tuple2<String, Integer> otherTuple) {
-        for (Tuple2 tuple : tuples) {
-            if (tuple.equals(otherTuple))
-                return true;
-        }
-        return false;
+        return tuples.contains(otherTuple);
     }
 
     public int size() {
         return tuples.size();
     }
-
+    public List<Tuple2> getTupels() {
+        return tuples;
+    }
 
     public boolean isOfKey(String key) {
         return this.key.equals(key);

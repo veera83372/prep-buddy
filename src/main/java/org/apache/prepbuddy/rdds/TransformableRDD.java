@@ -167,4 +167,26 @@ public class TransformableRDD extends JavaRDD<String> {
         });
         return new TransformableRDD(mappedRDD, fileType);
     }
+
+    public TransformableRDD removeFlag(final int symbolColumnIndex) {
+        return this.removeColumn(symbolColumnIndex);
+    }
+
+    public TransformableRDD removeColumn(final int columnIndex) {
+        JavaRDD<String> mapped = this.map(new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                int newArrayIndex = 0;
+                String[] recordAsArray = fileType.parseRecord(row);
+                String[] newRecordArray = new String[recordAsArray.length - 1];
+                for (int i = 0; i < recordAsArray.length; i++) {
+                    String columnValue = recordAsArray[i];
+                    if (i != columnIndex)
+                        newRecordArray[newArrayIndex++] = columnValue;
+                }
+                return fileType.join(newRecordArray);
+            }
+        });
+        return new TransformableRDD(mapped, fileType);
+    }
 }
