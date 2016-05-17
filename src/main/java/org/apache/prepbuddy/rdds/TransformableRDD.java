@@ -3,18 +3,19 @@ package org.apache.prepbuddy.rdds;
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
 import org.apache.prepbuddy.datacleansers.Deduplication;
+import org.apache.prepbuddy.datacleansers.Duplicates;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
-import org.apache.prepbuddy.datacleansers.ReplacementFunction;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.filetypes.FileType;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
-import org.apache.prepbuddy.transformation.ColumnJoiner;
+import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -58,6 +59,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD duplicates(){
+        JavaRDD transformed = new Duplicates().apply(this);
+        return new TransformableRDD(transformed);
+    }
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
         JavaRDD<String> transformed = new RowPurger(predicate).apply(this, fileType);
         return new TransformableRDD(transformed, fileType);
@@ -72,7 +77,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 String value = recordAsArray[columnIndex];
                 String replacementValue = value;
                 if (value == null || value.trim().isEmpty()) {
-                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray) );
+                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray));
                 }
                 recordAsArray[columnIndex] = replacementValue;
                 return fileType.join(recordAsArray);
@@ -81,13 +86,15 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD replace(final int columnIndex, final ReplacementFunction function) {
+    public TransformableRDD replace(final int columnIndex, final Replacement... replacements) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                recordAsArray[columnIndex] = function.replace(recordAsArray[columnIndex]);
+                for (Replacement replacement : replacements) {
+                    recordAsArray[columnIndex] = replacement.replace(recordAsArray[columnIndex]);
+                }
                 return fileType.join(recordAsArray);
             }
         });
@@ -131,12 +138,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD joinColumns(final ColumnJoiner columnJoiner) {
+    public TransformableRDD mergeColumns(final ColumnMerger columnMerger) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = columnJoiner.apply(recordAsArray);
+                String[] transformedRow = columnMerger.apply(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });
@@ -156,12 +163,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD mapByFlag(final String flag, final int columnIndex, final Function<String, String> mapFunction) {
+    public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
         JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String[] records = fileType.parseRecord(row);
-                String lastColumn = records[columnIndex];
+                String lastColumn = records[symbolColumnIndex];
                 return lastColumn.equals(flag) ? mapFunction.call(row) : row;
             }
         });

@@ -13,4 +13,10 @@ public class Replacement<O, N> extends Pair<O,N> {
     public boolean matches(O existing) {
         return existing != null && existing.equals(firstValue);
     }
+
+    public String replace(O currentValue) {
+       if(matches(currentValue))
+           return replacementValue();
+        return currentValue.toString();
+    }
 }
