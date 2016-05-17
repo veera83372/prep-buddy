@@ -2,10 +2,11 @@ package org.apache.prepbuddy.groupingops;
 
 import scala.Tuple2;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cluster {
+public class Cluster implements Serializable{
 
     private final String key;
     private List<Tuple2> tuples = new ArrayList<>();
@@ -19,19 +20,22 @@ public class Cluster {
     }
 
     public boolean contain(Tuple2<String, Integer> otherTuple) {
-        for (Tuple2 tuple : tuples) {
-            if (tuple.equals(otherTuple))
-                return true;
-        }
-        return false;
+        return tuples.contains(otherTuple);
     }
 
     public int size() {
         return tuples.size();
     }
 
-
     public boolean isOfKey(String key) {
         return this.key.equals(key);
+    }
+
+    public boolean containValue(String value) {
+        for (Tuple2 tuple : tuples) {
+            if (tuple._1().equals(value))
+                return true;
+        }
+        return false;
     }
 }
