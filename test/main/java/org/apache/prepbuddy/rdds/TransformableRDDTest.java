@@ -4,6 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.filetypes.FileType;
+import org.apache.prepbuddy.groupingops.Cluster;
+import org.apache.prepbuddy.groupingops.Clusters;
+import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Assert;
@@ -13,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 
 public class TransformableRDDTest extends SparkTestCase {
     @Test
@@ -72,5 +76,19 @@ public class TransformableRDDTest extends SparkTestCase {
         JavaRDD<String> decrypt = rdd.decrypt(0);
 
         Assert.assertEquals(decrypt.collect(),initialDataset.collect());
+    }
+
+    @Test
+    public void shouldChangeValueOfFieldOfMatchesClusters() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
+
+        List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(1);
+        TransformableRDD afterMergeCluster = initialRDD.mergeCluster(clustersWithSizeGreaterThanOne.get(0), "Finger print", 0);
+
+        List<String> listOfValues = afterMergeCluster.collect();
+
+        Assert.assertTrue(listOfValues.contains("Finger print"));
     }
 }

@@ -8,6 +8,7 @@ import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.filetypes.FileType;
+import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -175,7 +176,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mappedRDD, fileType);
     }
 
-    public TransformableRDD removeFlag(final int symbolColumnIndex) {
+    public TransformableRDD dropFlag(final int symbolColumnIndex) {
         return this.removeColumn(symbolColumnIndex);
     }
 
@@ -195,5 +196,20 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         });
         return new TransformableRDD(mapped, fileType);
+    }
+
+    public TransformableRDD mergeCluster(final Cluster cluster, final String newValue, final int columnIndex) {
+        JavaRDD<String> mapped = this.map(new Function<String, String>() {
+            @Override
+            public String call(String row) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(row);
+                String value = recordAsArray[columnIndex];
+                if (cluster.containValue(value))
+                    recordAsArray[columnIndex] = newValue;
+                return fileType.join(recordAsArray);
+            }
+        });
+        return new TransformableRDD(mapped, fileType);
+
     }
 }

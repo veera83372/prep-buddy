@@ -12,11 +12,11 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ClustersTest extends SparkTestCase {
-        @Test
+    @Test
     public void shouldGiveClusterOfSimilarColumnValues() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
-            TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-            Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
 
         Tuple2<String, Integer> expected1 = new Tuple2<>("CLUSTER Of Finger print", 1);
         Tuple2<String, Integer> expected2 = new Tuple2<>("finger print of cluster", 1);
@@ -40,7 +40,6 @@ public class ClustersTest extends SparkTestCase {
         assertEquals(3, clustersWithSizeGreaterThanOne.get(0).size());
 
     }
-
 
 
     @Test
