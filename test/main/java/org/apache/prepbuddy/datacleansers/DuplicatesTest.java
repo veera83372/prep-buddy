@@ -30,6 +30,6 @@ public class DuplicatesTest extends SparkTestCase {
         Duplicates duplicates = new Duplicates();
         List results = duplicates.apply(csvInput).collect();
 
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
     }
 }
