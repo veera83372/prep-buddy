@@ -8,10 +8,12 @@ import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.filetypes.FileType;
+import org.apache.prepbuddy.filetypes.Type;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.inferer.TypeAnalyzer;
 import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
@@ -25,6 +27,7 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class TransformableRDD extends JavaRDD<String> {
@@ -42,7 +45,7 @@ public class TransformableRDD extends JavaRDD<String> {
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
         final PaillierPublicKey publicKey = keyPair.getPublicKey();
         final PaillierContext signedContext = publicKey.createSignedContext();
-        JavaRDD map = wrapRDD(rdd()).map(new Function<String, String>() {
+        JavaRDD map = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String[] values = fileType.parseRecord(row);
@@ -174,6 +177,17 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         });
         return new TransformableRDD(mappedRDD, fileType);
+    }
+
+    public Type inferType(final int columnIndex) {
+        List<String> sample = this.takeSample(false, 5);
+        List<String> columnSample = new LinkedList<>();
+        for (String row : sample) {
+            String[] strings = fileType.parseRecord(row);
+            columnSample.add(strings[columnIndex]);
+        }
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSample);
+        return typeAnalyzer.getType();
     }
 
     public TransformableRDD dropFlag(final int symbolColumnIndex) {
