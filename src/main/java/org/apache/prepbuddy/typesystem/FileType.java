@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.filetypes;
+package org.apache.prepbuddy.typesystem;
 
 
 import org.apache.commons.lang.StringUtils;

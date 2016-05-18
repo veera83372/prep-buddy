@@ -2,7 +2,7 @@ package org.apache.prepbuddy.encryptors;
 
 import com.n1analytics.paillier.EncryptedNumber;
 import com.n1analytics.paillier.PaillierPrivateKey;
-import org.apache.prepbuddy.filetypes.FileType;
+import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;

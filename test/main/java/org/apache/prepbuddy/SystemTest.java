@@ -2,7 +2,7 @@ package org.apache.prepbuddy;
 
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
-import org.apache.prepbuddy.filetypes.Type;
+import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -11,6 +11,7 @@ import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
 import org.apache.prepbuddy.transformation.SplitByDelimiter;
 import org.apache.prepbuddy.transformation.SplitByFieldLength;
+import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
@@ -205,7 +206,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        Type type = initialRDD.inferType(2);
-        assertEquals(type,Type.STRING);
+        DataType type = initialRDD.inferType(1);
+        assertEquals(type, DataType.INTEGER);
     }
 }
