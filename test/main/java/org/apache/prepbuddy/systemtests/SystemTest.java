@@ -1,5 +1,6 @@
-package org.apache.prepbuddy;
+package org.apache.prepbuddy.systemtests;
 
+import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
@@ -248,7 +249,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD imputed = initialRDD.impute(3, new ApproxMeanStrategy());
+        TransformableRDD imputed = initialRDD.impute(3, new ApproxMeanSubstitution());
         List<String> listOfRecord = imputed.collect();
 
         String expected1 = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
