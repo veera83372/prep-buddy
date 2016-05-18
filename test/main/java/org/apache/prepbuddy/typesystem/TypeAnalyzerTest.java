@@ -7,6 +7,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class TypeAnalyzerTest {
+
     @Test
     public void shouldInferAsAlphanumeric() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("facebook", "mpire", "teachstreet"));
