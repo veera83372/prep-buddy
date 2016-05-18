@@ -1,5 +1,6 @@
 package org.apache.prepbuddy;
 
+import org.apache.prepbuddy.datacleansers.ImputationStrategy;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.groupingops.Clusters;
@@ -66,6 +67,9 @@ public class SystemTest extends SparkTestCase {
                 return "Male";
             }
         });
+        purged.impute(2, ImputationStrategy.REMOVE_ROWS);
+        purged.impute(2, ImputationStrategy.SUSBTITUTE_WITH_MEAN);
+        purged.impute(2, ImputationStrategy.SUSBTITUTE_WITH_MOST_FREQUENT_ITEM);
         assertEquals("X,Y,Male", imputedRDD.first());
 
         TransformableRDD numericRDD = imputedRDD.replace(2, new Replacement<>("Male", 0), new Replacement<>("Female", 1));
