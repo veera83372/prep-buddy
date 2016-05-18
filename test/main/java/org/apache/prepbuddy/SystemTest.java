@@ -3,6 +3,7 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.datacleansers.ImputationStrategy;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
+import org.apache.prepbuddy.filetypes.Type;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -22,6 +23,7 @@ import java.util.Collections;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SystemTest extends SparkTestCase {
@@ -61,6 +63,9 @@ public class SystemTest extends SparkTestCase {
         assertEquals(1, mapedRDD.count());
         assertEquals("Star X,Y,,*", mapedRDD.first());
 
+        TransformableRDD unflaged = mapedRDD.dropFlag(3);
+
+        assertEquals("Star X,Y,", unflaged.first());
         TransformableRDD imputedRDD = purged.impute(2, new MissingDataHandler() {
             @Override
             public String handleMissingData(RowRecord record) {
@@ -192,5 +197,19 @@ public class SystemTest extends SparkTestCase {
 
         TextFacets facets = splitByLengthRDD.listFacets(2);
         assertEquals(1, facets.highest().size());
+    }
+    @Test
+    public void shouldBeAbleToInferTheTypeOfADataSetColumn() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        Type type = initialRDD.inferType(2);
+        assertEquals(type,Type.STRING);
     }
 }
