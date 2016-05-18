@@ -7,8 +7,9 @@ import org.apache.prepbuddy.datacleansers.Duplicates;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
-import org.apache.prepbuddy.filetypes.FileType;
-import org.apache.prepbuddy.filetypes.Type;
+import org.apache.prepbuddy.typesystem.DataType;
+import org.apache.prepbuddy.typesystem.FileType;
+import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
@@ -179,14 +180,14 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mappedRDD, fileType);
     }
 
-    public Type inferType(final int columnIndex) {
-        List<String> sample = this.takeSample(false, 5);
-        List<String> columnSample = new LinkedList<>();
-        for (String row : sample) {
+    public DataType inferType(final int columnIndex) {
+        List<String> rowSamples = this.takeSample(false, 5);
+        List<String> columnSamples = new LinkedList<>();
+        for (String row : rowSamples) {
             String[] strings = fileType.parseRecord(row);
-            columnSample.add(strings[columnIndex]);
+            columnSamples.add(strings[columnIndex]);
         }
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSample);
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
 
