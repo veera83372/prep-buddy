@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.datacleansers.imputation;
 
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;

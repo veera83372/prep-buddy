@@ -1,21 +1,21 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.datacleansers.imputation;
 
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
-public class MeanSubstitution implements ImputationStrategy {
-
-    private Double mean;
+public class ApproxMeanSubstitution implements ImputationStrategy {
+    private Double approximateMean;
 
     @Override
     public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+        int timeout = 20000;
         JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(columnIndex);
-        mean = javaDoubleRDD.mean();
+        this.approximateMean = javaDoubleRDD.meanApprox(timeout).getFinalValue().mean();
     }
 
     @Override
     public String handleMissingData(RowRecord record) {
-        return mean.toString();
+        return approximateMean.toString();
     }
 }

@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.datacleansers.imputation;
 
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
