@@ -1,9 +1,6 @@
 package org.apache.prepbuddy;
 
-import org.apache.prepbuddy.datacleansers.ImputationStrategy;
-import org.apache.prepbuddy.datacleansers.MissingDataHandler;
-import org.apache.prepbuddy.datacleansers.RowPurger;
-import org.apache.prepbuddy.typesystem.BaseDataType;
+import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -21,10 +18,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SystemTest extends SparkTestCase {
@@ -67,15 +64,20 @@ public class SystemTest extends SparkTestCase {
         TransformableRDD unflaged = mapedRDD.dropFlag(3);
 
         assertEquals("Star X,Y,", unflaged.first());
-        TransformableRDD imputedRDD = purged.impute(2, new MissingDataHandler() {
+        TransformableRDD imputedRDD = purged.impute(2, new ImputationStrategy() {
+            @Override
+            public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+
+            }
+
             @Override
             public String handleMissingData(RowRecord record) {
                 return "Male";
             }
         });
-        purged.impute(2, ImputationStrategy.REMOVE_ROWS);
-        purged.impute(2, ImputationStrategy.SUSBTITUTE_WITH_MEAN);
-        purged.impute(2, ImputationStrategy.SUSBTITUTE_WITH_MOST_FREQUENT_ITEM);
+//        purged.impute(2, ImputationStrategy.REMOVE_ROWS);
+//        purged.imputeSubstituteWithMean(2);
+//        purged.impute(2, ImputationStrategy.SUBSTITUTE_WITH_MOST_FREQUENT_ITEM);
         assertEquals("X,Y,Male", imputedRDD.first());
 
         TransformableRDD numericRDD = imputedRDD.replace(2, new Replacement<>("Male", 0), new Replacement<>("Female", 1));
@@ -152,7 +154,12 @@ public class SystemTest extends SparkTestCase {
         assertEquals(3, removedRowsRDD.count());
         assertFalse(removedRowsRDD.collect().contains("07641036117,07681546436,Missed,0,Mon Feb 11 08:04:42 +0000 1980"));
 
-        TransformableRDD imputedRDD = removedRowsRDD.impute(1, new MissingDataHandler() {
+        TransformableRDD imputedRDD = removedRowsRDD.impute(1, new ImputationStrategy() {
+            @Override
+            public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+
+            }
+
             @Override
             public String handleMissingData(RowRecord record) {
                 return "1234567890";
@@ -213,4 +220,87 @@ public class SystemTest extends SparkTestCase {
         DataType type = initialRDD.inferType(1);
         assertEquals(type, DataType.INTEGER);
     }
+
+    @Test
+    public void shouldImputeTheValueWithTheMean() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,31,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,20,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming, ,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(3, new MeanSubstitution());
+        List<String> listOfRecord = imputed.collect();
+
+        String expected1 = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected1));
+    }
+
+    @Test
+    public void shouldImputeTheValueWithTheMeanApprox() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,31,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,20,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming, ,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(3, new ApproxMeanStrategy());
+        List<String> listOfRecord = imputed.collect();
+
+        String expected1 = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected1));
+    }
+
+    @Test
+    public void shouldImputeTheValueWithTheMostOccurredValue() throws Exception {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,31,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,31,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming, ,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(3, new MostOccerredSubstitute());
+        List<String> listOfRecord = imputed.collect();
+        String expected1 = "07641036117,07371326239,Incoming,31,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected1));
+    }
+//    @Test
+//    public void seeTimeMean() {
+//        JavaRDD<String> fileRDD = javaSparkContext.textFile("data/highGenerated.csv");
+//        JavaDoubleRDD javaDoubleRDD = fileRDD.mapToDouble(new DoubleFunction<String>() {
+//            @Override
+//            public double call(String row) throws Exception {
+//                String[] recordAsArray = FileType.CSV.parseRecord(row);
+//                String duration = recordAsArray[3];
+//                if ( duration.matches("\\d+(\\.\\d+|\\d+)|\\.\\d+"))
+//                    return Double.parseDouble(recordAsArray[3]);
+//                return 0;
+//            }
+//        });
+//        Double mean = javaDoubleRDD.mean();
+//        System.out.println("javaDoubleRDD = " + mean);
+//    }
+//
+//    @Test
+//    public void seeTimeMeanaprox() {
+//        JavaRDD<String> fileRDD = javaSparkContext.textFile("data/highGenerated.csv");
+//        JavaDoubleRDD javaDoubleRDD = fileRDD.mapToDouble(new DoubleFunction<String>() {
+//            @Override
+//            public double call(String row) throws Exception {
+//                String[] recordAsArray = FileType.CSV.parseRecord(row);
+//                String duration = recordAsArray[3];
+//                if ( duration.matches("\\d+(\\.\\d+|\\d+)|\\.\\d+"))
+//                    return Double.parseDouble(recordAsArray[3]);
+//                return 0;
+//            }
+//        });
+//        PartialResult<BoundedDouble> boundedDoublePartialResult = javaDoubleRDD.meanApprox(6000);
+//        System.out.println("javaDoubleRDD = " + boundedDoublePartialResult);
+//    }
 }

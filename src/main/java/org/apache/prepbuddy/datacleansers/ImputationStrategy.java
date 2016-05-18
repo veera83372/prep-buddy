@@ -1,25 +1,11 @@
 package org.apache.prepbuddy.datacleansers;
 
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 
-public interface ImputationStrategy {
-    MissingDataHandler REMOVE_ROWS = new MissingDataHandler() {
-        @Override
-        public String handleMissingData(RowRecord record) {
-            return null;
-        }
-    };
+import java.io.Serializable;
 
-    MissingDataHandler SUSBTITUTE_WITH_MEAN = new MissingDataHandler() {
-        @Override
-        public String handleMissingData(RowRecord record) {
-            return null;
-        }
-    };
-    MissingDataHandler SUSBTITUTE_WITH_MOST_FREQUENT_ITEM = new MissingDataHandler() {
-        @Override
-        public String handleMissingData(RowRecord record) {
-            return null;
-        }
-    };
+public interface ImputationStrategy extends Serializable{
+   void prepareSubstitute(TransformableRDD rdd, int columnIndex);
+    String handleMissingData(RowRecord record) ;
 }

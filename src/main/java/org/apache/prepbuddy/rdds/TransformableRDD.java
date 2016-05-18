@@ -2,14 +2,10 @@ package org.apache.prepbuddy.rdds;
 
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
-import org.apache.prepbuddy.datacleansers.Deduplication;
-import org.apache.prepbuddy.datacleansers.Duplicates;
-import org.apache.prepbuddy.datacleansers.MissingDataHandler;
-import org.apache.prepbuddy.datacleansers.RowPurger;
+import org.apache.prepbuddy.datacleansers.*;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
-import org.apache.prepbuddy.typesystem.DataType;
-import org.apache.prepbuddy.typesystem.FileType;
-import org.apache.prepbuddy.typesystem.BaseDataType;
+import org.apache.prepbuddy.exceptions.ApplicationException;
+import org.apache.prepbuddy.exceptions.ErrorMessages;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
@@ -18,11 +14,15 @@ import org.apache.prepbuddy.inferer.TypeAnalyzer;
 import org.apache.prepbuddy.transformation.ColumnMerger;
 import org.apache.prepbuddy.transformation.ColumnSplitter;
 import org.apache.prepbuddy.transformation.MarkerPredicate;
+import org.apache.prepbuddy.typesystem.DataType;
+import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
+import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.DoubleFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TransformableRDD extends JavaRDD<String> {
-    private FileType fileType;
+    public FileType fileType;
 
     public TransformableRDD(JavaRDD rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
@@ -64,30 +64,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD duplicates(){
+    public TransformableRDD duplicates() {
         JavaRDD transformed = new Duplicates().apply(this);
         return new TransformableRDD(transformed);
     }
+
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
         JavaRDD<String> transformed = new RowPurger(predicate).apply(this, fileType);
-        return new TransformableRDD(transformed, fileType);
-    }
-
-    public TransformableRDD impute(final int columnIndex, final MissingDataHandler handler) {
-        JavaRDD<String> transformed = this.map(new Function<String, String>() {
-
-            @Override
-            public String call(String record) throws Exception {
-                String[] recordAsArray = fileType.parseRecord(record);
-                String value = recordAsArray[columnIndex];
-                String replacementValue = value;
-                if (value == null || value.trim().isEmpty()) {
-                    replacementValue = handler.handleMissingData(new RowRecord(recordAsArray));
-                }
-                recordAsArray[columnIndex] = replacementValue;
-                return fileType.join(recordAsArray);
-            }
-        });
         return new TransformableRDD(transformed, fileType);
     }
 
@@ -227,4 +210,43 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
 
     }
+
+    public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        strategy.prepareSubstitute(this, columnIndex);
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+
+            @Override
+            public String call(String record) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(record);
+                String value = recordAsArray[columnIndex];
+                String replacementValue = value;
+                if (value == null || value.trim().isEmpty()) {
+                    replacementValue = strategy.handleMissingData(new RowRecord(recordAsArray));
+                }
+                recordAsArray[columnIndex] = replacementValue;
+                return fileType.join(recordAsArray);
+            }
+        });
+        return new TransformableRDD(transformed, fileType);
+    }
+
+
+    public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
+        DataType dataType = inferType(columnIndex);
+        boolean isNumeric = DataType.INTEGER.equals(dataType) || DataType.DECIMAL.equals(dataType);
+        if (!isNumeric)
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
+
+        return this.mapToDouble(new DoubleFunction<String>() {
+            @Override
+            public double call(String row) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(row);
+                String columnValue = recordAsArray[columnIndex];
+                if (!columnValue.trim().isEmpty())
+                    return Double.parseDouble(recordAsArray[columnIndex]);
+                return 0;
+            }
+        });
+    }
+
 }
