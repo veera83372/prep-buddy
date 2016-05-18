@@ -1,11 +1,12 @@
-package org.apache.prepbuddy.inferer;
+package org.apache.prepbuddy.typesystem.inferer;
 
-import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
+import org.apache.prepbuddy.typesystem.TypeAnalyzer;
 import org.junit.Test;
+
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TypeAnalyzerTest {
     @Test
