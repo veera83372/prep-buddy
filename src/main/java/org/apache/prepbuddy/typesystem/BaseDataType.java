@@ -6,10 +6,10 @@ import java.util.List;
 public enum BaseDataType implements Serializable {
 
     NUMERIC(DataType.INTEGER, DataType.DECIMAL, DataType.IP_ADDRESS),
-    STRING(DataType.CURRENCY, DataType.EMAIL, DataType.URL, DataType.SOCIAL_SECURITY_NUMBER,DataType.ZIP_CODE);
+    STRING(DataType.CURRENCY, DataType.EMAIL, DataType.URL, DataType.SOCIAL_SECURITY_NUMBER,DataType.ZIP_CODE,DataType.COUNTRY_CODE);
 
-    protected DataType[] subtypes;
-    private static final String PATTERN = "^(\\d*(\\.\\d+)?)+$";
+    private final DataType[] subtypes;
+    private final static String PATTERN = "^(\\d*(\\.\\d+)?)+$";
     BaseDataType(DataType... subtypes) {
         this.subtypes = subtypes;
     }
