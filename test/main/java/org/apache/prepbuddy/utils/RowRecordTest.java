@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.utils;
 
-import org.apache.prepbuddy.transformation.SplitByDelimiter;
+import org.apache.prepbuddy.transformations.SplitByDelimiter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;

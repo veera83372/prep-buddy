@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.transformation;
+package org.apache.prepbuddy.transformations;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;

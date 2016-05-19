@@ -1,5 +1,6 @@
 package org.apache.prepbuddy.groupingops;
 
+import org.apache.prepbuddy.exceptions.SystemException;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function2;
 import scala.Tuple2;
@@ -19,7 +20,7 @@ public class TextFacets implements Serializable {
         return facets.count();
     }
 
-    public List<Tuple2> highest() throws Exception {
+    public List<Tuple2> highest() {
         return  getPeakListFor(new Function2<Integer, Integer, Boolean>() {
             @Override
             public Boolean call(Integer currentTupleValue, Integer peakTupleValue) throws Exception {
@@ -37,23 +38,27 @@ public class TextFacets implements Serializable {
         });
     }
 
-    private List<Tuple2> getPeakListFor(Function2<Integer, Integer, Boolean> compareFunction) throws Exception {
+    private List<Tuple2> getPeakListFor(Function2<Integer, Integer, Boolean> compareFunction) {
         List<Tuple2<String, Integer>> allTuple = facets.collect();
         ArrayList<Tuple2> list = new ArrayList<>();
+        try {
+            Tuple2<String, Integer> peakTuple = allTuple.get(0);
+            list.add(peakTuple);
+            for (Tuple2<String, Integer> tuple : allTuple) {
+                if (compareFunction.call(tuple._2(), peakTuple._2())) {
+                    peakTuple = tuple;
+                    list.clear();
+                    list.add(peakTuple);
+                }
 
-        Tuple2<String, Integer> peakTuple = allTuple.get(0);
-        list.add(peakTuple);
-        for (Tuple2<String, Integer> tuple : allTuple) {
-            if (compareFunction.call(tuple._2(), peakTuple._2())) {
-                peakTuple = tuple;
-                list.clear();
-                list.add(peakTuple);
+                if (tuple._2().equals(peakTuple._2())  && tuple != peakTuple) {
+                    list.add(tuple);
+                }
+
             }
-
-            if (tuple._2().equals(peakTuple._2())  && tuple != peakTuple) {
-                list.add(tuple);
-            }
-
+        }
+        catch (Exception e){
+            throw new SystemException(e);
         }
         return list;
     }

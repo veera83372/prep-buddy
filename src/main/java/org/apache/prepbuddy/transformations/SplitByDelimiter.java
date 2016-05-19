@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.transformation;
+package org.apache.prepbuddy.transformations;
 
 
 public class SplitByDelimiter extends ColumnSplitter {

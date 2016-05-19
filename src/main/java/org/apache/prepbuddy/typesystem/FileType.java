@@ -44,4 +44,6 @@ public enum FileType {
 
 
     public abstract String appendDelimiter(String row);
+
+
 }

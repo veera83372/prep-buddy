@@ -1,4 +1,4 @@
-package org.apache.prepbuddy;
+package org.apache.prepbuddy.examples;
 
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;

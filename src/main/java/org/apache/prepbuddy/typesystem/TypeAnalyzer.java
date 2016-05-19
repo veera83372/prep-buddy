@@ -1,7 +1,4 @@
-package org.apache.prepbuddy.inferer;
-
-import org.apache.prepbuddy.typesystem.BaseDataType;
-import org.apache.prepbuddy.typesystem.DataType;
+package org.apache.prepbuddy.typesystem;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.apache.prepbuddy;
+package org.apache.prepbuddy.examples;
 
 import org.apache.prepbuddy.datacleansers.Deduplication;
 import org.apache.spark.SparkConf;

@@ -1,8 +1,5 @@
-package org.apache.prepbuddy.inferer;
+package org.apache.prepbuddy.typesystem;
 
-import org.apache.prepbuddy.typesystem.BaseDataType;
-import org.apache.prepbuddy.typesystem.DataType;
-import org.junit.Assert;
 import org.junit.Test;
 import java.util.Arrays;
 

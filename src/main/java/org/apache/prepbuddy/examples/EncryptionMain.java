@@ -1,4 +1,4 @@
-package org.apache.prepbuddy;
+package org.apache.prepbuddy.examples;
 
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.rdds.TransformableRDD;
