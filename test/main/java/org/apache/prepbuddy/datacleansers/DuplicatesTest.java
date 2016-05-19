@@ -1,6 +1,7 @@
 package org.apache.prepbuddy.datacleansers;
 
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.datacleansers.dedupe.DuplicateDetector;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class DuplicatesTest extends SparkTestCase {
                         "07784425582,07981267897,Incoming,474,Thu Sep 09 18:44:34 +0100 2010"
                 )
         );
-        Duplicates duplicates = new Duplicates();
+        DuplicateDetector duplicates = new DuplicateDetector();
         List results = duplicates.apply(csvInput).collect();
 
         assertEquals(3, results.size());
