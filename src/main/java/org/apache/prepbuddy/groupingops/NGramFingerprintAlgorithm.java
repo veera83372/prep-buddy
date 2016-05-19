@@ -2,7 +2,6 @@ package org.apache.prepbuddy.groupingops;
 
 import scala.Tuple2;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -21,10 +20,9 @@ public class NGramFingerprintAlgorithm extends FingerprintAlgorithm {
 
         TreeSet<String> set = getNGramSetOf(someString, nGram);
         StringBuilder buffer = new StringBuilder();
-        Iterator<String> iterator = set.iterator();
 
-        while (iterator.hasNext()) {
-            buffer.append(iterator.next());
+        for (String aSet : set) {
+            buffer.append(aSet);
         }
 
         return buffer.toString();

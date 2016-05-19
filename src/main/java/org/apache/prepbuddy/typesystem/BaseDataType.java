@@ -6,23 +6,24 @@ import java.util.List;
 public enum BaseDataType implements Serializable {
 
     NUMERIC(DataType.INTEGER, DataType.DECIMAL, DataType.IP_ADDRESS),
-    STRING(DataType.CURRENCY, DataType.EMAIL, DataType.URL, DataType.SOCIAL_SECURITY_NUMBER,DataType.ZIP_CODE);
+    STRING(DataType.CURRENCY, DataType.EMAIL, DataType.URL, DataType.SOCIAL_SECURITY_NUMBER, DataType.ZIP_CODE);
 
     protected DataType[] subtypes;
     private static final String PATTERN = "^(\\d*(\\.\\d+)?)+$";
+
     BaseDataType(DataType... subtypes) {
         this.subtypes = subtypes;
     }
 
     public static BaseDataType getBaseType(List<String> samples) {
-        if (matchesWith(PATTERN,samples))
+        if (matchesWith(PATTERN, samples))
             return NUMERIC;
         return STRING;
     }
 
     private static boolean matchesWith(String regex, List<String> samples) {
         int counter = 0;
-        int threshold = samples.size()/2;
+        int threshold = samples.size() / 2;
         for (String string : samples)
             if (string.matches(regex)) counter++;
         return (counter >= threshold);

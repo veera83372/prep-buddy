@@ -12,11 +12,11 @@ public class EncryptionKeyPair implements Serializable {
         paillierPrivateKey = PaillierPrivateKey.create(seed);
     }
 
-    public PaillierPrivateKey getPrivateKey(){
+    public PaillierPrivateKey getPrivateKey() {
         return paillierPrivateKey;
     }
 
-    public PaillierPublicKey getPublicKey(){
+    public PaillierPublicKey getPublicKey() {
         return paillierPrivateKey.getPublicKey();
     }
 }

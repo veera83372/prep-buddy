@@ -14,6 +14,6 @@ public class RowRecordTest {
         String[] actual = splitBySpace.apply("FirstName LastName,Something Else".split(","), 0);
         String[] expected = "FirstName,LastName,Something Else".split(",");
 
-        assertArrayEquals(expected,actual);
+        assertArrayEquals(expected, actual);
     }
 }

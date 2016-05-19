@@ -12,10 +12,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class FacetTest extends SparkTestCase{
+public class FacetTest extends SparkTestCase {
     @Test
     public void _TextFacetShouldGiveCountOfPair() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFacets = initialRDD.listFacets(0);
         assertEquals(2, textFacets.count());
@@ -23,7 +23,7 @@ public class FacetTest extends SparkTestCase{
 
     @Test
     public void _TextFacets_highestShouldGiveOneHighestPairIfOnlyOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFaceted = initialRDD.listFacets(0);
 
@@ -33,19 +33,19 @@ public class FacetTest extends SparkTestCase{
         assertEquals(1, listOfHighest.size());
 
         Tuple2 actual = listOfHighest.get(0);
-        assertEquals(2,textFaceted.count());
+        assertEquals(2, textFaceted.count());
         assertEquals(expected, actual);
     }
 
     @Test
     public void _TextFacet_highestShouldGiveListOfHighestPairsIfMoreThanOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","X,P"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E", "X,P"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFaceted = initialRDD.listFacets(0);
         List<Tuple2> listOfHighest = textFaceted.highest();
 
         assertEquals(2, listOfHighest.size());
-        assertEquals(2,textFaceted.count());
+        assertEquals(2, textFaceted.count());
 
         Tuple2<String, Integer> expected1 = new Tuple2<>("A", 3);
         Tuple2<String, Integer> expected2 = new Tuple2<>("X", 3);
@@ -53,9 +53,10 @@ public class FacetTest extends SparkTestCase{
         assertTrue(listOfHighest.contains(expected1));
         assertTrue(listOfHighest.contains(expected2));
     }
+
     @Test
     public void _TextFacet_lowestShouldGiveOnePairInListIfOnlyOneLowestPairIsFound() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFaceted = initialRDD.listFacets(0);
 
@@ -72,7 +73,7 @@ public class FacetTest extends SparkTestCase{
 
     @Test
     public void _TextFacet_lowestShouldGiveListOfLowestPairsIfMoreThanOnePairFound() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFaceted = initialRDD.listFacets(0);
 
@@ -87,13 +88,14 @@ public class FacetTest extends SparkTestCase{
         assertTrue(listOfLowest.contains(expected2));
 
     }
+
     @Test
     public void _TextFacet_getFacetsBetweenShouldGiveListOfFacetedPairInGivenRange() throws Exception {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z","A,Q","A,E","Q,E","Q,R","W,E"));
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TextFacets textFaceted = initialRDD.listFacets(0);
 
-        List<Tuple2> facetedPair = textFaceted.getFacetsBetween(2,3);
+        List<Tuple2> facetedPair = textFaceted.getFacetsBetween(2, 3);
 
         assertEquals(4, textFaceted.count());
         assertEquals(3, facetedPair.size());

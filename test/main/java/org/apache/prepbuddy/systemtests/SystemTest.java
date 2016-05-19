@@ -209,6 +209,7 @@ public class SystemTest extends SparkTestCase {
         TextFacets facets = splitByLengthRDD.listFacets(2);
         assertEquals(1, facets.highest().size());
     }
+
     @Test
     public void shouldBeAbleToInferTheTypeOfADataSetColumn() {
         JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(

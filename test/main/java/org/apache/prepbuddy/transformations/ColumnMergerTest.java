@@ -18,7 +18,6 @@ public class ColumnMergerTest {
         assertEquals("732,XYZ,MiddleName_LastName_FirstName", StringUtils.join(actualValue, ","));
     }
 
-
     @Test
     public void shouldMergeTheGivenColumnsAndPlaceTheResultAtTheEndOfTheRowByKeepingTheOriginalValue() {
         String[] inputRecord = "FirstName,LastName,732,MiddleName,One,Two,Three".split(",");

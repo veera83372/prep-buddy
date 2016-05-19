@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class DeduplicationMain {
     public static void main(String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             System.out.println("--> File Path Need To Be Specified with number of partition");
             System.exit(0);
         }
@@ -21,7 +21,7 @@ public class DeduplicationMain {
         JavaRDD<String> csvInput = sc.textFile(filePath);
 
         JavaRDD transformedRdd = new DuplicationHandler().deduplicate(csvInput);
-        transformedRdd.saveAsTextFile("s3://twi-analytics-sandbox/job-output/unique-"+new Date().toString());
+        transformedRdd.saveAsTextFile("s3://twi-analytics-sandbox/job-output/unique-" + new Date().toString());
 
         sc.close();
     }

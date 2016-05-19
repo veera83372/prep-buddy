@@ -37,7 +37,6 @@ public class ReadAvro {
         for (String s : collect) {
             System.out.println(s);
         }
-//        System.out.println("collect = " + collect);
         System.out.printf(flag.first());
 
     }
