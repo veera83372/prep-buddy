@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.transformations;
 
 
-public class SplitByDelimiter extends ColumnSplitter {
+public class SplitByDelimiter extends SplitPlan {
     private String separator;
     private Integer maxPartition;
 

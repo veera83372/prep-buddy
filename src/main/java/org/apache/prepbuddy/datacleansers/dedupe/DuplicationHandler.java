@@ -5,14 +5,14 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.serializer.JavaSerializer;
 import scala.Tuple2;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class DuplicationHandler extends JavaSerializer {
+public class DuplicationHandler implements Serializable {
 
     public JavaRDD deduplicate(JavaRDD inputRecords) {
         JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {

@@ -10,8 +10,8 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.transformations.ColumnMerger;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
+import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitByDelimiter;
 import org.apache.prepbuddy.transformations.SplitByFieldLength;
 import org.apache.prepbuddy.typesystem.DataType;
@@ -120,13 +120,13 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName,LastName,732,MiddleName"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), false, "_"));
+        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false, "_"));
         assertEquals("732,MiddleName_LastName_FirstName", joinedColumnRDD.first());
 
-        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), true, "_"));
+        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), true, "_"));
         assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", joinedColumnRDDByKeepingOriginals.first());
 
-        TransformableRDD joinedColumnWithDefault = initialRDD.mergeColumns(new ColumnMerger(Arrays.asList(3, 1, 0), false));
+        TransformableRDD joinedColumnWithDefault = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false));
         assertEquals("732,MiddleName LastName FirstName", joinedColumnWithDefault.first());
     }
 
@@ -197,7 +197,7 @@ public class SystemTest extends SparkTestCase {
         TransformableRDD splitBySpaceRDD = mappedFlagRDD.splitColumn(4, new SplitByDelimiter(" ", false));
         assertTrue(splitBySpaceRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon,Feb,11,07:18:23,+0000,1980,"));
 
-        TransformableRDD mergedRDD = splitBySpaceRDD.mergeColumns(new ColumnMerger(Arrays.asList(4, 5, 6, 9, 7, 8), false));
+        TransformableRDD mergedRDD = splitBySpaceRDD.mergeColumns(new MergePlan(Arrays.asList(4, 5, 6, 9, 7, 8), false));
         assertTrue(mergedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980 07:18:23 +0000"));
 
         TransformableRDD splitByLengthRDD = mergedRDD.splitColumn(5, new SplitByFieldLength(Arrays.asList(15, 9), false));
