@@ -5,7 +5,7 @@ import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.datacleansers.imputation.ApproxMeanSubstitution;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.datacleansers.imputation.MeanSubstitution;
-import org.apache.prepbuddy.datacleansers.imputation.MostOccerredSubstitute;
+import org.apache.prepbuddy.datacleansers.imputation.MostOccurredSubstitution;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -268,7 +268,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD imputed = initialRDD.impute(3, new MostOccerredSubstitute());
+        TransformableRDD imputed = initialRDD.impute(3, new MostOccurredSubstitution());
         List<String> listOfRecord = imputed.collect();
         String expected1 = "07641036117,07371326239,Incoming,31,Mon Feb 11 07:45:42 +0000 1980";
         assertTrue(listOfRecord.contains(expected1));
