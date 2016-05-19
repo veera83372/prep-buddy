@@ -1,7 +1,6 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.datacleansers.dedupe;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.datacleansers.dedupe.Deduplication;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
