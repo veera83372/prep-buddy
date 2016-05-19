@@ -3,7 +3,6 @@ package org.apache.prepbuddy;
 import org.apache.prepbuddy.datacleansers.ImputationStrategy;
 import org.apache.prepbuddy.datacleansers.MissingDataHandler;
 import org.apache.prepbuddy.datacleansers.RowPurger;
-import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -22,8 +21,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -210,7 +209,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        DataType type = initialRDD.inferType(1);
-        assertEquals(type, DataType.INTEGER);
+        DataType dataType = initialRDD.inferType(1);
+        assertEquals(dataType, DataType.INTEGER);
     }
 }

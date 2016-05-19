@@ -9,7 +9,6 @@ import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
-import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
@@ -181,7 +180,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public DataType inferType(final int columnIndex) {
-        List<String> rowSamples = this.takeSample(false, 5);
+        List<String> rowSamples = this.takeSample(false, 10);
         List<String> columnSamples = new LinkedList<>();
         for (String row : rowSamples) {
             String[] strings = fileType.parseRecord(row);
