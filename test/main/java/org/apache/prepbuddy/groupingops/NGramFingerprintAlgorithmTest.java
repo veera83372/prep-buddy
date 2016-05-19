@@ -9,13 +9,14 @@ public class NGramFingerprintAlgorithmTest extends SparkTestCase {
     @Test
     public void generateNGramFingerprintShouldGive_arispari_Of_ParisIn2Gram() {
         String parisNGramFingerPrint = new NGramFingerprintAlgorithm(2).generateNGramFingerprint("Paris");
-        String expected ="arispari";
+        String expected = "arispari";
         assertEquals(expected, parisNGramFingerPrint);
     }
+
     @Test
     public void generateNGramFingerprintShouldGive_aiprs_Of_ParisIn2Gram() {
         String parisNGramFingerPrint = new NGramFingerprintAlgorithm(1).generateNGramFingerprint("Paris");
-        String expected ="aiprs";
+        String expected = "aiprs";
         assertEquals(expected, parisNGramFingerPrint);
     }
 

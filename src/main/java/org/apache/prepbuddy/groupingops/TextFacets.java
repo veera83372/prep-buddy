@@ -21,7 +21,7 @@ public class TextFacets implements Serializable {
     }
 
     public List<Tuple2> highest() {
-        return  getPeakListFor(new Function2<Integer, Integer, Boolean>() {
+        return getPeakListFor(new Function2<Integer, Integer, Boolean>() {
             @Override
             public Boolean call(Integer currentTupleValue, Integer peakTupleValue) throws Exception {
                 return currentTupleValue > peakTupleValue;
@@ -30,7 +30,7 @@ public class TextFacets implements Serializable {
     }
 
     public List<Tuple2> lowest() throws Exception {
-        return  getPeakListFor(new Function2<Integer, Integer, Boolean>() {
+        return getPeakListFor(new Function2<Integer, Integer, Boolean>() {
             @Override
             public Boolean call(Integer currentTupleValue, Integer peakTupleValue) throws Exception {
                 return currentTupleValue < peakTupleValue;
@@ -51,13 +51,12 @@ public class TextFacets implements Serializable {
                     list.add(peakTuple);
                 }
 
-                if (tuple._2().equals(peakTuple._2())  && tuple != peakTuple) {
+                if (tuple._2().equals(peakTuple._2()) && tuple != peakTuple) {
                     list.add(tuple);
                 }
 
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new SystemException(e);
         }
         return list;

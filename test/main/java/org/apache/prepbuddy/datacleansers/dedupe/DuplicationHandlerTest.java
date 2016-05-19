@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.datacleansers.dedupe;
 
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class DeduplicationTest extends SparkTestCase {
+public class DuplicationHandlerTest extends SparkTestCase {
 
     @Test
     public void shouldGiveAnRddWithNoDuplicateRows() throws NoSuchAlgorithmException {
@@ -28,8 +28,8 @@ public class DeduplicationTest extends SparkTestCase {
                         "07784425582,07981267897,Incoming,474,Thu Sep 09 18:44:34 +0100 2010"
                 )
         );
-        Deduplication deduplication = new Deduplication();
-        List results = deduplication.apply(csvInput).collect();
+        DuplicationHandler duplicationHandler = new DuplicationHandler();
+        List results = duplicationHandler.deduplicate(csvInput).collect();
 
         assertEquals(5, results.size());
     }
@@ -48,8 +48,8 @@ public class DeduplicationTest extends SparkTestCase {
                         "07784425582,07981267897，传入，474，周四9月9日18时44分34秒+01002010"
                 )
         );
-        Deduplication deduplication = new Deduplication();
-        List result = deduplication.apply(csvInput).collect();
+        DuplicationHandler duplicationHandler = new DuplicationHandler();
+        List result = duplicationHandler.deduplicate(csvInput).collect();
 
         assertEquals(3, result.size());
     }

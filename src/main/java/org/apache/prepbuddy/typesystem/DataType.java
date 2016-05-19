@@ -10,44 +10,44 @@ public enum DataType implements Serializable {
     INTEGER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.INT_PATTERN,sampleData);
+            return matchesWith(this.INT_PATTERN, sampleData);
         }
     }, URL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.URL_PATTERN,sampleData);
+            return matchesWith(this.URL_PATTERN, sampleData);
         }
     }, EMAIL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.EMAIL_PATTERN,sampleData);
+            return matchesWith(this.EMAIL_PATTERN, sampleData);
         }
     }, CURRENCY {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.CURRENCY_PATTERN,sampleData);
+            return matchesWith(this.CURRENCY_PATTERN, sampleData);
         }
     }, DECIMAL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.DECIMAL_PATTERN,sampleData);
+            return matchesWith(this.DECIMAL_PATTERN, sampleData);
         }
-    },SOCIAL_SECURITY_NUMBER{
+    }, SOCIAL_SECURITY_NUMBER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.SSN_PATTERN,sampleData);
+            return matchesWith(this.SSN_PATTERN, sampleData);
         }
     }, IP_ADDRESS {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.IP_PATTERN,sampleData);
+            return matchesWith(this.IP_PATTERN, sampleData);
         }
-    },ZIP_CODE{
+    }, ZIP_CODE {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            return matchesWith(this.ZIP_PATTERN,sampleData);
+            return matchesWith(this.ZIP_PATTERN, sampleData);
         }
-    },ALPHANUMERIC_STRING{
+    }, ALPHANUMERIC_STRING {
         @Override
         public boolean isOfType(List<String> sampleData) {
             return false;
@@ -78,7 +78,7 @@ public enum DataType implements Serializable {
 
     public boolean matchesWith(String regex, List<String> samples) {
         int counter = 0;
-        int threshold = samples.size()/2;
+        int threshold = samples.size() / 2;
         for (String string : samples)
             if (string.matches(regex)) {
                 counter++;

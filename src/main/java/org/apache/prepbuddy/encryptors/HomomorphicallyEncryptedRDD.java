@@ -11,11 +11,11 @@ import org.apache.spark.rdd.RDD;
 
 import java.math.BigInteger;
 
-public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
+public class HomomorphicallyEncryptedRDD extends JavaRDD<String> {
     private final EncryptionKeyPair keyPair;
     private final FileType fileType;
 
-    public HomomorphicallyEncryptedRDD(RDD rdd,EncryptionKeyPair keyPair, FileType fileType) {
+    public HomomorphicallyEncryptedRDD(RDD rdd, EncryptionKeyPair keyPair, FileType fileType) {
         super(rdd, rdd.elementClassTag());
         this.keyPair = keyPair;
         this.fileType = fileType;
@@ -27,7 +27,7 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
             @Override
             public String call(String row) throws Exception {
                 String[] values = fileType.parseRecord(row);
-                EncryptedNumber encryptedNumber = EncryptedNumber.create(values[columnIndex],keyPair.getPrivateKey());
+                EncryptedNumber encryptedNumber = EncryptedNumber.create(values[columnIndex], keyPair.getPrivateKey());
                 BigInteger bigInteger = privateKey.decrypt(encryptedNumber).decodeApproximateBigInteger();
                 values[columnIndex] = bigInteger.toString();
                 return fileType.join(values);
@@ -56,6 +56,6 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String>  {
     public double average(int columnIndex) {
         BigInteger sum = sum(columnIndex);
         long count = rdd().count();
-        return  sum.doubleValue() / count;
+        return sum.doubleValue() / count;
     }
 }

@@ -12,7 +12,6 @@ import java.io.Serializable;
 public class SparkTestCase implements Serializable {
     protected transient JavaSparkContext javaSparkContext;
 
-
     @Before
     public void setUp() throws Exception {
         SparkConf sparkConf = new SparkConf().setAppName(getClass().getName()).setMaster("local");

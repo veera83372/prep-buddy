@@ -2,9 +2,8 @@ package org.apache.prepbuddy.rdds;
 
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
-import org.apache.prepbuddy.datacleansers.Deduplication;
-import org.apache.prepbuddy.datacleansers.Duplicates;
 import org.apache.prepbuddy.datacleansers.RowPurger;
+import org.apache.prepbuddy.datacleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.exceptions.ApplicationException;
@@ -13,9 +12,9 @@ import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
-import org.apache.prepbuddy.transformations.ColumnMerger;
-import org.apache.prepbuddy.transformations.ColumnSplitter;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
+import org.apache.prepbuddy.transformations.MergePlan;
+import org.apache.prepbuddy.transformations.SplitPlan;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
@@ -63,12 +62,12 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public TransformableRDD deduplicate() {
-        JavaRDD transformed = new Deduplication().apply(this);
+        JavaRDD transformed = new DuplicationHandler().deduplicate(this);
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD duplicates() {
-        JavaRDD transformed = new Duplicates().apply(this);
+    public TransformableRDD detectDuplicates() {
+        JavaRDD transformed = new DuplicationHandler().duplicates(this);
         return new TransformableRDD(transformed);
     }
 
@@ -117,24 +116,24 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    public TransformableRDD splitColumn(final int columnIndex, final ColumnSplitter columnSplitter) {
+    public TransformableRDD splitColumn(final int columnIndex, final SplitPlan splitPlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = columnSplitter.apply(recordAsArray, columnIndex);
+                String[] transformedRow = splitPlan.apply(recordAsArray, columnIndex);
                 return fileType.join(transformedRow);
             }
         });
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD mergeColumns(final ColumnMerger columnMerger) {
+    public TransformableRDD mergeColumns(final MergePlan mergePlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = columnMerger.apply(recordAsArray);
+                String[] transformedRow = mergePlan.apply(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });

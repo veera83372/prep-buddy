@@ -2,10 +2,10 @@ package org.apache.prepbuddy.transformations;
 
 import java.io.Serializable;
 
-public abstract class ColumnSplitter implements Serializable{
+public abstract class SplitPlan implements Serializable {
     private boolean retainColumn;
 
-    public ColumnSplitter(boolean retainColumn) {
+    public SplitPlan(boolean retainColumn) {
         this.retainColumn = retainColumn;
     }
 
