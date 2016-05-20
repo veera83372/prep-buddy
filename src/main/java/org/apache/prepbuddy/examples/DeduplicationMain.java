@@ -20,7 +20,7 @@ public class DeduplicationMain {
         String filePath = args[0];
         JavaRDD<String> csvInput = sc.textFile(filePath);
 
-        JavaRDD transformedRdd = new DuplicationHandler().deduplicate(csvInput);
+        JavaRDD transformedRdd = DuplicationHandler.deduplicate(csvInput);
         transformedRdd.saveAsTextFile("s3://twi-analytics-sandbox/job-output/unique-" + new Date().toString());
 
         sc.close();
