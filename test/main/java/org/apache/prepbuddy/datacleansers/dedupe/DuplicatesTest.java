@@ -28,7 +28,7 @@ public class DuplicatesTest extends SparkTestCase {
                 )
         );
         DuplicationHandler duplicates = new DuplicationHandler();
-        List results = duplicates.duplicates(csvInput).collect();
+        List results = duplicates.detectDuplicates(csvInput).collect();
 
         assertEquals(3, results.size());
     }

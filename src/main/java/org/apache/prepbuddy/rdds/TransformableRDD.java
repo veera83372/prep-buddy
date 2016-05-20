@@ -67,7 +67,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD detectDuplicates() {
-        JavaRDD transformed = new DuplicationHandler().duplicates(this);
+        JavaRDD transformed = new DuplicationHandler().detectDuplicates(this);
         return new TransformableRDD(transformed);
     }
 
@@ -210,7 +210,6 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         });
         return new TransformableRDD(mapped, fileType);
-
     }
 
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {

@@ -32,7 +32,7 @@ public class DuplicationHandler implements Serializable {
         return uniqueRecordsWithKeys.values();
     }
 
-    public JavaRDD duplicates(JavaRDD inputRecords) {
+    public JavaRDD detectDuplicates(JavaRDD inputRecords) {
         JavaPairRDD fingerprintedRDD = inputRecords.mapToPair(new PairFunction<String, Long, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<Long, Tuple2<String, Integer>> call(String record) throws Exception {
