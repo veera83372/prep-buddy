@@ -85,7 +85,7 @@ public class TransformableRDDTest extends SparkTestCase {
         Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
 
         List<Cluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(1);
-        TransformableRDD afterMergeCluster = initialRDD.mergeCluster(clustersWithSizeGreaterThanOne.get(0), "Finger print", 0);
+        TransformableRDD afterMergeCluster = initialRDD.replaceValues(clustersWithSizeGreaterThanOne.get(0), "Finger print", 0);
 
         List<String> listOfValues = afterMergeCluster.collect();
 
