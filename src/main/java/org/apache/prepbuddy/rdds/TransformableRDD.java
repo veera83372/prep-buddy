@@ -198,7 +198,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
-    public TransformableRDD mergeCluster(final Cluster cluster, final String newValue, final int columnIndex) {
+    public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
