@@ -7,7 +7,7 @@ import scala.Tuple2;
 
 import java.util.List;
 
-public class MostOccurredSubstitution implements ImputationStrategy {
+public class ModeSubstitution implements ImputationStrategy {
     private  Tuple2 highest;
     @Override
     public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {

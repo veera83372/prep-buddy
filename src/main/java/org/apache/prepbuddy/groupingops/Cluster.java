@@ -5,6 +5,7 @@ import scala.Tuple2;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 public class Cluster implements Serializable {
 
     private final String key;
