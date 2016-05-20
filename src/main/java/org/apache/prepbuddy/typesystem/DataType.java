@@ -59,14 +59,6 @@ public enum DataType implements Serializable {
         }
     };
 
-     boolean isCountry(List<String> sampleData) {
-        String[] listOfCountry = Locale.getISOCountries();
-        Set<String> sample = new TreeSet<>(sampleData);
-        int size = listOfCountry.length;
-        for (String country : listOfCountry) sample.add(country);
-        return (sample.size()==size);
-    }
-
     final String INT_PATTERN = "^\\d+$";
     final String DECIMAL_PATTERN = "^\\.\\d+|\\d+\\.\\d+$";
     final String URL_PATTERN = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$";
@@ -75,6 +67,14 @@ public enum DataType implements Serializable {
     final String SSN_PATTERN = "^(\\d{3}-\\d{2}-\\d{4})$";
     final String IP_PATTERN = "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     final String ZIP_PATTERN = "^[0-9]{5}(?:-[0-9]{4})?$";
+
+    boolean isCountry(List<String> sampleData) {
+        String[] listOfCountry = Locale.getISOCountries();
+        Set<String> sample = new TreeSet<>(sampleData);
+        int size = listOfCountry.length;
+        for (String country : listOfCountry) sample.add(country);
+        return (sample.size() == size);
+    }
 
     public boolean matchesWith(String regex, List<String> samples) {
         int counter = 0;

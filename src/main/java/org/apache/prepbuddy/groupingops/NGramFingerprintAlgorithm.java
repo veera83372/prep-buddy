@@ -13,6 +13,15 @@ public class NGramFingerprintAlgorithm extends FingerprintAlgorithm {
         this.nGram = nGram;
     }
 
+    private static TreeSet<String> getNGramSetOf(String someString, int nGram) {
+        TreeSet<String> set = new TreeSet<>();
+        char[] chars = someString.toCharArray();
+        for (int i = 0; i + nGram <= chars.length; i++) {
+            set.add(new String(chars, i, nGram));
+        }
+        return set;
+    }
+
     public String generateNGramFingerprint(String someString) {
         someString = someString.trim();
         someString = someString.toLowerCase();
@@ -26,15 +35,6 @@ public class NGramFingerprintAlgorithm extends FingerprintAlgorithm {
         }
 
         return buffer.toString();
-    }
-
-    private static TreeSet<String> getNGramSetOf(String someString, int nGram) {
-        TreeSet<String> set = new TreeSet<>();
-        char[] chars = someString.toCharArray();
-        for (int i = 0; i + nGram <= chars.length; i++) {
-            set.add(new String(chars, i, nGram));
-        }
-        return set;
     }
 
     @Override
