@@ -7,7 +7,7 @@ import org.apache.spark.api.java.function.Function;
 
 import java.io.Serializable;
 
-public class RowPurger implements Serializable{
+public class RowPurger implements Serializable {
 
     private final Predicate condition;
 
@@ -19,7 +19,7 @@ public class RowPurger implements Serializable{
         return dataset.filter(new Function<String, Boolean>() {
             @Override
             public Boolean call(String record) throws Exception {
-                return !condition.evaluate(new RowRecord(type.parseRecord(record)) );
+                return !condition.evaluate(new RowRecord(type.parseRecord(record)));
             }
         });
     }

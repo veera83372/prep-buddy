@@ -1,10 +1,12 @@
 package org.apache.prepbuddy.transformations;
 
+import scala.Serializable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ColumnMerger implements TransformationOperation {
+public class ColumnMerger implements Serializable{
     private List<Integer> combinationOrder;
     private String separator;
     private boolean retainColumns;

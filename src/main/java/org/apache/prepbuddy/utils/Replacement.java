@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.utils;
 
-public class Replacement<O, N> extends Pair<O,N> {
+public class Replacement<O, N> extends Pair<O, N> {
 
     public Replacement(O oldValue, N newValue) {
         super(oldValue, newValue);
@@ -15,8 +15,8 @@ public class Replacement<O, N> extends Pair<O,N> {
     }
 
     public String replace(O currentValue) {
-       if(matches(currentValue))
-           return replacementValue();
+        if (matches(currentValue))
+            return replacementValue();
         return currentValue.toString();
     }
 }
