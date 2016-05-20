@@ -78,4 +78,10 @@ public class TypeAnalyzerTest {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IND", "USA", "CHN"));
         assertEquals(DataType.COUNTRY_CODE_3_CHARACTER, typeAnalyzer.getType());
     }
+
+    @Test
+    public void shouldBeAbleToGiveTypeAsCountryName() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("India", "China", "South Africa", "United States"));
+        assertEquals(DataType.COUNTRY_NAME, typeAnalyzer.getType());
+    }
 }

@@ -69,27 +69,51 @@ public enum DataType implements Serializable {
     COUNTRY_CODE_2_CHARACTER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            String[] char2countryCodes = Locale.getISOCountries();
-            Set<String> sample = new TreeSet<>(sampleData);
-            int size = char2countryCodes.length;
-            for (String country : char2countryCodes) sample.add(country);
-            return (sample.size() == size);
+            TreeSet<String> char2countryCodes = new TreeSet<>(Arrays.asList(Locale.getISOCountries()));
+            return predicate(sampleData, char2countryCodes);
         }
-    }, COUNTRY_CODE_3_CHARACTER {
+    },
+    COUNTRY_CODE_3_CHARACTER {
         @Override
         public boolean isOfType(List<String> sampleData) {
+            Set<String> countryCodes = getISO3Codes();
+            return predicate(sampleData, countryCodes);
+        }
+
+        private Set<String> getISO3Codes() {
             String[] isoCountries = Locale.getISOCountries();
-            ArrayList<String> countryCodes = new ArrayList<>();
+            TreeSet<String> countryCodes = new TreeSet<>();
             for (String country : isoCountries) {
                 Locale locale = new Locale("", country);
                 countryCodes.add(locale.getISO3Country());
             }
-            Set<String> sample = new TreeSet<>(sampleData);
-            int size = countryCodes.size();
-            for (String country : countryCodes) sample.add(country);
-            return (sample.size() == size);
+            return countryCodes;
+        }
+    },
+    COUNTRY_NAME {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            Set<String> countryNames = getCountryNames();
+            return predicate(sampleData, countryNames);
+        }
+
+        private Set<String> getCountryNames() {
+            String[] isoCountries = Locale.getISOCountries();
+            TreeSet<String> countryCodes = new TreeSet<>();
+            for (String country : isoCountries) {
+                Locale locale = new Locale("", country);
+                countryCodes.add(locale.getDisplayCountry());
+            }
+            return countryCodes;
         }
     };
+
+    protected boolean predicate(List<String> sampleData, Set<String> orignalData) {
+        Set<String> sample = new TreeSet<>(sampleData);
+        int size = orignalData.size();
+        for (String element : orignalData) sample.add(element);
+        return (sample.size() == size);
+    }
 
     public boolean matchesWith(String regex, List<String> samples) {
         int counter = 0;
