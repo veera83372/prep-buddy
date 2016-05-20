@@ -121,7 +121,7 @@ public class TransformableRDD extends JavaRDD<String> {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = splitPlan.apply(recordAsArray, columnIndex);
+                String[] transformedRow = splitPlan.splitColumn(recordAsArray, columnIndex);
                 return fileType.join(transformedRow);
             }
         });
