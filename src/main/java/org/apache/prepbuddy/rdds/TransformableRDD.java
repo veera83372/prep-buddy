@@ -116,12 +116,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    public TransformableRDD splitColumn(final int columnIndex, final SplitPlan splitPlan) {
+    public TransformableRDD splitColumn(final SplitPlan splitPlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = splitPlan.apply(recordAsArray, columnIndex);
+                String[] transformedRow = splitPlan.splitColumn(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });
@@ -250,4 +250,18 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int xColumnIndex) {
+        return this.mapToDouble(new DoubleFunction<String>() {
+            @Override
+            public double call(String row) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(row);
+                String columnValue = recordAsArray[columnIndex];
+                String otherColumnValue = recordAsArray[xColumnIndex];
+                if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
+                    return 0;
+                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
+
+            }
+        });
+    }
 }
