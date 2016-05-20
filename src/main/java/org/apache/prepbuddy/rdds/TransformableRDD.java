@@ -116,12 +116,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    public TransformableRDD splitColumn(final int columnIndex, final SplitPlan splitPlan) {
+    public TransformableRDD splitColumn(final SplitPlan splitPlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = splitPlan.splitColumn(recordAsArray, columnIndex);
+                String[] transformedRow = splitPlan.splitColumn(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });

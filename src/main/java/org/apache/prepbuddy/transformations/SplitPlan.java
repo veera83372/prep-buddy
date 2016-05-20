@@ -6,30 +6,33 @@ import java.util.List;
 
 public class SplitPlan implements Serializable {
     private List<Integer> fieldLengths = null;
+    private int columnIndex;
     private String separator;
     private Integer maxNumberOfSplit;
     private boolean retainColumn;
 
-    public SplitPlan(String separator, Integer maxNumberOfSplit, boolean retainColumn) {
+    public SplitPlan(int columnIndex, String separator, Integer maxNumberOfSplit, boolean retainColumn) {
+        this.columnIndex = columnIndex;
         this.separator = separator;
         this.retainColumn = retainColumn;
         this.maxNumberOfSplit = maxNumberOfSplit;
     }
 
-    public SplitPlan(String separator, boolean retainColumn) {
-        this(separator, null, retainColumn);
+    public SplitPlan(int columnIndex, String separator, boolean retainColumn) {
+        this(columnIndex, separator, null, retainColumn);
     }
 
-    public SplitPlan(List<Integer> fieldLengths, boolean retainColumn) {
+    public SplitPlan(int columnIndex, List<Integer> fieldLengths, boolean retainColumn) {
+        this.columnIndex = columnIndex;
         this.fieldLengths = fieldLengths;
         this.retainColumn = retainColumn;
     }
 
-    public String[] splitColumn(String[] record, int columnIndex) {
+    public String[] splitColumn(String[] record) {
         String[] splittedColumn = splitColumnValue(record[columnIndex]);
         if (retainColumn)
-            return arrangeRecordByKeepingColumn(splittedColumn, record, columnIndex);
-        return arrangeRecordByRemovingColumn(splittedColumn, record, columnIndex);
+            return arrangeRecordByKeepingColumn(splittedColumn, record);
+        return arrangeRecordByRemovingColumn(splittedColumn, record);
     }
 
     private String[] splitColumnValue(String record) {
@@ -60,7 +63,7 @@ public class SplitPlan implements Serializable {
         return columnValue.split(separator, maxNumberOfSplit);
     }
 
-    private String[] arrangeRecordByKeepingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
+    private String[] arrangeRecordByKeepingColumn(String[] splittedColumn, String[] oldRecord) {
         int newRecordLength = splittedColumn.length + oldRecord.length;
         String[] resultHolder = new String[newRecordLength];
 
@@ -77,7 +80,7 @@ public class SplitPlan implements Serializable {
         return resultHolder;
     }
 
-    private String[] arrangeRecordByRemovingColumn(String[] splittedColumn, String[] oldRecord, int columnIndex) {
+    private String[] arrangeRecordByRemovingColumn(String[] splittedColumn, String[] oldRecord) {
         int newRecordLength = splittedColumn.length + oldRecord.length - 1;
         String[] resultHolder = new String[newRecordLength];
 

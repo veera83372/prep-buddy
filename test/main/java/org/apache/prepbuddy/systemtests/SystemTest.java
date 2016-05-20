@@ -98,16 +98,16 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName LastName MiddleName,850"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD splitColumnRDD = initialRDD.splitColumn(0, new SplitPlan(" ", false));
+        TransformableRDD splitColumnRDD = initialRDD.splitColumn(new SplitPlan(0, " ", false));
         assertEquals("FirstName,LastName,MiddleName,850", splitColumnRDD.first());
 
-        TransformableRDD splitColumnRDDByKeepingColumn = initialRDD.splitColumn(0, new SplitPlan(" ", true));
+        TransformableRDD splitColumnRDDByKeepingColumn = initialRDD.splitColumn(new SplitPlan(0, " ", true));
         assertEquals("FirstName LastName MiddleName,FirstName,LastName,MiddleName,850", splitColumnRDDByKeepingColumn.first());
 
-        TransformableRDD splitColumnByLengthRDD = initialRDD.splitColumn(0, new SplitPlan(Arrays.asList(9, 9), false));
+        TransformableRDD splitColumnByLengthRDD = initialRDD.splitColumn(new SplitPlan(0, Arrays.asList(9, 9), false));
         assertEquals("FirstName, LastName,850", splitColumnByLengthRDD.first());
 
-        TransformableRDD splitColumnByLengthRDDByKeepingColumn = initialRDD.splitColumn(0, new SplitPlan(Arrays.asList(9, 9), true));
+        TransformableRDD splitColumnByLengthRDDByKeepingColumn = initialRDD.splitColumn(new SplitPlan(0, Arrays.asList(9, 9), true));
         assertEquals("FirstName LastName MiddleName,FirstName, LastName,850", splitColumnByLengthRDDByKeepingColumn.first());
     }
 
@@ -190,13 +190,13 @@ public class SystemTest extends SparkTestCase {
         assertTrue(mappedFlagRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon Feb 11 07:18:23 +0000 1980,"));
 
 
-        TransformableRDD splitBySpaceRDD = mappedFlagRDD.splitColumn(4, new SplitPlan(" ", false));
+        TransformableRDD splitBySpaceRDD = mappedFlagRDD.splitColumn(new SplitPlan(4, " ", false));
         assertTrue(splitBySpaceRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon,Feb,11,07:18:23,+0000,1980,"));
 
         TransformableRDD mergedRDD = splitBySpaceRDD.mergeColumns(new MergePlan(Arrays.asList(4, 5, 6, 9, 7, 8), false));
         assertTrue(mergedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980 07:18:23 +0000"));
 
-        TransformableRDD splitByLengthRDD = mergedRDD.splitColumn(5, new SplitPlan(Arrays.asList(15, 9), false));
+        TransformableRDD splitByLengthRDD = mergedRDD.splitColumn(new SplitPlan(5, Arrays.asList(15, 9), false));
         assertTrue(splitByLengthRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,,Mon Feb 11 1980, 07:18:23"));
 
         Clusters clustersBySimpleFingerprint = splitByLengthRDD.clusters(2, new SimpleFingerprintAlgorithm());
