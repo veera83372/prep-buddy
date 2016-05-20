@@ -67,7 +67,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD detectDuplicates() {
-        JavaRDD transformed = new DuplicationHandler().duplicates(this);
+        JavaRDD transformed = new DuplicationHandler().detectDuplicates(this);
         return new TransformableRDD(transformed);
     }
 
@@ -116,12 +116,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
-    public TransformableRDD splitColumn(final int columnIndex, final SplitPlan splitPlan) {
+    public TransformableRDD splitColumn(final SplitPlan splitPlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(record);
-                String[] transformedRow = splitPlan.apply(recordAsArray, columnIndex);
+                String[] transformedRow = splitPlan.splitColumn(recordAsArray);
                 return fileType.join(transformedRow);
             }
         });
@@ -198,7 +198,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
-    public TransformableRDD mergeCluster(final Cluster cluster, final String newValue, final int columnIndex) {
+    public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -210,7 +210,6 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         });
         return new TransformableRDD(mapped, fileType);
-
     }
 
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
