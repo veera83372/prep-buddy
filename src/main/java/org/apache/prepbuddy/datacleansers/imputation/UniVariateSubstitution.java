@@ -7,13 +7,13 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 
 import java.text.DecimalFormat;
 
-public class RegressionSubstitution implements ImputationStrategy {
+public class UniVariateSubstitution implements ImputationStrategy {
 
     private int _XColumnIndex;
     private double slop;
     private double intercept;
 
-    public RegressionSubstitution(int _XColumnIndex) {
+    public UniVariateSubstitution(int _XColumnIndex) {
         this._XColumnIndex = _XColumnIndex;
     }
 
