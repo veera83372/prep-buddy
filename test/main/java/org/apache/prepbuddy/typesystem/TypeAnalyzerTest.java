@@ -81,7 +81,13 @@ public class TypeAnalyzerTest {
 
     @Test
     public void shouldBeAbleToGiveTypeAsCountryName() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("India", "China", "South Africa", "United States"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("India", "China", "South Africa", "United States", "Uganda"));
         assertEquals(DataType.COUNTRY_NAME, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToGIveTypeAsPhoneNumber() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("6723459812", "9992345678", "4576893245", "02345678901", "03465789012"));
+        assertEquals(DataType.MOBILE_NUMBER, typeAnalyzer.getType());
     }
 }

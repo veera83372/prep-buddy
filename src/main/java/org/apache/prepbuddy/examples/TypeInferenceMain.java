@@ -22,7 +22,7 @@ public class TypeInferenceMain implements Serializable {
         JavaRDD<String> csvInput = sc.textFile(filePath);
 
         TransformableRDD transformableRDD = new TransformableRDD(csvInput);
-        DataType dataType = transformableRDD.inferType(5);
+        DataType dataType = transformableRDD.inferType(0);
         System.out.println("dataType = " + dataType);
 
         sc.close();

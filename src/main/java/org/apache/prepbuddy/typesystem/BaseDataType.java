@@ -6,9 +6,10 @@ import java.util.List;
 public enum BaseDataType implements Serializable {
 
     NUMERIC(DataType.ZIP_CODE_US,
+            DataType.MOBILE_NUMBER,
+            DataType.IP_ADDRESS,
             DataType.INTEGER,
-            DataType.DECIMAL,
-            DataType.IP_ADDRESS
+            DataType.DECIMAL
     ),
     STRING(DataType.CURRENCY,
             DataType.EMAIL,

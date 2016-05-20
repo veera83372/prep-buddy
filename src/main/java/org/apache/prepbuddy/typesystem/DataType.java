@@ -106,12 +106,19 @@ public enum DataType implements Serializable {
             }
             return countryCodes;
         }
+    }, MOBILE_NUMBER {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            final String PHONE_PATTERN = "^0?\\d{10}$";
+            return matchesWith(PHONE_PATTERN, sampleData);
+        }
     };
 
-    protected boolean predicate(List<String> sampleData, Set<String> orignalData) {
-        Set<String> sample = new TreeSet<>(sampleData);
-        int size = orignalData.size();
-        for (String element : orignalData) sample.add(element);
+    protected boolean predicate(List<String> sampleData, Set<String> originalData) {
+        Set<String> sample = new TreeSet<>();
+        for (String element : sampleData) sample.add(element.toLowerCase());
+        int size = originalData.size();
+        for (String element : originalData) sample.add(element.toLowerCase());
         return (sample.size() == size);
     }
 
