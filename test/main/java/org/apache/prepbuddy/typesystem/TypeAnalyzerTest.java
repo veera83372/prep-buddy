@@ -63,13 +63,31 @@ public class TypeAnalyzerTest {
 
     @Test
     public void shouldBeAbleToGiveTheTypeAsZIPCode() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("12345-2345", "23456-1234"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("12345", "23456-1234", "12345", "34567"));
         assertEquals(DataType.ZIP_CODE_US, typeAnalyzer.getType());
     }
 
     @Test
-    public void shouldBeAbleToGiveTheTypeAsCountry() {
+    public void shouldBeAbleToGiveTheTypeAsCountryCode2CHARACTER() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IN","IR"));
         assertEquals(DataType.COUNTRY_CODE_2_CHARACTER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToGiveTypeAsCountryCode3CHARACTER() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IND", "USA", "CHN"));
+        assertEquals(DataType.COUNTRY_CODE_3_CHARACTER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToGiveTypeAsCountryName() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("India", "China", "South Africa", "United States", "Uganda"));
+        assertEquals(DataType.COUNTRY_NAME, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToGIveTypeAsPhoneNumber() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("6723459812", "9992345678", "4576893245", "02345678901", "03465789012"));
+        assertEquals(DataType.MOBILE_NUMBER, typeAnalyzer.getType());
     }
 }

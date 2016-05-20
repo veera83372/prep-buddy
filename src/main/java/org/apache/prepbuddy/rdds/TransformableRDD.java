@@ -166,7 +166,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public DataType inferType(final int columnIndex) {
-        List<String> rowSamples = this.takeSample(false, 10);
+        List<String> rowSamples = this.takeSample(false, 100);
         List<String> columnSamples = new LinkedList<>();
         for (String row : rowSamples) {
             String[] strings = fileType.parseRecord(row);

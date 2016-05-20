@@ -5,8 +5,21 @@ import java.util.List;
 
 public enum BaseDataType implements Serializable {
 
-    NUMERIC(DataType.INTEGER, DataType.DECIMAL, DataType.IP_ADDRESS),
-    STRING(DataType.CURRENCY, DataType.EMAIL, DataType.URL, DataType.SOCIAL_SECURITY_NUMBER, DataType.ZIP_CODE_US, DataType.COUNTRY_CODE_2_CHARACTER);
+    NUMERIC(DataType.ZIP_CODE_US,
+            DataType.MOBILE_NUMBER,
+            DataType.IP_ADDRESS,
+            DataType.INTEGER,
+            DataType.DECIMAL
+    ),
+    STRING(DataType.CURRENCY,
+            DataType.EMAIL,
+            DataType.URL,
+            DataType.SOCIAL_SECURITY_NUMBER,
+            DataType.ZIP_CODE_US,
+            DataType.COUNTRY_CODE_2_CHARACTER,
+            DataType.COUNTRY_CODE_3_CHARACTER,
+            DataType.COUNTRY_NAME
+    );
 
     private final static String PATTERN = "^(\\d*(\\.\\d+)?)+$";
     private final DataType[] subtypes;

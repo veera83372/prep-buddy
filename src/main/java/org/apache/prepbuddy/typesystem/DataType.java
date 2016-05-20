@@ -1,10 +1,7 @@
 package org.apache.prepbuddy.typesystem;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public enum DataType implements Serializable {
     INTEGER {
@@ -72,13 +69,58 @@ public enum DataType implements Serializable {
     COUNTRY_CODE_2_CHARACTER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            String[] char2countryCodes = Locale.getISOCountries();
-            Set<String> sample = new TreeSet<>(sampleData);
-            int size = char2countryCodes.length;
-            for (String country : char2countryCodes) sample.add(country);
-            return (sample.size() == size);
+            TreeSet<String> char2countryCodes = new TreeSet<>(Arrays.asList(Locale.getISOCountries()));
+            return predicate(sampleData, char2countryCodes);
+        }
+    },
+    COUNTRY_CODE_3_CHARACTER {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            Set<String> countryCodes = getISO3Codes();
+            return predicate(sampleData, countryCodes);
+        }
+
+        private Set<String> getISO3Codes() {
+            String[] isoCountries = Locale.getISOCountries();
+            TreeSet<String> countryCodes = new TreeSet<>();
+            for (String country : isoCountries) {
+                Locale locale = new Locale("", country);
+                countryCodes.add(locale.getISO3Country());
+            }
+            return countryCodes;
+        }
+    },
+    COUNTRY_NAME {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            Set<String> countryNames = getCountryNames();
+            return predicate(sampleData, countryNames);
+        }
+
+        private Set<String> getCountryNames() {
+            String[] isoCountries = Locale.getISOCountries();
+            TreeSet<String> countryCodes = new TreeSet<>();
+            for (String country : isoCountries) {
+                Locale locale = new Locale("", country);
+                countryCodes.add(locale.getDisplayCountry());
+            }
+            return countryCodes;
+        }
+    }, MOBILE_NUMBER {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            final String PHONE_PATTERN = "^0?\\d{10}$";
+            return matchesWith(PHONE_PATTERN, sampleData);
         }
     };
+
+    protected boolean predicate(List<String> sampleData, Set<String> originalData) {
+        Set<String> sample = new TreeSet<>();
+        for (String element : sampleData) sample.add(element.toLowerCase());
+        int size = originalData.size();
+        for (String element : originalData) sample.add(element.toLowerCase());
+        return (sample.size() == size);
+    }
 
     public boolean matchesWith(String regex, List<String> samples) {
         int counter = 0;
