@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ColumnMerger implements Serializable{
+public class MergePlan implements Serializable {
     private List<Integer> combinationOrder;
     private String separator;
     private boolean retainColumns;
 
-    public ColumnMerger(List<Integer> combinationOrder, boolean retainColumns, String separator) {
+    public MergePlan(List<Integer> combinationOrder, boolean retainColumns, String separator) {
         this.combinationOrder = combinationOrder;
         this.separator = separator;
         this.retainColumns = retainColumns;
     }
 
-    public ColumnMerger(List<Integer> combinationOrder, boolean retainColumns) {
+    public MergePlan(List<Integer> combinationOrder, boolean retainColumns) {
         this(combinationOrder, retainColumns, " ");
     }
 

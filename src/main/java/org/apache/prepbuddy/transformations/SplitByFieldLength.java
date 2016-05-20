@@ -3,7 +3,7 @@ package org.apache.prepbuddy.transformations;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SplitByFieldLength extends ColumnSplitter {
+public class SplitByFieldLength extends SplitPlan {
     private final List<Integer> fieldLengths;
 
     public SplitByFieldLength(List<Integer> fieldLengths, boolean retainColumn) {
