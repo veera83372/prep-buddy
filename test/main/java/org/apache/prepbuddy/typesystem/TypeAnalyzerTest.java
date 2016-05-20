@@ -64,12 +64,12 @@ public class TypeAnalyzerTest {
     @Test
     public void shouldBeAbleToGiveTheTypeAsZIPCode() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("12345-2345", "23456-1234"));
-        assertEquals(DataType.ZIP_CODE, typeAnalyzer.getType());
+        assertEquals(DataType.ZIP_CODE_US, typeAnalyzer.getType());
     }
 
     @Test
     public void shouldBeAbleToGiveTheTypeAsCountry() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IN","IR"));
-        assertEquals(DataType.COUNTRY_CODE,typeAnalyzer.getType());
+        assertEquals(DataType.COUNTRY_CODE_2_CHARACTER, typeAnalyzer.getType());
     }
 }
