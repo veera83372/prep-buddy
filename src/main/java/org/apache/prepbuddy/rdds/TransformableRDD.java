@@ -251,4 +251,18 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int xColumnIndex) {
+        return this.mapToDouble(new DoubleFunction<String>() {
+            @Override
+            public double call(String row) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(row);
+                String columnValue = recordAsArray[columnIndex];
+                String otherColumnValue = recordAsArray[xColumnIndex];
+                if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
+                    return 0;
+                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
+
+            }
+        });
+    }
 }

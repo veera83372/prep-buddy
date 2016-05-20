@@ -2,10 +2,7 @@ package org.apache.prepbuddy.systemtests;
 
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.datacleansers.RowPurger;
-import org.apache.prepbuddy.datacleansers.imputation.ApproxMeanSubstitution;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
-import org.apache.prepbuddy.datacleansers.imputation.MeanSubstitution;
-import org.apache.prepbuddy.datacleansers.imputation.MostOccurredSubstitution;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
@@ -23,7 +20,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

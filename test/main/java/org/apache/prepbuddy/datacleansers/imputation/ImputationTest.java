@@ -55,9 +55,22 @@ public class ImputationTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD imputed = initialRDD.impute(3, new MostOccurredSubstitution());
+        TransformableRDD imputed = initialRDD.impute(3, new ModeSubstitution());
         List<String> listOfRecord = imputed.collect();
         String expected1 = "07641036117,07371326239,Incoming,31,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected1));
+    }
+
+    @Test
+    public void shouldImputeTheValueWithTheRegression() throws Exception {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "60,3.1", "61,3.6", "62,3.8", "63,4", "65,4.1", "64,"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(1, new RegressionSubstitution(0));
+        List<String> listOfRecord = imputed.collect();
+
+        String expected1 = "64,4.06";
         assertTrue(listOfRecord.contains(expected1));
     }
 }
