@@ -214,7 +214,7 @@ public class SystemTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         DataType dataType = initialRDD.inferType(1);
-        assertEquals(dataType, DataType.INTEGER);
+        assertEquals(dataType, DataType.MOBILE_NUMBER);
     }
 
 
