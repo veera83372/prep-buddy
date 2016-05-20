@@ -16,7 +16,7 @@ import java.util.List;
 
 public class DuplicationHandler implements Serializable {
 
-    public static JavaRDD deduplicateByColumn(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
+    public static JavaRDD deduplicateByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
         final JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {
             @Override
             public Tuple2<Long, String> call(String record) throws Exception {
@@ -35,11 +35,11 @@ public class DuplicationHandler implements Serializable {
     }
 
     public static JavaRDD deduplicate(JavaRDD<String> inputRDD) {
-        return deduplicateByColumn(inputRDD, null, null);
+        return deduplicateByColumns(inputRDD, null, null);
     }
 
 
-    public static JavaRDD detectDuplicatesByColumn(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
+    public static JavaRDD detectDuplicatesByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
         JavaPairRDD fingerprintedRDD = inputRecords.mapToPair(new PairFunction<String, Long, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<Long, Tuple2<String, Integer>> call(String record) throws Exception {
@@ -77,7 +77,7 @@ public class DuplicationHandler implements Serializable {
     }
 
     public static JavaRDD detectDuplicates(JavaRDD<String> inputRecords) {
-        return detectDuplicatesByColumn(inputRecords, null, null);
+        return detectDuplicatesByColumns(inputRecords, null, null);
     }
 
     private static long generateFingerprint(String record, List<Integer> columnIndexes, FileType fileType) {

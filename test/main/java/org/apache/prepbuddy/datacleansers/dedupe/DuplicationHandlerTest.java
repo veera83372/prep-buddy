@@ -69,7 +69,7 @@ public class DuplicationHandlerTest extends SparkTestCase {
                         "07784425582,07981267897,Incoming,474,Thu Sep 09 18:44:34 +0100 2010"
                 )
         );
-        List results = DuplicationHandler.deduplicateByColumn(csvInput, Arrays.asList(2, 3), FileType.CSV).collect();
+        List results = DuplicationHandler.deduplicateByColumns(csvInput, Arrays.asList(2, 3), FileType.CSV).collect();
 
         assertEquals(4, results.size());
     }
@@ -111,7 +111,7 @@ public class DuplicationHandlerTest extends SparkTestCase {
                         "07784425582,07981267897,Incoming,474,Thu Sep 09 18:44:34 +0100 2010"
                 )
         );
-        List results = DuplicationHandler.detectDuplicatesByColumn(csvInput, Arrays.asList(2, 3), FileType.CSV).collect();
+        List results = DuplicationHandler.detectDuplicatesByColumns(csvInput, Arrays.asList(2, 3), FileType.CSV).collect();
 
         assertEquals(3, results.size());
     }

@@ -18,6 +18,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 public class TransformableRDDTest extends SparkTestCase {
     @Test
     public void shouldEncryptAColumn() {
@@ -26,7 +28,7 @@ public class TransformableRDDTest extends SparkTestCase {
         EncryptionKeyPair keyPair = new EncryptionKeyPair(1024);
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair, 0);
         JavaRDD<String> dataSet = encryptedRDD.decrypt(0);
-        Assert.assertEquals(dataSet.collect(), initialDataset.collect());
+        assertEquals(dataSet.collect(), initialDataset.collect());
     }
 
     @Test
@@ -37,7 +39,7 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair, 0);
         BigInteger sum = encryptedRDD.sum(0);
 
-        Assert.assertEquals(new BigInteger("24"), sum);
+        assertEquals(new BigInteger("24"), sum);
     }
 
     @Test
@@ -48,7 +50,7 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair, 1);
         double average = encryptedRDD.average(1);
 
-        Assert.assertEquals(1.75, average, 0.01);
+        assertEquals(1.75, average, 0.01);
     }
 
     @Test
@@ -59,7 +61,7 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD encryptedRDD = transformableRDD.encryptHomomorphically(keyPair, 0);
         BigInteger sum = encryptedRDD.sum(0);
 
-        Assert.assertEquals(new BigInteger("22"), sum);
+        assertEquals(new BigInteger("22"), sum);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class TransformableRDDTest extends SparkTestCase {
         HomomorphicallyEncryptedRDD rdd = new HomomorphicallyEncryptedRDD(stringJavaRDD.rdd(), keyPair, FileType.CSV);
         JavaRDD<String> decrypt = rdd.decrypt(0);
 
-        Assert.assertEquals(decrypt.collect(), initialDataset.collect());
+        assertEquals(decrypt.collect(), initialDataset.collect());
     }
 
     @Test
@@ -90,5 +92,57 @@ public class TransformableRDDTest extends SparkTestCase {
         List<String> listOfValues = afterMergeCluster.collect();
 
         Assert.assertTrue(listOfValues.contains("Finger print"));
+    }
+
+    @Test
+    public void shouldBeAbleToDeduplicateRecordsBasedWholeRecord() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        TransformableRDD deduplicatedRDD = initialRDD.deduplicate();
+        assertEquals(4, deduplicatedRDD.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDeduplicateRecordsBasedOnColumns() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        TransformableRDD deduplicatedRDD = initialRDD.deduplicate(Arrays.asList(0, 3));
+        assertEquals(3, deduplicatedRDD.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDeduplicateRecordsBasedOnColumns() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        TransformableRDD duplicates = initialRDD.detectDuplicates(Arrays.asList(0, 3));
+        assertEquals(1, duplicates.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDeduplicateRecordsBasedOnWholeRecord() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        TransformableRDD duplicates = initialRDD.detectDuplicates();
+        assertEquals(0, duplicates.count());
     }
 }
