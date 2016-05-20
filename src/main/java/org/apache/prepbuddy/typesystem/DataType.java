@@ -1,10 +1,7 @@
 package org.apache.prepbuddy.typesystem;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public enum DataType implements Serializable {
     INTEGER {
@@ -76,6 +73,20 @@ public enum DataType implements Serializable {
             Set<String> sample = new TreeSet<>(sampleData);
             int size = char2countryCodes.length;
             for (String country : char2countryCodes) sample.add(country);
+            return (sample.size() == size);
+        }
+    }, COUNTRY_CODE_3_CHARACTER {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            String[] isoCountries = Locale.getISOCountries();
+            ArrayList<String> countryCodes = new ArrayList<>();
+            for (String country : isoCountries) {
+                Locale locale = new Locale("", country);
+                countryCodes.add(locale.getISO3Country());
+            }
+            Set<String> sample = new TreeSet<>(sampleData);
+            int size = countryCodes.size();
+            for (String country : countryCodes) sample.add(country);
             return (sample.size() == size);
         }
     };
