@@ -1,7 +1,8 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.examples;
 
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
