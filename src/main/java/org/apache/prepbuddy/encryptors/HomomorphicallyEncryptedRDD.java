@@ -7,7 +7,6 @@ import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.rdd.RDD;
 
 import java.math.BigInteger;
 
@@ -15,8 +14,8 @@ public class HomomorphicallyEncryptedRDD extends JavaRDD<String> {
     private final EncryptionKeyPair keyPair;
     private final FileType fileType;
 
-    public HomomorphicallyEncryptedRDD(RDD rdd, EncryptionKeyPair keyPair, FileType fileType) {
-        super(rdd, rdd.elementClassTag());
+    public HomomorphicallyEncryptedRDD(JavaRDD rdd, EncryptionKeyPair keyPair, FileType fileType) {
+        super(rdd.rdd(), rdd.classTag());
         this.keyPair = keyPair;
         this.fileType = fileType;
     }

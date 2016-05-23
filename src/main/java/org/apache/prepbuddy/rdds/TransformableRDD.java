@@ -15,6 +15,7 @@ import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
+import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
@@ -48,7 +49,7 @@ public class TransformableRDD extends JavaRDD<String> {
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
         final PaillierPublicKey publicKey = keyPair.getPublicKey();
         final PaillierContext signedContext = publicKey.createSignedContext();
-        JavaRDD map = this.map(new Function<String, String>() {
+        JavaRDD encryptedRDD = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
                 String[] values = fileType.parseRecord(row);
@@ -57,7 +58,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 return fileType.join(values);
             }
         });
-        return new HomomorphicallyEncryptedRDD(map.rdd(), keyPair, fileType);
+        return new HomomorphicallyEncryptedRDD(encryptedRDD, keyPair, fileType);
     }
 
 
@@ -176,12 +177,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public DataType inferType(final int columnIndex) {
-        List<String> rowSamples = this.takeSample(false, 100);
-        List<String> columnSamples = new LinkedList<>();
-        for (String row : rowSamples) {
-            String[] strings = fileType.parseRecord(row);
-            columnSamples.add(strings[columnIndex]);
-        }
+        List<String> columnSamples = takeSampleSet(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
@@ -243,8 +239,9 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
-        DataType dataType = inferType(columnIndex);
-        boolean isNumeric = DataType.INTEGER.equals(dataType) || DataType.DECIMAL.equals(dataType);
+        List<String> columnSamples = takeSampleSet(columnIndex);
+        BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
+        boolean isNumeric = baseType.equals(BaseDataType.NUMERIC);
         if (!isNumeric)
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
 
@@ -260,6 +257,16 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    private List<String> takeSampleSet(int columnIndex) {
+        List<String> rowSamples = this.takeSample(false, 100);
+        List<String> columnSamples = new LinkedList<>();
+        for (String row : rowSamples) {
+            String[] strings = fileType.parseRecord(row);
+            columnSamples.add(strings[columnIndex]);
+        }
+        return columnSamples;
+    }
+
     public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int xColumnIndex) {
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
@@ -267,8 +274,6 @@ public class TransformableRDD extends JavaRDD<String> {
                 String[] recordAsArray = fileType.parseRecord(row);
                 String columnValue = recordAsArray[columnIndex];
                 String otherColumnValue = recordAsArray[xColumnIndex];
-                System.out.println("otherColumnValue = " + otherColumnValue);
-                System.out.println("columnValue = " + columnValue);
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
                 return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
