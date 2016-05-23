@@ -257,6 +257,8 @@ public class TransformableRDD extends JavaRDD<String> {
                 String[] recordAsArray = fileType.parseRecord(row);
                 String columnValue = recordAsArray[columnIndex];
                 String otherColumnValue = recordAsArray[xColumnIndex];
+                System.out.println("otherColumnValue = " + otherColumnValue);
+                System.out.println("columnValue = " + columnValue);
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
                 return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
