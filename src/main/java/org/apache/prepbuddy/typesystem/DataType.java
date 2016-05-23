@@ -121,11 +121,12 @@ public enum DataType implements Serializable {
     };
 
     protected boolean predicate(List<String> sampleData, Set<String> originalData) {
+        int tolerance = sampleData.size() / 4;
+        int threshold = originalData.size() + tolerance;
         Set<String> sample = new TreeSet<>();
         for (String element : sampleData) sample.add(element.toLowerCase());
-        int size = originalData.size();
         for (String element : originalData) sample.add(element.toLowerCase());
-        return (sample.size() == size);
+        return (sample.size() <= threshold);
     }
 
     public boolean matchesWith(String regex, List<String> samples) {
