@@ -7,13 +7,13 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 
 import java.text.DecimalFormat;
 
-public class RegressionSubstitution implements ImputationStrategy {
+public class UniVariateSubstitution implements ImputationStrategy {
 
     private int _XColumnIndex;
     private double slop;
     private double intercept;
 
-    public RegressionSubstitution(int _XColumnIndex) {
+    public UniVariateSubstitution(int _XColumnIndex) {
         this._XColumnIndex = _XColumnIndex;
     }
 
@@ -27,16 +27,16 @@ public class RegressionSubstitution implements ImputationStrategy {
                 return _XColumnValue.trim().isEmpty() || _YColumnValue.trim().isEmpty();
             }
         });
-        long count = rdd.count() - 1;
+        long count = withoutMissingValue.count();
         JavaDoubleRDD _XYRdd = withoutMissingValue.toMultipliedRdd(columnIndex, _XColumnIndex);
         JavaDoubleRDD _XXRdd = withoutMissingValue.toMultipliedRdd(_XColumnIndex, _XColumnIndex);
-        JavaDoubleRDD _YDoubleRdd = withoutMissingValue.toDoubleRDD(columnIndex);
-        JavaDoubleRDD _XDoubleRdd = withoutMissingValue.toDoubleRDD(_XColumnIndex);
+        JavaDoubleRDD _YRdd = withoutMissingValue.toDoubleRDD(columnIndex);
+        JavaDoubleRDD _XRdd = withoutMissingValue.toDoubleRDD(_XColumnIndex);
 
         Double squareRddSum = _XXRdd.sum();
         Double _XYRddSum = _XYRdd.sum();
-        Double _YRddSum = _YDoubleRdd.sum();
-        Double _XRddSum = _XDoubleRdd.sum();
+        Double _YRddSum = _YRdd.sum();
+        Double _XRddSum = _XRdd.sum();
 
         setSlop(_XRddSum, _YRddSum, _XYRddSum, squareRddSum, count);
         setIntercept(_XRddSum, _YRddSum, count);
@@ -49,8 +49,7 @@ public class RegressionSubstitution implements ImputationStrategy {
     private void setSlop(Double xRddSum, Double yRddSum, Double xyRddSum, Double squareRddSum, long count) {
         slop = ((count * xyRddSum) - (xRddSum * yRddSum)) / ((count * squareRddSum) - xRddSum * xRddSum);
     }
-
-
+    
     @Override
     public String handleMissingData(RowRecord record) {
         Double value = Double.parseDouble(record.valueAt(_XColumnIndex));
