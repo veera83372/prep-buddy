@@ -83,6 +83,7 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         TransformableRDD imputed = initialRDD.impute(1, new UniVariateSubstitution(0));
         List<String> listOfRecord = imputed.collect();
+
         String expected1 = "3.6,5.24";
         assertTrue(listOfRecord.contains(expected1));
     }
