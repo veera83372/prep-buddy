@@ -7,7 +7,7 @@ public enum DataType implements Serializable {
     INTEGER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String INT_PATTERN = "^\\d+$";
+            final String INT_PATTERN = "^[+-]?\\d+$";
             return matchesWith(INT_PATTERN, sampleData);
         }
     },
@@ -35,7 +35,7 @@ public enum DataType implements Serializable {
     DECIMAL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String DECIMAL_PATTERN = "^\\.\\d+|\\d+\\.\\d+$";
+            final String DECIMAL_PATTERN = "^[+-]?(\\.\\d+|\\d+\\.\\d+)$";
             return matchesWith(DECIMAL_PATTERN, sampleData);
         }
     },
@@ -109,13 +109,25 @@ public enum DataType implements Serializable {
     }, MOBILE_NUMBER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String PHONE_PATTERN = "^0?\\d{10}$";
+            final String PHONE_PATTERN = "^(([+]\\d+\\s)|0)?\\d{10}$";
             return matchesWith(PHONE_PATTERN, sampleData);
         }
     }, TIMESTAMP {
         @Override
         public boolean isOfType(List<String> sampleData) {
             final String PATTERN = "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}x?)";
+            return matchesWith(PATTERN, sampleData);
+        }
+    }, LATITUDE {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            final String PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$";
+            return matchesWith(PATTERN, sampleData);
+        }
+    }, LONGITUDE {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            final String PATTERN = "^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
             return matchesWith(PATTERN, sampleData);
         }
     };
@@ -133,9 +145,7 @@ public enum DataType implements Serializable {
         int counter = 0;
         int threshold = samples.size() / 2;
         for (String string : samples)
-            if (string.matches(regex)) {
-                counter++;
-            }
+            if (string.matches(regex)) counter++;
         return (counter >= threshold);
     }
 

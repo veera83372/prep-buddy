@@ -73,8 +73,8 @@ public class TransformableRDDTest extends SparkTestCase {
 
         FileUtils.deleteDirectory(new File("data/somePlace"));
         encryptedRDD.saveAsTextFile("data/somePlace");
-        JavaRDD<String> stringJavaRDD = javaSparkContext.textFile("data/somePlace");
-        HomomorphicallyEncryptedRDD rdd = new HomomorphicallyEncryptedRDD(stringJavaRDD.rdd(), keyPair, FileType.CSV);
+        JavaRDD<String> javaRDD = javaSparkContext.textFile("data/somePlace");
+        HomomorphicallyEncryptedRDD rdd = new HomomorphicallyEncryptedRDD(javaRDD, keyPair, FileType.CSV);
         JavaRDD<String> decrypt = rdd.decrypt(0);
 
         assertEquals(decrypt.collect(), initialDataset.collect());

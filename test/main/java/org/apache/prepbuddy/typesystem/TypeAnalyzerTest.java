@@ -14,8 +14,8 @@ public class TypeAnalyzerTest {
     }
 
     @Test
-    public void shouldBeAbleToGiveTheTypeAsNumericOfGivenSample() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList(".56", "2.56", "23", "2345676543245678.7654564", "45.34"));
+    public void shouldBeAbleToGiveTheTypeAsDecimalOfGivenSample() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList(".56", "290.56", "23", "2345676543245678.7654564", "405.34"));
         assertEquals(DataType.DECIMAL, typeAnalyzer.getType());
     }
 
@@ -27,7 +27,7 @@ public class TypeAnalyzerTest {
 
     @Test
     public void shouldBeAbleToGiveTheTypeAsInteger() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("56", "56", "23", "2345676543245678"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("569", "506", "23", "2345676543245678", "23456"));
         assertEquals(DataType.INTEGER, typeAnalyzer.getType());
     }
 
@@ -86,8 +86,14 @@ public class TypeAnalyzerTest {
     }
 
     @Test
-    public void shouldBeAbleToGIveTypeAsPhoneNumber() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("6723459812", "9992345678", "4576893245", "02345678901", "03465789012"));
+    public void shouldBeAbleToGIveTypeAsMobileNumber() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("6723459812", "9992345678", "04576893245", "02345678901", "03465789012"));
+        assertEquals(DataType.MOBILE_NUMBER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToGIveTypeAsMobileNumberWithCode() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("-12 6723459812", "+92 9992345678", "+343 2424432489", "+324 543545445"));
         assertEquals(DataType.MOBILE_NUMBER, typeAnalyzer.getType());
     }
 
@@ -95,5 +101,18 @@ public class TypeAnalyzerTest {
     public void shouldBeAbleToGiveTypeAsTimeStamp() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("2010-07-21T08:52:05.222", "2016-05-20T12:51:00.282Z", "2016-05-20T13:04:41.632Z"));
         assertEquals(DataType.TIMESTAMP, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectLongitudeAsType() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("-122.42045568910925", "-73.9683", "-155.93665", "-107.4799714831678"));
+        assertEquals(DataType.LONGITUDE, typeAnalyzer.getType());
+    }
+
+
+    @Test
+    public void shouldBeAbleToDetectLatitudeAsType() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("40.2201", "40.7415", "19.05939", "36.994098822572425", "-82.180507982090035"));
+        assertEquals(DataType.LATITUDE, typeAnalyzer.getType());
     }
 }
