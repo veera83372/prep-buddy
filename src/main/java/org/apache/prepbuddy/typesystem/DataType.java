@@ -112,6 +112,12 @@ public enum DataType implements Serializable {
             final String PHONE_PATTERN = "^0?\\d{10}$";
             return matchesWith(PHONE_PATTERN, sampleData);
         }
+    }, TIMESTAMP {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            final String PATTERN = "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}x?)";
+            return matchesWith(PATTERN, sampleData);
+        }
     };
 
     protected boolean predicate(List<String> sampleData, Set<String> originalData) {

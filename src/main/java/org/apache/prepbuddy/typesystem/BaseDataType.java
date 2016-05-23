@@ -18,7 +18,8 @@ public enum BaseDataType implements Serializable {
             DataType.ZIP_CODE_US,
             DataType.COUNTRY_CODE_2_CHARACTER,
             DataType.COUNTRY_CODE_3_CHARACTER,
-            DataType.COUNTRY_NAME
+            DataType.COUNTRY_NAME,
+            DataType.TIMESTAMP
     );
 
     private final static String PATTERN = "^(\\d*(\\.\\d+)?)+$";

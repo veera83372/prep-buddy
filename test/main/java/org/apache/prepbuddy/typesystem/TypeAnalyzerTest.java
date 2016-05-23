@@ -90,4 +90,10 @@ public class TypeAnalyzerTest {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("6723459812", "9992345678", "4576893245", "02345678901", "03465789012"));
         assertEquals(DataType.MOBILE_NUMBER, typeAnalyzer.getType());
     }
+
+    @Test
+    public void shouldBeAbleToGiveTypeAsTimeStamp() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("2010-07-21T08:52:05.222", "2016-05-20T12:51:00.282Z", "2016-05-20T13:04:41.632Z"));
+        assertEquals(DataType.TIMESTAMP, typeAnalyzer.getType());
+    }
 }
