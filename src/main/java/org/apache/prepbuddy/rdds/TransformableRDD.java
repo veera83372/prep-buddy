@@ -118,6 +118,26 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
+    public TextFacets listFacets(final int... columnIndexes) {
+        JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
+            @Override
+            public Tuple2<String, Integer> call(String record) throws Exception {
+                String[] columnValues = fileType.parseRecord(record);
+                String joinValue = "";
+                for (int columnIndex : columnIndexes) {
+                    joinValue += " " + columnValues[columnIndex];
+                }
+                return new Tuple2<>(joinValue, 1);
+            }
+        });
+        JavaPairRDD<String, Integer> facets = columnValuePair.reduceByKey(new Function2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer accumulator, Integer currentValue) throws Exception {
+                return accumulator + currentValue;
+            }
+        });
+        return new TextFacets(facets);
+    }
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
@@ -274,4 +294,5 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         });
     }
+
 }

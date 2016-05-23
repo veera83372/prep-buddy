@@ -87,4 +87,36 @@ public class ImputationTest extends SparkTestCase {
         String expected1 = "3.6,5.24";
         assertTrue(listOfRecord.contains(expected1));
     }
+
+    @Test
+    public void shouldImputeMissingValuesWithTheNaiveBayes() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "known,new,long,home,skips",
+                "unknown,new,short,work,reads",
+                "unknown,follow Up,long,work,skips",
+                "known,follow Up,long,home,skips",
+                "known,new,short,home,reads",
+                "known,follow Up,long,work,skips",
+                "unknown,follow Up,short,work,skips",
+                "unknown,new,short,work,reads",
+                "known,follow Up,long,home,skips",
+                "known,new,long,work,skips",
+                "unknown,follow Up,short,home,skips",
+                "known,new,long,work,skips",
+                "known,follow Up,short,home,reads",
+                "known,new,short,work,reads",
+                "known,new,short,home,reads",
+                "known,follow Up,short,work,reads",
+                "known,new,short,home,reads",
+                "unknown,new,short,work,reads",
+                "unknown,new,long,work,",
+                "unknown,follow Up,long,home,"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(1, 2));
+        List<String> listOfRecord = imputed.collect();
+
+        String expected1 = "unknown,new,long,work,reads";
+        assertTrue(listOfRecord.contains(expected1));
+    }
 }

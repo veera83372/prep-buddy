@@ -10,4 +10,5 @@ public class Pair<O, N> implements Serializable {
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }
+
 }

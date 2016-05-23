@@ -28,6 +28,7 @@ public class UniVariateSubstitution implements ImputationStrategy {
             }
         });
         long count = withoutMissingValue.count();
+
         JavaDoubleRDD _XYRdd = withoutMissingValue.toMultipliedRdd(columnIndex, _XColumnIndex);
         JavaDoubleRDD _XXRdd = withoutMissingValue.toMultipliedRdd(_XColumnIndex, _XColumnIndex);
         JavaDoubleRDD _YRdd = withoutMissingValue.toDoubleRDD(columnIndex);
@@ -49,7 +50,7 @@ public class UniVariateSubstitution implements ImputationStrategy {
     private void setSlop(Double xRddSum, Double yRddSum, Double xyRddSum, Double squareRddSum, long count) {
         slop = ((count * xyRddSum) - (xRddSum * yRddSum)) / ((count * squareRddSum) - xRddSum * xRddSum);
     }
-    
+
     @Override
     public String handleMissingData(RowRecord record) {
         Double value = Double.parseDouble(record.valueAt(_XColumnIndex));
