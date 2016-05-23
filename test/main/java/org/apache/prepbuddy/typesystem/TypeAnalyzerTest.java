@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class TypeAnalyzerTest {
     @Test
     public void shouldBeAbleToGiveTheTypeStringOfGivenSample() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("facebook", "mpire", "teachstreet"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("facebook", "mpire", "teachstreet", "twitter"));
         assertEquals(DataType.ALPHANUMERIC_STRING, typeAnalyzer.getType());
     }
 
