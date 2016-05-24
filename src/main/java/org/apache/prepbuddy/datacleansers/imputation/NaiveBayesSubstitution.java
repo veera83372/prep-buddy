@@ -41,12 +41,12 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         List<Probability> probabilities = bayesianProbabilities(record);
         Probability highest = Probability.create(0);
         for (Probability eachProbability : probabilities) {
-//            eachProbability.show();
             if (eachProbability.isGreaterThan(highest)) {
                 highest = eachProbability;
             }
         }
-        return categoricalKeys.get(probabilities.indexOf(highest))._1();
+        String probableCategory = categoricalKeys.get(probabilities.indexOf(highest))._1();
+        return probableCategory;
     }
 
     private void setCategoricalKeys(TransformableRDD trainingSet, int columnIndex) {
