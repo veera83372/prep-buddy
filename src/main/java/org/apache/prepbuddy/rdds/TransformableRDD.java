@@ -12,6 +12,7 @@ import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.normalizers.NormalizationStrategy;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
@@ -139,6 +140,7 @@ public class TransformableRDD extends JavaRDD<String> {
         });
         return new TextFacets(facets);
     }
+
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
@@ -302,4 +304,26 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
+        normalizer.prepare(this, columnIndex);
+        JavaRDD<String> normalized = this.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] columns = fileType.parseRecord(record);
+                String normalized = normalizer.normalize(columns[columnIndex]);
+                columns[columnIndex] = normalized;
+                return fileType.join(columns);
+            }
+        });
+        return new TransformableRDD(normalized);
+    }
+
+    public JavaRDD<String> select(final int columnIndex) {
+        return map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                return fileType.parseRecord(record)[columnIndex];
+            }
+        });
+    }
 }
