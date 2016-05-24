@@ -7,6 +7,7 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
+import org.apache.prepbuddy.normalizers.SerializableComparator;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Double.parseDouble;
 import static org.junit.Assert.*;
 
 public class SystemTest extends SparkTestCase {
@@ -230,9 +232,17 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer());
+        SerializableComparator<String> comparator = new SerializableComparator<String>() {
+            @Override
+            public int compare(String firstRecord, String secondRecord) {
+                String firstValue = firstRecord.split(",")[3];
+                String secondValue = secondRecord.split(",")[3];
+                return Double.compare(parseDouble(firstValue), parseDouble(secondValue));
+            }
+        };
+        TransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer(comparator));
         List<String> normalizedDurations = finalRDD.select(3).collect();
-        List<String> expected = Arrays.asList("1", "0", "0.213", "0.213", "0.0569");
+        List<String> expected = Arrays.asList("1.0", "0.0", "0.2132701421800948", "0.2132701421800948", "0.05687203791469194");
         assertEquals(expected, normalizedDurations);
     }
 }
