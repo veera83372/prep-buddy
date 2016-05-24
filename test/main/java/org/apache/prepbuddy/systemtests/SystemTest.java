@@ -6,6 +6,7 @@ import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -217,5 +219,20 @@ public class SystemTest extends SparkTestCase {
         assertEquals(dataType, DataType.MOBILE_NUMBER);
     }
 
+    @Test
+    public void shouldNormalizeRecords() throws Exception {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
 
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer());
+        List<String> normalizedDurations = finalRDD.select(3).collect();
+        List<String> expected = Arrays.asList("1", "0", "0.213", "0.213", "0.0569");
+        assertEquals(expected, normalizedDurations);
+    }
 }
