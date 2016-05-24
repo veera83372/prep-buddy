@@ -8,13 +8,13 @@ import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class NaiveBayesSubstitution implements ImputationStrategy {
     private int[] columnIndexes;
     private List<List<Tuple2<String, Integer>>> groupedFacets;
+    private List<List<Tuple2<String, Integer>>> allColumnFacets;
     private long count;
-    private Set<String> classKeys;
+    private List<String> classKeys;
 
     public NaiveBayesSubstitution(int... columnIndexes) {
         this.columnIndexes = columnIndexes;
@@ -33,7 +33,15 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
         List<TextFacets> textFacets = listOfTextFacets(trainingSet, columnIndex);
         setGroupedFacets(textFacets);
+        setAllColumnFacets(trainingSet);
 
+    }
+
+    private void setAllColumnFacets(TransformableRDD trainingSet) {
+        allColumnFacets = new ArrayList<>();
+        for (int columnIndex : columnIndexes) {
+            allColumnFacets.add(trainingSet.listFacets(columnIndex).rdd().collect());
+        }
     }
 
     private void setGroupedFacets(List<TextFacets> textFacets) {
@@ -44,7 +52,11 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
     }
 
     private void setClassKeys(TransformableRDD trainingSet, int columnIndex) {
-        classKeys = trainingSet.listFacets(columnIndex).rdd().collectAsMap().keySet();
+        List<Tuple2<String, Integer>> listOfClassTuple = trainingSet.listFacets(columnIndex).rdd().collect();
+        classKeys = new ArrayList<>();
+        for (Tuple2<String, Integer> tuple : listOfClassTuple) {
+            classKeys.add(tuple._1());
+        }
     }
 
     private void setCount(TransformableRDD trainingSet) {
@@ -63,9 +75,23 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
     @Override
     public String handleMissingData(RowRecord record) {
         List<Double> probs = BayesianProbability(record);
-
-
-        return null;
+        double normalizingConstant = 0.0;
+        for (Double prob : probs) {
+            normalizingConstant *= 1 / prob;
+        }
+        Double highest = 0.0;
+        double probability = 0;
+        for (Double prob : probs) {
+            Double multipliedWithConstant = prob * normalizingConstant;
+            if (multipliedWithConstant > highest) {
+                highest = multipliedWithConstant;
+                probability = prob;
+            }
+        }
+        System.out.println("probs = " + probs);
+        System.out.println("probability = " + probability);
+        System.out.println(probs.indexOf(probability) + "jsdbcvhsdsjvsj");
+        return classKeys.get(probs.indexOf(probability));
     }
 
     private List<Double> BayesianProbability(RowRecord record) {
@@ -74,6 +100,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
             double probability = 0;
             for (int columnIndex : columnIndexes) {
                 probability *=  conditionalProbability(classKey, record.valueAt(columnIndex), columnIndex);
+                System.out.println("probabilityInsite = " + probability);
             }
             probability *= classKeysProbability();
             probs.add(probability);
@@ -83,15 +110,35 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private double conditionalProbability(String classKey, String secondValue, int columnIndex) {
         double intersectionCount = countOf(secondValue + " " +classKey, columnIndex);
-        return intersectionCount / count;
+        double otherColumnCount = countOfInAllFcates(secondValue);
+//        System.out.println("secondValue = " + secondValue+" " +classKey);
+//        System.out.println("intersectionCount = " + intersectionCount);
+        return intersectionCount / otherColumnCount;
 
     }
 
+    private double countOfInAllFcates(String value) {
+        for (List<Tuple2<String, Integer>> allColumnFacet : allColumnFacets) {
+            for (Tuple2<String, Integer> tuple : allColumnFacet) {
+                if (tuple._1().equals(value)) {
+                    return tuple._2();
+                }
+            }
+        }
+        return 0;
+    }
+
     private double countOf(String value, int columnIndex) {
-        List<Tuple2<String, Integer>> listOfTuple = groupedFacets.get(columnIndex);
-        for (Tuple2<String, Integer> tuple : listOfTuple) {
-            if (tuple._1().equals(value))
-                return tuple._2();
+//        List<Tuple2<String, Integer>> listOfTuple = groupedFacets.get(columnIndex);
+        System.out.println("value = " + value);
+        for (List<Tuple2<String, Integer>> groupedFacet : groupedFacets) {
+            for (Tuple2<String, Integer> tuple : groupedFacet) {
+
+                System.out.println("tuple._1() = " + tuple._1());
+                if (tuple._1().equals(value)) {
+                    return tuple._2();
+                }
+            }
         }
         return 0;
     }

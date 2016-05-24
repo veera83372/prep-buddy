@@ -113,10 +113,10 @@ public class ImputationTest extends SparkTestCase {
                 "unknown,follow Up,long,home,"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(1, 2));
+        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
         List<String> listOfRecord = imputed.collect();
 
         String expected1 = "unknown,new,long,work,reads";
-//        assertTrue(listOfRecord.contains(expected1));
+        assertTrue(listOfRecord.contains(expected1));
     }
 }
