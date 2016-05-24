@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TransformableRDD extends JavaRDD<String> {
-    public FileType fileType;
+    private FileType fileType;
 
     public TransformableRDD(JavaRDD rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());

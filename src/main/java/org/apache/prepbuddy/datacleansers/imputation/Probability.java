@@ -38,5 +38,5 @@ public class Probability implements Serializable {
         return Double.compare(that.probability, probability) == 0;
 
     }
-
+    
 }
