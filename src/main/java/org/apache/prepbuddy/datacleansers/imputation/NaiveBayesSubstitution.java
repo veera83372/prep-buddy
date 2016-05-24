@@ -83,7 +83,6 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private double conditionalProbability(String classKey, String secondValue, int columnIndex) {
         double intersectionCount = countOf(secondValue + " " +classKey, columnIndex);
-        double secondValueCount = countOf();
         return intersectionCount / count;
 
     }
