@@ -6,8 +6,9 @@ import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.normalizers.DecimalScalingNormalization;
 import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
-import org.apache.prepbuddy.normalizers.SerializableComparator;
+import org.apache.prepbuddy.normalizers.ZScoreNormalization;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
@@ -23,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Double.parseDouble;
 import static org.junit.Assert.*;
 
 public class SystemTest extends SparkTestCase {
@@ -222,7 +222,7 @@ public class SystemTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldNormalizeRecords() throws Exception {
+    public void shouldNormalizeRecordsUsingMinMaxNormalizer() throws Exception {
         JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
                 "07434677419,07371326239,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
                 "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
@@ -232,17 +232,44 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        SerializableComparator<String> comparator = new SerializableComparator<String>() {
-            @Override
-            public int compare(String firstRecord, String secondRecord) {
-                String firstValue = firstRecord.split(",")[3];
-                String secondValue = secondRecord.split(",")[3];
-                return Double.compare(parseDouble(firstValue), parseDouble(secondValue));
-            }
-        };
-        TransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer(comparator));
+        TransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer());
         List<String> normalizedDurations = finalRDD.select(3).collect();
         List<String> expected = Arrays.asList("1.0", "0.0", "0.2132701421800948", "0.2132701421800948", "0.05687203791469194");
         assertEquals(expected, normalizedDurations);
     }
+
+    @Test
+    public void shouldNormalizeRecordsUsingZScoreNormalization() throws Exception {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD finalRDD = initialRDD.normalize(3, new ZScoreNormalization());
+        List<String> normalizedDurations = finalRDD.select(3).collect();
+        List<String> expected = Arrays.asList("1.944528306701421", "-0.8202659838241843", "-0.2306179123850742", "-0.2306179123850742", "-0.6630264981070882");
+        assertEquals(expected, normalizedDurations);
+    }
+
+    @Test
+    public void shouldNormalizeRecordsUsingDecimalScalingNormalization() throws Exception {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD finalRDD = initialRDD.normalize(3, new DecimalScalingNormalization());
+        List<String> normalizedDurations = finalRDD.select(3).collect();
+        List<String> expected = Arrays.asList("2.11", "0.0", "0.45", "0.45", "0.12");
+        assertEquals(expected, normalizedDurations);
+    }
+
 }

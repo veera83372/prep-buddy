@@ -5,24 +5,9 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.DoubleFunction;
 
-import static java.lang.Double.parseDouble;
+public class DecimalScalingNormalization implements NormalizationStrategy {
 
-
-public class MinMaxNormalizer implements NormalizationStrategy {
-    private final int minRange;
-    private final int maxRange;
-
-    private Double minValue;
-    private Double maxValue;
-
-    public MinMaxNormalizer(int minRange, int maxRange) {
-        this.minRange = minRange;
-        this.maxRange = maxRange;
-    }
-
-    public MinMaxNormalizer() {
-        this(0, 1);
-    }
+    private int length;
 
     @Override
     public void prepare(TransformableRDD transformableRDD, int columnIndex) {
@@ -33,13 +18,11 @@ public class MinMaxNormalizer implements NormalizationStrategy {
                 return Double.parseDouble(element);
             }
         });
-        maxValue = rdd.max();
-        minValue = rdd.min();
+        length = String.valueOf(rdd.max().intValue()).length();
     }
 
     @Override
     public String normalize(String rawValue) {
-        double normalizedValue = ((parseDouble(rawValue) - minValue) / (maxValue - minValue)) * (maxRange - minRange) + minRange;
-        return String.valueOf(normalizedValue);
+        return String.valueOf(Double.parseDouble(rawValue) / Math.pow(10, length - 1));
     }
 }

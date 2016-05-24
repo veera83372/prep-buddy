@@ -24,8 +24,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(3, new MeanSubstitution());
         List<String> listOfRecord = imputed.collect();
 
-        String expected1 = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
-        assertTrue(listOfRecord.contains(expected1));
+        String expected = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected));
     }
 
     @Test
@@ -41,8 +41,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(3, new ApproxMeanSubstitution());
         List<String> listOfRecord = imputed.collect();
 
-        String expected1 = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
-        assertTrue(listOfRecord.contains(expected1));
+        String expected = "07641036117,07371326239,Incoming,15.75,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         TransformableRDD imputed = initialRDD.impute(3, new ModeSubstitution());
         List<String> listOfRecord = imputed.collect();
-        String expected1 = "07641036117,07371326239,Incoming,31,Mon Feb 11 07:45:42 +0000 1980";
-        assertTrue(listOfRecord.contains(expected1));
+        String expected = "07641036117,07371326239,Incoming,31,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected));
     }
 
     @Test
@@ -70,8 +70,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(1, new UnivariateLinearRegressionSubstitution(0));
         List<String> listOfRecord = imputed.collect();
 
-        String expected1 = "64,4.06";
-        assertTrue(listOfRecord.contains(expected1));
+        String expected = "64,4.06";
+        assertTrue(listOfRecord.contains(expected));
     }
 
     @Test
@@ -84,8 +84,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(1, new UnivariateLinearRegressionSubstitution(0));
         List<String> listOfRecord = imputed.collect();
 
-        String expected1 = "3.6,5.24";
-        assertTrue(listOfRecord.contains(expected1));
+        String expected = "3.6,5.24";
+        assertTrue(listOfRecord.contains(expected));
     }
 
     @Test
@@ -117,6 +117,8 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(1, 2));
         List<String> listOfRecord = imputed.collect();
 
+        String expected = "unknown,new,long,work,skips";
+        assertTrue(listOfRecord.contains(expected));
         String expected1 = "unknown,new,long,work,skips";
         String expected2 = "unknown,follow Up,short,home,reads";
 
