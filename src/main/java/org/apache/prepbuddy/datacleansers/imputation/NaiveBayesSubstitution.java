@@ -106,12 +106,12 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private double conditionalProbability(String classKey, String secondValue) {
         double intersectionCount = countOf(secondValue + " " + classKey);
-        double otherColumnCount = countOfInAllFcates(secondValue);
+        double otherColumnCount = countOfInAllFacets(secondValue);
         return intersectionCount / otherColumnCount;
 
     }
 
-    private double countOfInAllFcates(String value) {
+    private double countOfInAllFacets(String value) {
         for (List<Tuple2<String, Integer>> allColumnFacet : allColumnFacets) {
             for (Tuple2<String, Integer> tuple : allColumnFacet) {
                 if (tuple._1().equals(value)) {
