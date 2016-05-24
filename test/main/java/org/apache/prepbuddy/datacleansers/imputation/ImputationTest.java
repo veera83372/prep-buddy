@@ -116,7 +116,41 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
         List<String> listOfRecord = imputed.collect();
 
-        String expected1 = "unknown,new,long,work,reads";
+        String expected1 = "unknown,new,long,work,skips";
         assertTrue(listOfRecord.contains(expected1));
+    }
+
+
+    @Test
+    public void shouldImputeMissingValuesWithTheNaiveBayesOnAnyDataset() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "sunny,hot,high,false,N",
+                "sunny,hot,high,true,N",
+                "overcast,hot,high,false,P",
+                "rain,mild,high,false,P",
+                "rain,cool,normal,false,P",
+                "rain,cool,normal,true,N",
+                "overcast,cool,normal,true,P",
+                "sunny,mild,high,false,N",
+                "sunny,cool,normal,false,P",
+                "rain,mild,normal,false,P",
+                "sunny,mild,normal,true,P",
+                "overcast,mild,high,true,P",
+                "overcast,hot,normal,false,P",
+                "rain,mild,high,true,N",
+                "sunny,cool,high,false,",
+                "rain,hot,high,false,"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
+        List<String> listOfRecord = imputed.collect();
+
+        System.out.println("listOfRecord = " + listOfRecord);
+        String expected1 = "sunny,cool,high,false,N";
+        String expected2 = "rain,hot,high,false,N";
+
+        assertTrue(listOfRecord.contains(expected1));
+        assertTrue(listOfRecord.contains(expected2));
+
     }
 }

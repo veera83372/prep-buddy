@@ -6,6 +6,7 @@ import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import scala.Tuple2;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +34,16 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
         List<TextFacets> textFacets = listOfTextFacets(trainingSet, columnIndex);
         setGroupedFacets(textFacets);
-        setAllColumnFacets(trainingSet);
+        setAllColumnFacets(trainingSet, columnIndex);
 
     }
 
-    private void setAllColumnFacets(TransformableRDD trainingSet) {
+    private void setAllColumnFacets(TransformableRDD trainingSet, int categoricalIndex) {
         allColumnFacets = new ArrayList<>();
         for (int columnIndex : columnIndexes) {
             allColumnFacets.add(trainingSet.listFacets(columnIndex).rdd().collect());
         }
+        allColumnFacets.add(trainingSet.listFacets(categoricalIndex).rdd().collect());
     }
 
     private void setGroupedFacets(List<TextFacets> textFacets) {
@@ -75,41 +77,37 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
     @Override
     public String handleMissingData(RowRecord record) {
         List<Double> probs = BayesianProbability(record);
-        double normalizingConstant = 0.0;
-        for (Double prob : probs) {
-            normalizingConstant *= 1 / prob;
-        }
         Double highest = 0.0;
-        double probability = 0;
         for (Double prob : probs) {
-            Double multipliedWithConstant = prob * normalizingConstant;
-            if (multipliedWithConstant > highest) {
-                highest = multipliedWithConstant;
-                probability = prob;
+            prob = Double.parseDouble(new DecimalFormat("##.####").format(prob));
+            if (prob > highest) {
+                highest = prob;
             }
         }
-        return classKeys.get(probs.indexOf(probability));
+        return classKeys.get(probs.indexOf(highest));
     }
 
     private List<Double> BayesianProbability(RowRecord record) {
         List<Double> probs = new ArrayList<>();
         for (String classKey : classKeys) {
-            double probability = 0;
+            double probability = 1;
             for (int columnIndex : columnIndexes) {
-                probability *= conditionalProbability(classKey, record.valueAt(columnIndex));
+                double conditional = bayesProbability(classKey, record.valueAt(columnIndex));
+                probability *= bayesProbability(classKey, record.valueAt(columnIndex));
             }
-            probability *= classKeysProbability();
+            probability *= classKeysProbability(classKey);
+            probability = Double.parseDouble(new DecimalFormat("##.####").format(probability));
             probs.add(probability);
         }
         return probs;
     }
 
-    private double conditionalProbability(String classKey, String secondValue) {
+    private double bayesProbability(String classKey, String secondValue) {
         double intersectionCount = countOf(secondValue + " " + classKey);
-        double otherColumnCount = countOfInAllFacets(secondValue);
-        return intersectionCount / otherColumnCount;
-
+        double otherColumnCount = countOfInAllFacets(classKey);
+        return Double.parseDouble(new DecimalFormat("##.####").format(intersectionCount / otherColumnCount));
     }
+
 
     private double countOfInAllFacets(String value) {
         for (List<Tuple2<String, Integer>> allColumnFacet : allColumnFacets) {
@@ -125,7 +123,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
     private double countOf(String value) {
         for (List<Tuple2<String, Integer>> groupedFacet : groupedFacets) {
             for (Tuple2<String, Integer> tuple : groupedFacet) {
-                if (tuple._1().equals(value)) {
+                if (tuple._1().trim().equals(value.trim())) {
                     return tuple._2();
                 }
             }
@@ -133,7 +131,10 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         return 0;
     }
 
-    private double classKeysProbability() {
-        return 1 / classKeys.size();
+    private double classKeysProbability(String classKey) {
+        double classKeyCount = countOfInAllFacets(classKey);
+        return classKeyCount / count;
     }
+
+
 }
