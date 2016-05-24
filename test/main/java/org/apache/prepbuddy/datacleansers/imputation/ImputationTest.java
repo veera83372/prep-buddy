@@ -110,14 +110,18 @@ public class ImputationTest extends SparkTestCase {
                 "known,new,short,home,reads",
                 "unknown,new,short,work,reads",
                 "unknown,new,long,work,",
-                "unknown,follow Up,long,home,"
+                "unknown,follow Up,long,home,",
+                "unknown,follow Up,short,home,"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
+        TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(1, 2));
         List<String> listOfRecord = imputed.collect();
 
         String expected1 = "unknown,new,long,work,skips";
+        String expected2 = "unknown,follow Up,short,home,reads";
+
         assertTrue(listOfRecord.contains(expected1));
+        assertTrue(listOfRecord.contains(expected2));
     }
 
 
@@ -145,7 +149,6 @@ public class ImputationTest extends SparkTestCase {
         TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
         List<String> listOfRecord = imputed.collect();
 
-        System.out.println("listOfRecord = " + listOfRecord);
         String expected1 = "sunny,cool,high,false,N";
         String expected2 = "rain,hot,high,false,N";
 

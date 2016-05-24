@@ -6,16 +6,15 @@ import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import scala.Tuple2;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NaiveBayesSubstitution implements ImputationStrategy {
     private int[] columnIndexes;
     private List<List<Tuple2<String, Integer>>> groupedFacets;
-    private List<List<Tuple2<String, Integer>>> allColumnFacets;
     private long count;
-    private List<String> classKeys;
+    private List<Tuple2<String, Integer>> categoricalKeys;
+
 
     public NaiveBayesSubstitution(int... columnIndexes) {
         this.columnIndexes = columnIndexes;
@@ -29,35 +28,40 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
                 return record.valueAt(columnIndex).trim().isEmpty();
             }
         });
+
+        setCategoricalKeys(trainingSet, columnIndex);
+        setGroupedFacets(trainingSet, columnIndex);
         setCount(trainingSet);
-        setClassKeys(trainingSet, columnIndex);
-
-        List<TextFacets> textFacets = listOfTextFacets(trainingSet, columnIndex);
-        setGroupedFacets(textFacets);
-        setAllColumnFacets(trainingSet, columnIndex);
-
     }
 
-    private void setAllColumnFacets(TransformableRDD trainingSet, int categoricalIndex) {
-        allColumnFacets = new ArrayList<>();
-        for (int columnIndex : columnIndexes) {
-            allColumnFacets.add(trainingSet.listFacets(columnIndex).rdd().collect());
+
+
+    @Override
+    public String handleMissingData(RowRecord record) {
+        List<Probability> probabilities = bayesianProbabilities(record);
+        Probability highest = Probability.create(0);
+        for (Probability eachProbability : probabilities) {
+//            eachProbability.show();
+            if (eachProbability.isGreaterThan(highest)) {
+                highest = eachProbability;
+            }
         }
-        allColumnFacets.add(trainingSet.listFacets(categoricalIndex).rdd().collect());
+        return categoricalKeys.get(probabilities.indexOf(highest))._1();
     }
 
-    private void setGroupedFacets(List<TextFacets> textFacets) {
+    private void setCategoricalKeys(TransformableRDD trainingSet, int columnIndex) {
+        categoricalKeys = trainingSet.listFacets(columnIndex).rdd().collect();
+    }
+
+    private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
+        List<TextFacets> facetsRddList = new ArrayList<>();
+        for (int index : columnIndexes) {
+            facetsRddList.add(rdd.listFacets(index, columnIndex));
+        }
+
         groupedFacets = new ArrayList<>();
-        for (TextFacets textFacet : textFacets) {
+        for (TextFacets textFacet : facetsRddList) {
             groupedFacets.add(textFacet.rdd().collect());
-        }
-    }
-
-    private void setClassKeys(TransformableRDD trainingSet, int columnIndex) {
-        List<Tuple2<String, Integer>> listOfClassTuple = trainingSet.listFacets(columnIndex).rdd().collect();
-        classKeys = new ArrayList<>();
-        for (Tuple2<String, Integer> tuple : listOfClassTuple) {
-            classKeys.add(tuple._1());
         }
     }
 
@@ -65,59 +69,27 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         count = trainingSet.count();
     }
 
+    private List<Probability> bayesianProbabilities(RowRecord record) {
+        List<Probability> probabilities = new ArrayList<>();
+        for (Tuple2<String, Integer> categoricalKey : categoricalKeys) {
+            Probability bayesianProbability = Probability.create(1);
 
-    private List<TextFacets> listOfTextFacets(TransformableRDD rdd, int columnIndex) {
-        List<TextFacets> facetsRddList = new ArrayList<>();
-        for (int index : columnIndexes) {
-            facetsRddList.add(rdd.listFacets(index, columnIndex));
-        }
-        return facetsRddList;
-    }
-
-    @Override
-    public String handleMissingData(RowRecord record) {
-        List<Double> probs = BayesianProbability(record);
-        Double highest = 0.0;
-        for (Double prob : probs) {
-            prob = Double.parseDouble(new DecimalFormat("##.####").format(prob));
-            if (prob > highest) {
-                highest = prob;
-            }
-        }
-        return classKeys.get(probs.indexOf(highest));
-    }
-
-    private List<Double> BayesianProbability(RowRecord record) {
-        List<Double> probs = new ArrayList<>();
-        for (String classKey : classKeys) {
-            double probability = 1;
             for (int columnIndex : columnIndexes) {
-                double conditional = bayesProbability(classKey, record.valueAt(columnIndex));
-                probability *= bayesProbability(classKey, record.valueAt(columnIndex));
+                Probability bayesProbability = bayesProbability(record.valueAt(columnIndex), categoricalKey);
+                bayesianProbability = bayesianProbability.multiply(bayesProbability);
             }
-            probability *= classKeysProbability(classKey);
-            probability = Double.parseDouble(new DecimalFormat("##.####").format(probability));
-            probs.add(probability);
+            Probability categoricalKeyProbability = Probability.create((double) categoricalKey._2() / count);
+            bayesianProbability = bayesianProbability.multiply(categoricalKeyProbability);
+            probabilities.add(bayesianProbability);
         }
-        return probs;
+        return probabilities;
     }
 
-    private double bayesProbability(String classKey, String secondValue) {
-        double intersectionCount = countOf(secondValue + " " + classKey);
-        double otherColumnCount = countOfInAllFacets(classKey);
-        return Double.parseDouble(new DecimalFormat("##.####").format(intersectionCount / otherColumnCount));
-    }
-
-
-    private double countOfInAllFacets(String value) {
-        for (List<Tuple2<String, Integer>> allColumnFacet : allColumnFacets) {
-            for (Tuple2<String, Integer> tuple : allColumnFacet) {
-                if (tuple._1().equals(value)) {
-                    return tuple._2();
-                }
-            }
-        }
-        return 0;
+    private Probability bayesProbability(String otherColumnValue, Tuple2<String, Integer> categoricalKey) {
+        String groupValue = otherColumnValue + " " + categoricalKey._1();
+        double intersectionCount = countOf(groupValue);
+        double classKeyCount = categoricalKey._2();
+        return Probability.create(intersectionCount / classKeyCount);
     }
 
     private double countOf(String value) {
@@ -130,11 +102,4 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         }
         return 0;
     }
-
-    private double classKeysProbability(String classKey) {
-        double classKeyCount = countOfInAllFacets(classKey);
-        return classKeyCount / count;
-    }
-
-
 }
