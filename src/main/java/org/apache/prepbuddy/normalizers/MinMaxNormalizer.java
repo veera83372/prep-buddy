@@ -1,32 +1,45 @@
 package org.apache.prepbuddy.normalizers;
 
-
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.typesystem.FileType;
+import org.apache.spark.api.java.JavaDoubleRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.DoubleFunction;
 
 import static java.lang.Double.parseDouble;
-import static java.lang.Double.valueOf;
 
 
 public class MinMaxNormalizer implements NormalizationStrategy {
+    private final int minRange;
+    private final int maxRange;
 
-    private SerializableComparator<String> serializableComparator;
-    private Double min;
-    private Double max;
+    private Double minValue;
+    private Double maxValue;
 
-    public MinMaxNormalizer(SerializableComparator<String> serializableComparator) {
-        this.serializableComparator = serializableComparator;
+    public MinMaxNormalizer(int minRange, int maxRange) {
+        this.minRange = minRange;
+        this.maxRange = maxRange;
+    }
+
+    public MinMaxNormalizer() {
+        this(0, 1);
     }
 
     @Override
     public void prepare(TransformableRDD transformableRDD, int columnIndex) {
-        FileType fileType = transformableRDD.fileType;
-        min = valueOf(fileType.parseRecord(transformableRDD.min(serializableComparator))[columnIndex]);
-        max = valueOf(fileType.parseRecord(transformableRDD.max(serializableComparator))[columnIndex]);
+        JavaRDD<String> columnValues = transformableRDD.select(columnIndex);
+        JavaDoubleRDD rdd = columnValues.mapToDouble(new DoubleFunction<String>() {
+            @Override
+            public double call(String element) throws Exception {
+                return Double.parseDouble(element);
+            }
+        });
+        maxValue = rdd.max();
+        minValue = rdd.min();
     }
 
     @Override
     public String normalize(String rawValue) {
-        return String.valueOf((parseDouble(rawValue) - min) / (max - min));
+        double normalizedValue = ((parseDouble(rawValue) - minValue) / (maxValue - minValue)) * (maxRange - minRange) + minRange;
+        return String.valueOf(normalizedValue);
     }
 }
