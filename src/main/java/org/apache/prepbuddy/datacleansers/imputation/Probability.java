@@ -1,5 +1,8 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
+import org.apache.prepbuddy.exceptions.ApplicationException;
+import org.apache.prepbuddy.exceptions.ErrorMessages;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
@@ -11,6 +14,8 @@ public class Probability implements Serializable {
     }
 
     public static Probability create(double probability) {
+        if (probability < 0 || probability > 1)
+            throw new ApplicationException(ErrorMessages.PROBABILITY_IS_NOT_IN_RANGE);
         probability = Double.parseDouble(new DecimalFormat("##.####").format(probability));
         return new Probability(probability);
     }
