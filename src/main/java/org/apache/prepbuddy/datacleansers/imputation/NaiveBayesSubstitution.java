@@ -88,9 +88,6 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
                 probability = prob;
             }
         }
-        System.out.println("probs = " + probs);
-        System.out.println("probability = " + probability);
-        System.out.println(probs.indexOf(probability) + "jsdbcvhsdsjvsj");
         return classKeys.get(probs.indexOf(probability));
     }
 
@@ -99,8 +96,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         for (String classKey : classKeys) {
             double probability = 0;
             for (int columnIndex : columnIndexes) {
-                probability *=  conditionalProbability(classKey, record.valueAt(columnIndex), columnIndex);
-                System.out.println("probabilityInsite = " + probability);
+                probability *= conditionalProbability(classKey, record.valueAt(columnIndex));
             }
             probability *= classKeysProbability();
             probs.add(probability);
@@ -108,11 +104,9 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         return probs;
     }
 
-    private double conditionalProbability(String classKey, String secondValue, int columnIndex) {
-        double intersectionCount = countOf(secondValue + " " +classKey, columnIndex);
+    private double conditionalProbability(String classKey, String secondValue) {
+        double intersectionCount = countOf(secondValue + " " + classKey);
         double otherColumnCount = countOfInAllFcates(secondValue);
-//        System.out.println("secondValue = " + secondValue+" " +classKey);
-//        System.out.println("intersectionCount = " + intersectionCount);
         return intersectionCount / otherColumnCount;
 
     }
@@ -128,13 +122,9 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         return 0;
     }
 
-    private double countOf(String value, int columnIndex) {
-//        List<Tuple2<String, Integer>> listOfTuple = groupedFacets.get(columnIndex);
-        System.out.println("value = " + value);
+    private double countOf(String value) {
         for (List<Tuple2<String, Integer>> groupedFacet : groupedFacets) {
             for (Tuple2<String, Integer> tuple : groupedFacet) {
-
-                System.out.println("tuple._1() = " + tuple._1());
                 if (tuple._1().equals(value)) {
                     return tuple._2();
                 }
