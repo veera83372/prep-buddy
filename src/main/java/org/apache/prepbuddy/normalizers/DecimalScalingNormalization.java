@@ -19,7 +19,6 @@ public class DecimalScalingNormalization implements NormalizationStrategy {
             }
         });
         length = String.valueOf(rdd.max().intValue()).length();
-        System.out.println("length = " + length);
     }
 
     @Override

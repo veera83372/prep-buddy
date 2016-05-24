@@ -21,8 +21,6 @@ public class ZScoreNormalization implements NormalizationStrategy {
         });
         standardDeviation = doubleRDD.stdev();
         mean = doubleRDD.mean();
-        System.out.println("standardDeviation = " + standardDeviation);
-        System.out.println("mean = " + mean);
     }
 
     @Override
