@@ -5,6 +5,7 @@ import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.typesystem.FileType;
 
 import static java.lang.Double.parseDouble;
+import static java.lang.Double.valueOf;
 
 
 public class MinMaxNormalizer implements NormalizationStrategy {
@@ -20,8 +21,8 @@ public class MinMaxNormalizer implements NormalizationStrategy {
     @Override
     public void prepare(TransformableRDD transformableRDD, int columnIndex) {
         FileType fileType = transformableRDD.fileType;
-        min = Double.valueOf(fileType.parseRecord(transformableRDD.min(serializableComparator))[columnIndex]);
-        max = Double.valueOf(fileType.parseRecord(transformableRDD.max(serializableComparator))[columnIndex]);
+        min = valueOf(fileType.parseRecord(transformableRDD.min(serializableComparator))[columnIndex]);
+        max = valueOf(fileType.parseRecord(transformableRDD.max(serializableComparator))[columnIndex]);
     }
 
     @Override

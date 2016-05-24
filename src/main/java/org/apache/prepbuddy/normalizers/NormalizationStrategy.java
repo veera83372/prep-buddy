@@ -8,5 +8,5 @@ public interface NormalizationStrategy extends Serializable {
 
     void prepare(TransformableRDD transformableRDD, int columnIndex);
 
-    String normalize(String rawValue);
+    public String normalize(String rawValue);
 }
