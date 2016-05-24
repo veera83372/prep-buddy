@@ -138,7 +138,8 @@ public class ImputationTest extends SparkTestCase {
                 "overcast,mild,high,true,P",
                 "overcast,hot,normal,false,P",
                 "rain,mild,high,true,N",
-                "sunny,cool,high,false,"
+                "sunny,cool,high,false,",
+                "rain,hot,high,false,"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         TransformableRDD imputed = initialRDD.impute(4, new NaiveBayesSubstitution(0, 1, 2, 3));
@@ -146,7 +147,10 @@ public class ImputationTest extends SparkTestCase {
 
         System.out.println("listOfRecord = " + listOfRecord);
         String expected1 = "sunny,cool,high,false,N";
+        String expected2 = "rain,hot,high,false,N";
+
         assertTrue(listOfRecord.contains(expected1));
+        assertTrue(listOfRecord.contains(expected2));
 
     }
 }
