@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NaiveBayesClassifier implements Serializable {
-    private int[] columnIndexes;
+    private int[] independentColumnIndexes;
     private List<List<Tuple2<String, Integer>>> groupedFacets;
     private long count;
     private List<Tuple2<String, Integer>> categoricalKeys;
 
-    public NaiveBayesClassifier(int[] columnIndexes) {
-        this.columnIndexes = columnIndexes;
+    public NaiveBayesClassifier(int... columnIndexes) {
+        this.independentColumnIndexes = columnIndexes;
     }
 
     public void train(TransformableRDD rdd, final int columnIndex) {
@@ -52,7 +52,7 @@ public class NaiveBayesClassifier implements Serializable {
 
     private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
         List<TextFacets> facetsRddList = new ArrayList<>();
-        for (int index : columnIndexes) {
+        for (int index : independentColumnIndexes) {
             facetsRddList.add(rdd.listFacets(index, columnIndex));
         }
 
@@ -71,7 +71,7 @@ public class NaiveBayesClassifier implements Serializable {
         for (Tuple2<String, Integer> categoricalKey : categoricalKeys) {
             Probability bayesianProbability = Probability.create(1);
 
-            for (int columnIndex : columnIndexes) {
+            for (int columnIndex : independentColumnIndexes) {
                 Probability bayesProbability = bayesProbability(record.valueAt(columnIndex), categoricalKey);
                 bayesianProbability = bayesianProbability.multiply(bayesProbability);
             }
