@@ -1,6 +1,5 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -16,21 +15,15 @@ public class NaiveBayesClassifier implements Serializable {
     private long count;
     private List<Tuple2<String, Integer>> categoricalKeys;
 
+
     public NaiveBayesClassifier(int... columnIndexes) {
         this.independentColumnIndexes = columnIndexes;
     }
 
     public void train(TransformableRDD rdd, final int columnIndex) {
-        TransformableRDD trainingSet = rdd.removeRows(new RowPurger.Predicate() {
-            @Override
-            public Boolean evaluate(RowRecord record) {
-                return record.valueAt(columnIndex).trim().isEmpty();
-            }
-        });
-
-        setCategoricalKeys(trainingSet, columnIndex);
-        setGroupedFacets(trainingSet, columnIndex);
-        setCount(trainingSet);
+        setCategoricalKeys(rdd, columnIndex);
+        setGroupedFacets(rdd, columnIndex);
+        setCount(rdd);
     }
 
 

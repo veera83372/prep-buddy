@@ -1,6 +1,5 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
-import junit.framework.Assert;
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -8,6 +7,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
 import java.util.Arrays;
+
+import static junit.framework.Assert.assertEquals;
 
 public class NaiveBayesClassifierTest extends SparkTestCase {
     @Test
@@ -35,8 +36,9 @@ public class NaiveBayesClassifierTest extends SparkTestCase {
         String[] rowRecord = ("sunny,cool,high,false").split(",");
         String mostProbable = naiveBayesClassifier.makeDecision(new RowRecord(rowRecord));
 
-        Assert.assertEquals("N", mostProbable);
-        String expected2 = "rain,hot,high,false,N";
+        assertEquals("N", mostProbable);
+        rowRecord = ("rain,hot,high,false,N").split(",");
+        assertEquals("N", naiveBayesClassifier.makeDecision(new RowRecord(rowRecord)));
 
     }
 }
