@@ -15,8 +15,8 @@ public class ZScoreNormalization implements NormalizationStrategy {
         JavaRDD<String> columnValue = transformableRDD.select(columnIndex);
         JavaDoubleRDD doubleRDD = columnValue.mapToDouble(new DoubleFunction<String>() {
             @Override
-            public double call(String s) throws Exception {
-                return Double.parseDouble(s);
+            public double call(String element) throws Exception {
+                return Double.parseDouble(element);
             }
         });
         standardDeviation = doubleRDD.stdev();

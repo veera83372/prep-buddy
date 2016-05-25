@@ -27,14 +27,14 @@ public class MinMaxNormalizer implements NormalizationStrategy {
     @Override
     public void prepare(TransformableRDD transformableRDD, int columnIndex) {
         JavaRDD<String> columnValues = transformableRDD.select(columnIndex);
-        JavaDoubleRDD rdd = columnValues.mapToDouble(new DoubleFunction<String>() {
+        JavaDoubleRDD doubleRDD = columnValues.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String element) throws Exception {
                 return Double.parseDouble(element);
             }
         });
-        maxValue = rdd.max();
-        minValue = rdd.min();
+        maxValue = doubleRDD.max();
+        minValue = doubleRDD.min();
     }
 
     @Override
