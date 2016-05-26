@@ -35,8 +35,8 @@ public class NaiveBayesClassifier implements Serializable {
                 highest = eachProbability;
             }
         }
-        String probableCategory = categoricalKeys.get(probabilities.indexOf(highest))._1();
-        return probableCategory;
+        int probableCategoryIndex = probabilities.indexOf(highest);
+        return categoricalKeys.get(probableCategoryIndex)._1();
     }
 
     private void setCategoricalKeys(TransformableRDD trainingSet, int columnIndex) {
