@@ -248,7 +248,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     private void checkColumnIndexOutOfBoundException(int... columnIndexes) {
         for (int index : columnIndexes) {
-            if (size() <= index)
+            if (index < 0 || size() <= index)
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
         }
     }
