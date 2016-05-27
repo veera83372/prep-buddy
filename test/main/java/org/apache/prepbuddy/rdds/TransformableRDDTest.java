@@ -9,7 +9,6 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
-import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -168,7 +167,7 @@ public class TransformableRDDTest extends SparkTestCase {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void toDoubleRddShouldThrowErrorIfColumnValuesAreNotNumeric() {
+    public void toDoubleRddShouldThrowExceptionIfColumnValuesAreNotNumeric() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
@@ -177,6 +176,32 @@ public class TransformableRDDTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
-        JavaDoubleRDD doubleRdd = initialRDD.toDoubleRDD(2);
+        initialRDD.toDoubleRDD(2);
+    }
+
+    @Test
+    public void toMultipliedRddShouldThrowExceptionIfGivenFirstColumnIsNotNumeric() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        exception.expect(ApplicationException.class);
+        initialRDD.toMultipliedRdd(2, 3);
+    }
+
+    @Test
+    public void toMultipliedRddShouldThrowExceptionIfGivenSecondColumnIsNotNumeric() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        exception.expect(ApplicationException.class);
+        initialRDD.toMultipliedRdd(3, 2);
     }
 }
