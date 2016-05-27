@@ -261,10 +261,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
-        List<String> columnSamples = takeSampleSet(columnIndex);
-        BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
-        boolean isNumeric = baseType.equals(BaseDataType.NUMERIC);
-        if (!isNumeric)
+        if (!isNumericColumn(columnIndex))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
 
         return this.mapToDouble(new DoubleFunction<String>() {
@@ -279,6 +276,12 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    private boolean isNumericColumn(int columnIndex) {
+        List<String> columnSamples = takeSampleSet(columnIndex);
+        BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
+        return baseType.equals(BaseDataType.NUMERIC);
+    }
+
     private List<String> takeSampleSet(int columnIndex) {
         List<String> rowSamples = this.takeSample(false, 100);
         List<String> columnSamples = new LinkedList<>();
@@ -289,16 +292,18 @@ public class TransformableRDD extends JavaRDD<String> {
         return columnSamples;
     }
 
-    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int xColumnIndex) {
+    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int anotherColumn) {
+        if (!isNumericColumn(columnIndex) || !isNumericColumn(anotherColumn))
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String row) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(row);
                 String columnValue = recordAsArray[columnIndex];
-                String otherColumnValue = recordAsArray[xColumnIndex];
+                String otherColumnValue = recordAsArray[anotherColumn];
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
-                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
+                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[anotherColumn]);
 
             }
         });
