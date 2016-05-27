@@ -209,11 +209,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return typeAnalyzer.getType();
     }
 
-    public TransformableRDD dropFlag(final int symbolColumnIndex) {
-        return this.removeColumn(symbolColumnIndex);
-    }
-
-    public TransformableRDD removeColumn(final int columnIndex) {
+    public TransformableRDD dropColumn(final int columnIndex) {
         checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
@@ -310,6 +306,7 @@ public class TransformableRDD extends JavaRDD<String> {
     public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int anotherColumn) {
         if (!isNumericColumn(columnIndex) || !isNumericColumn(anotherColumn))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
+
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String row) throws Exception {
@@ -325,7 +322,9 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         normalizer.prepare(this, columnIndex);
+
         JavaRDD<String> normalized = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
