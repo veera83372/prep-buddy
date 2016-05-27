@@ -88,6 +88,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD replace(final int columnIndex, final Replacement... replacements) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -103,6 +104,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TextFacets listFacets(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -120,6 +122,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TextFacets listFacets(final int... columnIndexes) {
+        checkColumnIndexOutOfBoundException(columnIndexes);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -141,6 +144,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
         List<Tuple2<String, Integer>> tuples = rdd.collect();
@@ -198,6 +202,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public DataType inferType(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         List<String> columnSamples = takeSampleSet(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
@@ -208,6 +213,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD removeColumn(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -226,6 +232,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -239,7 +246,15 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
+    private void checkColumnIndexOutOfBoundException(int... columnIndexes) {
+        for (int index : columnIndexes) {
+            if (size() <= index)
+                throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
+        }
+    }
+
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         strategy.prepareSubstitute(this, columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
