@@ -32,8 +32,7 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class TransformableRDD extends JavaRDD<String> {
     private FileType fileType;
@@ -330,5 +329,32 @@ public class TransformableRDD extends JavaRDD<String> {
                 return fileType.parseRecord(record)[columnIndex];
             }
         });
+    }
+
+    public int size() {
+        List<String> sampleString = this.takeSample(false, 10);
+        Map<Integer, Integer> lengthWithCount = new HashMap<>();
+        for (String row : sampleString) {
+            Set<Integer> lengths = lengthWithCount.keySet();
+            int rowLength = fileType.parseRecord(row).length;
+            if (!lengths.contains(rowLength))
+                lengthWithCount.put(rowLength, 1);
+            else {
+                Integer count = lengthWithCount.get(rowLength);
+                lengthWithCount.put(rowLength, count + 1);
+            }
+        }
+        return getHighestCountKey(lengthWithCount);
+
+    }
+
+    private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
+        Integer highest = 0;
+        for (Integer key : lengthWithCount.keySet()) {
+            Integer count = lengthWithCount.get(key);
+            if (highest < count)
+                highest = count;
+        }
+        return highest;
     }
 }

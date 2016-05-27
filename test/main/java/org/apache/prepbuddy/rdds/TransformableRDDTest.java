@@ -204,4 +204,17 @@ public class TransformableRDDTest extends SparkTestCase {
         exception.expect(ApplicationException.class);
         initialRDD.toMultipliedRdd(3, 2);
     }
+
+    @Test
+    public void sizeShouldGiveTheNumberOfColumnInRdd() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        int size = initialRDD.size();
+        assertEquals(4, size);
+    }
 }
