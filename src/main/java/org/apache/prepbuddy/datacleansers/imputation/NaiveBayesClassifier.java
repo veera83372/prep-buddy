@@ -46,7 +46,7 @@ public class NaiveBayesClassifier implements Serializable {
     private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
         List<TextFacets> facetsRddList = new ArrayList<>();
         for (int index : independentColumnIndexes) {
-            facetsRddList.add(rdd.listFacets(index, columnIndex));
+            facetsRddList.add(rdd.listFacets(new int[]{index, columnIndex}));
         }
 
         groupedFacets = new ArrayList<>();

@@ -41,7 +41,7 @@ public class BayesProbabilityCalculator {
     private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
         List<TextFacets> facetsRddList = new ArrayList<>();
         for (int index : columnIndexes) {
-            facetsRddList.add(rdd.listFacets(index, columnIndex));
+            facetsRddList.add(rdd.listFacets(new int[]{index, columnIndex}));
         }
 
         groupedFacets = new ArrayList<>();

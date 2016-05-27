@@ -121,7 +121,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
-    public TextFacets listFacets(final int... columnIndexes) {
+    public TextFacets listFacets(final int[] columnIndexes) {
         checkColumnIndexOutOfBoundException(columnIndexes);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
@@ -365,11 +365,14 @@ public class TransformableRDD extends JavaRDD<String> {
 
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
         Integer highest = 0;
+        Integer highestKey = 0;
         for (Integer key : lengthWithCount.keySet()) {
             Integer count = lengthWithCount.get(key);
-            if (highest < count)
+            if (highest < count) {
                 highest = count;
+                highestKey = key;
+            }
         }
-        return highest;
+        return highestKey;
     }
 }
