@@ -47,6 +47,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         final PaillierPublicKey publicKey = keyPair.getPublicKey();
         final PaillierContext signedContext = publicKey.createSignedContext();
         JavaRDD encryptedRDD = this.map(new Function<String, String>() {

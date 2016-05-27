@@ -2,7 +2,7 @@ package org.apache.prepbuddy.rdds;
 
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.exceptions.ApplicationException;
-import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Rule;
@@ -43,7 +43,7 @@ public class ExceptionTest extends SparkTestCase {
 
 
     @Test
-    public void listFacetsShouldThrowExceptionForNullColumnIndex() {
+    public void listFacetsShouldThrowException() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
@@ -52,7 +52,19 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
-        TextFacets textFacets = initialRDD.listFacets(5);
+        initialRDD.listFacets(new int[]{3, 6});
     }
 
+    @Test
+    public void clustersShouldThrowExceptionForIllegalColumnIndex() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        exception.expect(ApplicationException.class);
+        initialRDD.clusters(-1, new SimpleFingerprintAlgorithm());
+    }
 }
