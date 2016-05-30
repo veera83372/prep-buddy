@@ -4,12 +4,11 @@ import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class NaiveBayesClassifierTest extends SparkTestCase {
     @Test
