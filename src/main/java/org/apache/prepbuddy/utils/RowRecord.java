@@ -14,4 +14,12 @@ public class RowRecord {
     public int length() {
         return columnValues.length;
     }
+
+    public Boolean hasEmptyColumn() {
+        for (String columnValue : columnValues) {
+            if (columnValue.trim().isEmpty())
+                return true;
+        }
+        return false;
+    }
 }

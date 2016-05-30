@@ -17,7 +17,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
         TransformableRDD trainingSet = rdd.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                return record.valueAt(categoricalColumnIndex).trim().isEmpty();
+                return record.hasEmptyColumn();
             }
         });
 
