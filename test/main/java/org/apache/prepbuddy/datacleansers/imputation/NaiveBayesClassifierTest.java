@@ -34,11 +34,11 @@ public class NaiveBayesClassifierTest extends SparkTestCase {
 
         naiveBayesClassifier.train(initialRDD, 4);
         String[] rowRecord = ("sunny,cool,high,false").split(",");
-        String mostProbable = naiveBayesClassifier.classify(new RowRecord(rowRecord));
+        String mostProbable = naiveBayesClassifier.makeDecision(new RowRecord(rowRecord));
 
         assertEquals("N", mostProbable);
         rowRecord = ("rain,hot,high,false,N").split(",");
-        assertEquals("N", naiveBayesClassifier.classify(new RowRecord(rowRecord)));
+        assertEquals("N", naiveBayesClassifier.makeDecision(new RowRecord(rowRecord)));
 
     }
 }
