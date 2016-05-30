@@ -13,21 +13,21 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
     }
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, final int missingDataColumn) {
+    public void prepareSubstitute(TransformableRDD rdd, final int categoricalColumnIndex) {
         TransformableRDD trainingSet = rdd.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                return record.valueAt(missingDataColumn).trim().isEmpty();
+                return record.hasEmptyColumn();
             }
         });
 
-        naiveBayesClassifier.train(trainingSet, missingDataColumn);
+        naiveBayesClassifier.train(trainingSet, categoricalColumnIndex);
     }
 
 
     @Override
     public String handleMissingData(RowRecord record) {
-        return naiveBayesClassifier.classify(record);
+        return naiveBayesClassifier.makeDecision(record);
     }
 
 }
