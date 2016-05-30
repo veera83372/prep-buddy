@@ -17,6 +17,5 @@ public class LikelihoodTableTest {
         table.setProbability("buy_yes", "age_less_than_30", 0.5);
         double prob = table.lookup("buy_yes", "age_less_than_30");
         assertEquals(0.5, prob);
-
     }
 }
