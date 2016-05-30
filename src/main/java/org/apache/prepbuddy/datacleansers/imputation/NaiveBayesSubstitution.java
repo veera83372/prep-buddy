@@ -7,10 +7,8 @@ import org.apache.prepbuddy.utils.RowRecord;
 public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private NaiveBayesClassifier naiveBayesClassifier;
-    private int[] independentColumnIndexes;
 
     public NaiveBayesSubstitution(int... independentColumnIndexes) {
-        this.independentColumnIndexes = independentColumnIndexes;
         naiveBayesClassifier = new NaiveBayesClassifier(independentColumnIndexes);
     }
 

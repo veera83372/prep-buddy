@@ -10,4 +10,8 @@ public class RowRecord {
     public String valueAt(int columnIndex) {
         return columnValues[columnIndex];
     }
+
+    public int length() {
+        return columnValues.length;
+    }
 }

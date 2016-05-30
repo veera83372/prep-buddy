@@ -63,7 +63,7 @@ public class SystemTest extends SparkTestCase {
         assertEquals(1, mapedRDD.count());
         assertEquals("Star X,Y,,*", mapedRDD.first());
 
-        TransformableRDD unflaged = mapedRDD.dropFlag(3);
+        TransformableRDD unflaged = mapedRDD.dropColumn(3);
 
         assertEquals("Star X,Y,", unflaged.first());
         TransformableRDD imputedRDD = purged.impute(2, new ImputationStrategy() {

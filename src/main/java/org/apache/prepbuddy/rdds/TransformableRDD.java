@@ -32,8 +32,7 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class TransformableRDD extends JavaRDD<String> {
     private FileType fileType;
@@ -48,6 +47,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         final PaillierPublicKey publicKey = keyPair.getPublicKey();
         final PaillierContext signedContext = publicKey.createSignedContext();
         JavaRDD encryptedRDD = this.map(new Function<String, String>() {
@@ -89,6 +89,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD replace(final int columnIndex, final Replacement... replacements) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
             @Override
@@ -104,6 +105,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TextFacets listFacets(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -120,7 +122,8 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
-    public TextFacets listFacets(final int... columnIndexes) {
+    public TextFacets listFacets(final int[] columnIndexes) {
+        checkColumnIndexOutOfBoundException(columnIndexes);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
             @Override
             public Tuple2<String, Integer> call(String record) throws Exception {
@@ -142,6 +145,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         TextFacets textFacets = this.listFacets(columnIndex);
         JavaPairRDD<String, Integer> rdd = textFacets.rdd();
         List<Tuple2<String, Integer>> tuples = rdd.collect();
@@ -199,16 +203,14 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public DataType inferType(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         List<String> columnSamples = takeSampleSet(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
 
-    public TransformableRDD dropFlag(final int symbolColumnIndex) {
-        return this.removeColumn(symbolColumnIndex);
-    }
-
-    public TransformableRDD removeColumn(final int columnIndex) {
+    public TransformableRDD dropColumn(final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -227,6 +229,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -240,7 +243,15 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
+    private void checkColumnIndexOutOfBoundException(int... columnIndexes) {
+        for (int index : columnIndexes) {
+            if (index < 0 || size() <= index)
+                throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
+        }
+    }
+
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         strategy.prepareSubstitute(this, columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
 
@@ -261,10 +272,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
 
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
-        List<String> columnSamples = takeSampleSet(columnIndex);
-        BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
-        boolean isNumeric = baseType.equals(BaseDataType.NUMERIC);
-        if (!isNumeric)
+        if (!isNumericColumn(columnIndex))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
 
         return this.mapToDouble(new DoubleFunction<String>() {
@@ -279,6 +287,12 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
+    private boolean isNumericColumn(int columnIndex) {
+        List<String> columnSamples = takeSampleSet(columnIndex);
+        BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
+        return baseType.equals(BaseDataType.NUMERIC);
+    }
+
     private List<String> takeSampleSet(int columnIndex) {
         List<String> rowSamples = this.takeSample(false, 100);
         List<String> columnSamples = new LinkedList<>();
@@ -289,23 +303,28 @@ public class TransformableRDD extends JavaRDD<String> {
         return columnSamples;
     }
 
-    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int xColumnIndex) {
+    public JavaDoubleRDD toMultipliedRdd(final int columnIndex, final int anotherColumn) {
+        if (!isNumericColumn(columnIndex) || !isNumericColumn(anotherColumn))
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
+
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String row) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(row);
                 String columnValue = recordAsArray[columnIndex];
-                String otherColumnValue = recordAsArray[xColumnIndex];
+                String otherColumnValue = recordAsArray[anotherColumn];
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
-                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[xColumnIndex]);
+                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[anotherColumn]);
 
             }
         });
     }
 
     public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
+        checkColumnIndexOutOfBoundException(columnIndex);
         normalizer.prepare(this, columnIndex);
+
         JavaRDD<String> normalized = this.map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
@@ -325,5 +344,35 @@ public class TransformableRDD extends JavaRDD<String> {
                 return fileType.parseRecord(record)[columnIndex];
             }
         });
+    }
+
+    public int size() {
+        List<String> sampleString = this.takeSample(false, 10);
+        Map<Integer, Integer> lengthWithCount = new HashMap<>();
+        for (String row : sampleString) {
+            Set<Integer> lengths = lengthWithCount.keySet();
+            int rowLength = fileType.parseRecord(row).length;
+            if (!lengths.contains(rowLength))
+                lengthWithCount.put(rowLength, 1);
+            else {
+                Integer count = lengthWithCount.get(rowLength);
+                lengthWithCount.put(rowLength, count + 1);
+            }
+        }
+        return getHighestCountKey(lengthWithCount);
+
+    }
+
+    private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
+        Integer highest = 0;
+        Integer highestKey = 0;
+        for (Integer key : lengthWithCount.keySet()) {
+            Integer count = lengthWithCount.get(key);
+            if (highest < count) {
+                highest = count;
+                highestKey = key;
+            }
+        }
+        return highestKey;
     }
 }
