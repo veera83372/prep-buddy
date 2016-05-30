@@ -20,14 +20,13 @@ public class NaiveBayesClassifier implements Serializable {
         this.independentColumnIndexes = columnIndexes;
     }
 
-    public void train(TransformableRDD rdd, final int columnIndex) {
-        setCategoricalKeys(rdd, columnIndex);
-        setGroupedFacets(rdd, columnIndex);
-        setCount(rdd);
+    public void train(TransformableRDD trainingData, final int missingDataColumn) {
+        setCategoricalKeys(trainingData, missingDataColumn);
+        setGroupedFacets(trainingData, missingDataColumn);
+        setCount(trainingData);
     }
 
-
-    public String makeDecision(RowRecord record) {
+    public String classify(RowRecord record) {
         List<Probability> probabilities = bayesianProbabilities(record);
         Probability highest = Probability.create(0);
         for (Probability eachProbability : probabilities) {
@@ -39,14 +38,14 @@ public class NaiveBayesClassifier implements Serializable {
         return categoricalKeys.get(probableCategoryIndex)._1();
     }
 
-    private void setCategoricalKeys(TransformableRDD trainingSet, int columnIndex) {
-        categoricalKeys = trainingSet.listFacets(columnIndex).rdd().collect();
+    private void setCategoricalKeys(TransformableRDD trainingSet, int missingDataColumn) {
+        categoricalKeys = trainingSet.listFacets(missingDataColumn).rdd().collect();
     }
 
-    private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
+    private void setGroupedFacets(TransformableRDD rdd, int missingDataColumn) {
         List<TextFacets> facetsRddList = new ArrayList<>();
         for (int index : independentColumnIndexes) {
-            facetsRddList.add(rdd.listFacets(index, columnIndex));
+            facetsRddList.add(rdd.listFacets(index, missingDataColumn));
         }
 
         groupedFacets = new ArrayList<>();

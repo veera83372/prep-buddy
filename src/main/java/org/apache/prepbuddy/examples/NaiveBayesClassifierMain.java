@@ -35,7 +35,7 @@ public class NaiveBayesClassifierMain {
         naiveBayesClassifier.train(transformableRDD, 9);
 
         String[] testSet1 = (",,,,,THEFT,TELEPHONE THREAT,APARTMENT,,,,12,,,,,,,,,,,,,,2232").split(",");
-        String test1Decision = naiveBayesClassifier.makeDecision(new RowRecord(testSet1));
+        String test1Decision = naiveBayesClassifier.classify(new RowRecord(testSet1));
         System.out.println("test1Decision = " + test1Decision);
         sc.close();
     }
