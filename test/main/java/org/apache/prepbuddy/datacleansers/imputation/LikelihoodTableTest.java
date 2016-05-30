@@ -14,8 +14,8 @@ public class LikelihoodTableTest {
         LikelihoodTable table = new LikelihoodTable();
         List<String> strings = Arrays.asList(new String[]{"buy_yes", "buy_no"});
         table.addRowKeys(strings);
-        table.setProbability("buy_yes", "age_less_than_30", 0.5);
-        double prob = table.lookup("buy_yes", "age_less_than_30");
-        assertEquals(0.5, prob);
+        table.setProbability("buy_yes", "age_less_than_30", Probability.create(0.5));
+        Probability prob = table.lookup("buy_yes", "age_less_than_30");
+        assertEquals(Probability.create(0.5), prob);
     }
 }
