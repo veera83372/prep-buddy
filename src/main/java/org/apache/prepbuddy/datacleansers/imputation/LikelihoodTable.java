@@ -8,23 +8,23 @@ import java.util.Map;
 public class LikelihoodTable implements Serializable {
 
 
-    private final HashMap<String, Map<String, Double>> lookupTable;
+    private final HashMap<String, Map<String, Probability>> lookupTable;
 
     public LikelihoodTable() {
         lookupTable = new HashMap<>();
     }
 
-    public double lookup(String rowKey, String columnKey) {
+    public Probability lookup(String rowKey, String columnKey) {
         return lookupTable.get(rowKey).get(columnKey);
     }
 
     public void addRowKeys(List<String> values) {
         for (String value : values) {
-            lookupTable.put(value, new HashMap<String, Double>());
+            lookupTable.put(value, new HashMap<String, Probability>());
         }
     }
 
-    public void setProbability(String rowKey, String columnKey, double probability) {
+    public void setProbability(String rowKey, String columnKey, Probability probability) {
         lookupTable.get(rowKey).put(columnKey, probability);
     }
 

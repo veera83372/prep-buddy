@@ -21,6 +21,7 @@ import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
@@ -374,5 +375,31 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         }
         return highestKey;
+    }
+
+    public PivotTable pivotByCount(int firstColumn, int secondColumn) {
+        PivotTable pivotTable = new PivotTable();
+        TextFacets textFacets = listFacets(new int[]{firstColumn, secondColumn});
+        List<Tuple2<String, Integer>> tuples = textFacets.rdd().collect();
+        for (Tuple2<String, Integer> tuple : tuples) {
+            String[] split = tuple._1().split(" ");
+            pivotTable.addEntry(split[0], split[1], tuple._2());
+        }
+        return pivotTable;
+    }
+
+    public PivotTable pivotByCounts(int pivotalColumn, int[] independentColumnIndexes) {
+        PivotTable pivotTable = new PivotTable();
+
+        for (int index : independentColumnIndexes) {
+            TextFacets facets = listFacets(new int[]{pivotalColumn, index});
+            List<Tuple2<String, Integer>> tuples = facets.rdd().collect();
+            for (Tuple2<String, Integer> tuple : tuples) {
+                String[] split = tuple._1().split(" ");
+                pivotTable.addEntry(split[0], split[1], tuple._2());
+            }
+        }
+        return pivotTable;
+
     }
 }

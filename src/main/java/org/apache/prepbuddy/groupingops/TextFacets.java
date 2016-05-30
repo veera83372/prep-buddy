@@ -85,4 +85,12 @@ public class TextFacets implements Serializable {
     }
 
 
+    public List<String> cardinalValues() {
+        List<Tuple2<String, Integer>> tuples = facets.collect();
+        ArrayList<String> keys = new ArrayList<>();
+        for (Tuple2<String, Integer> tuple : tuples) {
+            keys.add(tuple._1());
+        }
+        return keys;
+    }
 }
