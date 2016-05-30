@@ -1,11 +1,11 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
-import java.util.Arrays;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LikelihoodTable {
+public class LikelihoodTable implements Serializable {
 
 
     private final HashMap<String, Map<String, Double>> lookupTable;
