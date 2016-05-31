@@ -12,4 +12,8 @@ public class PivotTable<T> implements Serializable {
             lookupTable.put(rowKey, new HashMap<String, T>());
         lookupTable.get(rowKey).put(columnKey, value);
     }
+
+    public T valueAt(String rowKey, String columnKey) {
+        return lookupTable.get(rowKey).get(columnKey);
+    }
 }

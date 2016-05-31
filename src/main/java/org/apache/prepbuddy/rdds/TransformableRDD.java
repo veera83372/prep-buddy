@@ -133,7 +133,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 for (int columnIndex : columnIndexes) {
                     joinValue += " " + columnValues[columnIndex];
                 }
-                return new Tuple2<>(joinValue, 1);
+                return new Tuple2<>(joinValue.trim(), 1);
             }
         });
         JavaPairRDD<String, Integer> facets = columnValuePair.reduceByKey(new Function2<Integer, Integer, Integer>() {
@@ -390,7 +390,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     public PivotTable pivotByCounts(int pivotalColumn, int[] independentColumnIndexes) {
         PivotTable pivotTable = new PivotTable();
-
+        
         for (int index : independentColumnIndexes) {
             TextFacets facets = listFacets(new int[]{pivotalColumn, index});
             List<Tuple2<String, Integer>> tuples = facets.rdd().collect();
