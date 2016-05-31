@@ -33,7 +33,8 @@ public class NaiveBayesClassifier implements Serializable {
         final long totalRows = trainingSet.count();
         probs = (PivotTable<Probability>) frequencyTable.transform(new TransformationFunction<Integer, Probability>() {
             public Probability transform(Integer input) {
-                Probability probability = new Probability((double) input.intValue() / totalRows);
+                double value = (double) input.intValue() / totalRows;
+                Probability probability = new Probability(value);
                 return probability;
             }
 
