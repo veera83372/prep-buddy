@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class NaiveBayesClassifierTest extends SparkTestCase {
+public class NaiveBayesSubstitutionTest extends SparkTestCase {
     @Test
     public void shouldMakeDecisionByGivenTrainingDataSet() {
         JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
@@ -30,15 +30,15 @@ public class NaiveBayesClassifierTest extends SparkTestCase {
                 "rain,mild,high,true,N"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier(0, 1, 2, 3);
 
-        naiveBayesClassifier.train(initialRDD, 4);
+        NaiveBayesSubstitution naiveBayesSubstitution = new NaiveBayesSubstitution(0, 1, 2, 3);
+        naiveBayesSubstitution.prepareSubstitute(initialRDD, 4);
         String[] rowRecord = ("sunny,cool,high,false").split(",");
-        String mostProbable = naiveBayesClassifier.makeDecision(new RowRecord(rowRecord));
+        String mostProbable = naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord));
 
         assertEquals("N", mostProbable);
         rowRecord = ("rain,hot,high,false,N").split(",");
-        assertEquals("N", naiveBayesClassifier.makeDecision(new RowRecord(rowRecord)));
+        assertEquals("N", naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)));
 
     }
 }

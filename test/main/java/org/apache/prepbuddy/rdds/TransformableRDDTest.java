@@ -9,6 +9,7 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -231,5 +232,36 @@ public class TransformableRDDTest extends SparkTestCase {
         TransformableRDD selectedFeatures = initialRDD.select(0, 1);
         List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
         assertEquals(expected, selectedFeatures.collect());
+    }
+
+    @Test
+    public void pivotByCountsShouldGiveCountsWithGivenColumns() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "known,new,long,home,skips",
+                "unknown,new,short,work,reads",
+                "unknown,follow Up,long,work,skips",
+                "known,follow Up,long,home,skips",
+                "known,new,short,home,reads",
+                "known,follow Up,long,work,skips",
+                "unknown,follow Up,short,work,skips",
+                "unknown,new,short,work,reads",
+                "known,follow Up,long,home,skips",
+                "known,new,long,work,skips",
+                "unknown,follow Up,short,home,skips",
+                "known,new,long,work,skips",
+                "known,follow Up,short,home,reads",
+                "known,new,short,work,reads",
+                "known,new,short,home,reads",
+                "known,follow Up,short,work,reads",
+                "known,new,short,home,reads",
+                "unknown,new,short,work,reads"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+        PivotTable<Integer> pivotTable = initialRDD.pivotByCount(4, new int[]{0, 1, 2, 3});
+        int valueAtSkipsLong = pivotTable.valueAt("skips", "long");
+        Assert.assertEquals(valueAtSkipsLong, 7);
+
+        int valueAtReadsLong = pivotTable.valueAt("reads", "long");
+        Assert.assertEquals(valueAtReadsLong, 0);
     }
 }

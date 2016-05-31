@@ -18,20 +18,20 @@ public class UnivariateLinearRegressionSubstitution implements ImputationStrateg
     }
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, final int columnIndex) {
+    public void prepareSubstitute(TransformableRDD rdd, final int missingDataColumn) {
         TransformableRDD withoutMissingValue = rdd.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
                 String _XColumnValue = record.valueAt(_XColumnIndex);
-                String _YColumnValue = record.valueAt(columnIndex);
+                String _YColumnValue = record.valueAt(missingDataColumn);
                 return _XColumnValue.trim().isEmpty() || _YColumnValue.trim().isEmpty();
             }
         });
         long count = withoutMissingValue.count();
 
-        JavaDoubleRDD _XYRdd = withoutMissingValue.toMultipliedRdd(columnIndex, _XColumnIndex);
+        JavaDoubleRDD _XYRdd = withoutMissingValue.toMultipliedRdd(missingDataColumn, _XColumnIndex);
         JavaDoubleRDD _XXRdd = withoutMissingValue.toMultipliedRdd(_XColumnIndex, _XColumnIndex);
-        JavaDoubleRDD _YRdd = withoutMissingValue.toDoubleRDD(columnIndex);
+        JavaDoubleRDD _YRdd = withoutMissingValue.toDoubleRDD(missingDataColumn);
         JavaDoubleRDD _XRdd = withoutMissingValue.toDoubleRDD(_XColumnIndex);
 
         Double squareRddSum = _XXRdd.sum();

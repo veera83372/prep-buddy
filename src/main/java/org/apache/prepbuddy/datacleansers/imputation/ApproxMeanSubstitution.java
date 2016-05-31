@@ -8,9 +8,9 @@ public class ApproxMeanSubstitution implements ImputationStrategy {
     private Double approximateMean;
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+    public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
         int timeout = 20000;
-        JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(columnIndex);
+        JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(missingDataColumn);
         this.approximateMean = javaDoubleRDD.meanApprox(timeout).getFinalValue().mean();
     }
 

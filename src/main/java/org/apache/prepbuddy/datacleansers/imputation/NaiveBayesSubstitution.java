@@ -7,13 +7,15 @@ import org.apache.prepbuddy.utils.RowRecord;
 public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private NaiveBayesClassifier naiveBayesClassifier;
+    private int[] otherColumns;
 
     public NaiveBayesSubstitution(int... independentColumnIndexes) {
-        naiveBayesClassifier = new NaiveBayesClassifier(independentColumnIndexes);
+        otherColumns = independentColumnIndexes;
     }
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, final int categoricalColumnIndex) {
+    public void prepareSubstitute(TransformableRDD rdd, final int missingDataColumn) {
+        naiveBayesClassifier = new NaiveBayesClassifier(missingDataColumn, otherColumns);
         TransformableRDD trainingSet = rdd.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
@@ -21,7 +23,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
             }
         });
 
-        naiveBayesClassifier.train(trainingSet, categoricalColumnIndex);
+        naiveBayesClassifier.train(trainingSet);
     }
 
 

@@ -68,7 +68,7 @@ public class SystemTest extends SparkTestCase {
         assertEquals("Star X,Y,", unflaged.first());
         TransformableRDD imputedRDD = purged.impute(2, new ImputationStrategy() {
             @Override
-            public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+            public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
 
             }
 
@@ -155,7 +155,7 @@ public class SystemTest extends SparkTestCase {
 
         TransformableRDD imputedRDD = removedRowsRDD.impute(1, new ImputationStrategy() {
             @Override
-            public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
+            public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
 
             }
 

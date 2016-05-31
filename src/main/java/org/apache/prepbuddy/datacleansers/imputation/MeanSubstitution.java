@@ -9,8 +9,8 @@ public class MeanSubstitution implements ImputationStrategy {
     private Double mean;
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
-        JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(columnIndex);
+    public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
+        JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(missingDataColumn);
         mean = javaDoubleRDD.mean();
     }
 

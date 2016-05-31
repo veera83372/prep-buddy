@@ -10,8 +10,8 @@ import java.util.List;
 public class ModeSubstitution implements ImputationStrategy {
     private  Tuple2 highest;
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, int columnIndex) {
-        TextFacets textFacets = rdd.listFacets(columnIndex);
+    public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
+        TextFacets textFacets = rdd.listFacets(missingDataColumn);
         List<Tuple2> listOfHighest = textFacets.highest();
         highest = listOfHighest.get(0);
     }
