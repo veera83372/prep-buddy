@@ -14,15 +14,34 @@ public class NaiveBayesClassifier implements Serializable {
     private List<List<Tuple2<String, Integer>>> groupedFacets;
     private long count;
     private List<Tuple2<String, Integer>> categoricalKeys;
-
+    private LikelihoodTable likelihoodTable;
+    private List<String> rowKeys;
 
     public NaiveBayesClassifier(int... columnIndexes) {
         this.independentColumnIndexes = columnIndexes;
     }
 
-    public void train(TransformableRDD rdd, final int columnIndex) {
-        setCategoricalKeys(rdd, columnIndex);
-        setGroupedFacets(rdd, columnIndex);
+    public void train(TransformableRDD rdd, final int missingColumnIndex) {
+        likelihoodTable = new LikelihoodTable();
+        TextFacets facets = rdd.listFacets(missingColumnIndex);
+        rowKeys = facets.cardinalValues();
+        likelihoodTable.addRowKeys(rowKeys);
+
+        //for each column in rdd generate a pivot table of it against the missing data column based on count
+        rdd.pivotByCount(missingColumnIndex, 0);
+        rdd.pivotByCounts(missingColumnIndex, independentColumnIndexes);
+
+
+//        List<Tuple2<String, Integer>> tuples = facets.rdd().collect();
+
+
+//        for (Tuple2<String, Integer> tuple : listOfTuple) {
+//            String eachKey = tuple._1();
+//            Probability probability = Probability.create(tuple._2() / count);
+//            likelihoodTable.setProbability(eachKey, eachKey, probability);
+//        }
+
+        setProbability(rdd, missingColumnIndex);
         setCount(rdd);
     }
 
@@ -39,20 +58,17 @@ public class NaiveBayesClassifier implements Serializable {
         return categoricalKeys.get(probableCategoryIndex)._1();
     }
 
-    private void setCategoricalKeys(TransformableRDD trainingSet, int columnIndex) {
-        categoricalKeys = trainingSet.listFacets(columnIndex).rdd().collect();
-    }
-
-    private void setGroupedFacets(TransformableRDD rdd, int columnIndex) {
-        List<TextFacets> facetsRddList = new ArrayList<>();
+    private void setProbability(TransformableRDD rdd, int columnIndex) {
+        List<List<Tuple2<String, Integer>>> facetsRddList = new ArrayList<>();
         for (int index : independentColumnIndexes) {
-            facetsRddList.add(rdd.listFacets(new int[]{index, columnIndex}));
+            List<Tuple2<String, Integer>> groupedFacets = rdd.listFacets(new int[]{index, columnIndex}).rdd().collect();
+            for (String rowKey : rowKeys) {
+                for (Tuple2<String, Integer> groupedFacet : groupedFacets) {
+
+                }
+            }
         }
 
-        groupedFacets = new ArrayList<>();
-        for (TextFacets textFacet : facetsRddList) {
-            groupedFacets.add(textFacet.rdd().collect());
-        }
     }
 
     private void setCount(TransformableRDD trainingSet) {
