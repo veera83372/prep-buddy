@@ -131,7 +131,7 @@ public class TransformableRDD extends JavaRDD<String> {
                 String[] columnValues = fileType.parseRecord(record);
                 String joinValue = "";
                 for (int columnIndex : columnIndexes) {
-                    joinValue += " " + columnValues[columnIndex];
+                    joinValue += "\n" + columnValues[columnIndex];
                 }
                 return new Tuple2<>(joinValue.trim(), 1);
             }
@@ -377,25 +377,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return highestKey;
     }
 
-    public PivotTable pivotByCount(int firstColumn, int secondColumn) {
-        PivotTable pivotTable = new PivotTable();
-        TextFacets textFacets = listFacets(new int[]{firstColumn, secondColumn});
-        List<Tuple2<String, Integer>> tuples = textFacets.rdd().collect();
-        for (Tuple2<String, Integer> tuple : tuples) {
-            String[] split = tuple._1().split(" ");
-            pivotTable.addEntry(split[0], split[1], tuple._2());
-        }
-        return pivotTable;
-    }
-
-    public PivotTable pivotByCounts(int pivotalColumn, int[] independentColumnIndexes) {
-        PivotTable pivotTable = new PivotTable();
-        
+    public PivotTable pivotByCount(int pivotalColumn, int[] independentColumnIndexes) {
+        PivotTable<Integer> pivotTable = new PivotTable<>(0);
         for (int index : independentColumnIndexes) {
             TextFacets facets = listFacets(new int[]{pivotalColumn, index});
             List<Tuple2<String, Integer>> tuples = facets.rdd().collect();
             for (Tuple2<String, Integer> tuple : tuples) {
-                String[] split = tuple._1().split(" ");
+                String[] split = tuple._1().split("\n");
                 pivotTable.addEntry(split[0], split[1], tuple._2());
             }
         }

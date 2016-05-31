@@ -9,8 +9,12 @@ import java.text.DecimalFormat;
 public class Probability implements Serializable {
     private double probability;
 
-    private Probability(double probability) {
+    public Probability(double probability) {
+        if (probability < 0 || probability > 1)
+            throw new ApplicationException(ErrorMessages.PROBABILITY_IS_NOT_IN_RANGE);
+        probability = Double.parseDouble(new DecimalFormat("##.####").format(probability));
         this.probability = probability;
+
     }
 
     public static Probability create(double probability) {
@@ -38,5 +42,9 @@ public class Probability implements Serializable {
         return Double.compare(that.probability, probability) == 0;
 
     }
-    
+
+
+    public Double value() {
+        return probability;
+    }
 }

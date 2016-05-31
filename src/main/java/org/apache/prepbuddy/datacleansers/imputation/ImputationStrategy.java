@@ -6,7 +6,7 @@ import org.apache.prepbuddy.utils.RowRecord;
 import java.io.Serializable;
 
 public interface ImputationStrategy extends Serializable {
-    void prepareSubstitute(TransformableRDD rdd, int columnIndex);
+    void prepareSubstitute(TransformableRDD rdd, int missingDataColumn);
 
     String handleMissingData(RowRecord record);
 }
