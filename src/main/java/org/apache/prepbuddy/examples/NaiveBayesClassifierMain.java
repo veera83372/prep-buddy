@@ -14,7 +14,7 @@ public class NaiveBayesClassifierMain {
             System.out.println("--> File Path Need To Be Specified");
             System.exit(0);
         }
-        SparkConf conf = new SparkConf().setAppName("Facets").setMaster("local");
+        SparkConf conf = new SparkConf().setAppName("NaiveBayes").setMaster("local");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         String filePath = args[0];
