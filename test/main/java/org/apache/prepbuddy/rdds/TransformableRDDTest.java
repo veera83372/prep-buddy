@@ -24,6 +24,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TransformableRDDTest extends SparkTestCase {
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     @Test
     public void shouldEncryptAColumn() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("1,X", "2,Y", "3,Z", "4,A"));
@@ -163,9 +166,6 @@ public class TransformableRDDTest extends SparkTestCase {
         assertEquals(expectedValues, columnValues.collect());
     }
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
     @Test
     public void toDoubleRddShouldThrowExceptionIfColumnValuesAreNotNumeric() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
@@ -216,5 +216,20 @@ public class TransformableRDDTest extends SparkTestCase {
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         int size = initialRDD.size();
         assertEquals(4, size);
+    }
+
+    @Test
+    public void shouldBeAbleToSelectSomeFeaturesFromTheDataSet() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+
+        TransformableRDD selectedFeatures = initialRDD.select(0, 1);
+        List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
+        assertEquals(expected, selectedFeatures.collect());
     }
 }

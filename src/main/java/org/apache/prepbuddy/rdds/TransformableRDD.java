@@ -402,4 +402,19 @@ public class TransformableRDD extends JavaRDD<String> {
         return pivotTable;
 
     }
+
+    public TransformableRDD select(final int... columnIndexes) {
+        checkColumnIndexOutOfBoundException(columnIndexes);
+        JavaRDD<String> reducedRDD = map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] reducedRecord = new String[columnIndexes.length];
+                String[] columns = fileType.parseRecord(record);
+                for (int i = 0; i < columnIndexes.length; i++)
+                    reducedRecord[i] = (columns[columnIndexes[i]]);
+                return fileType.join(reducedRecord);
+            }
+        });
+        return new TransformableRDD(reducedRDD, fileType);
+    }
 }
