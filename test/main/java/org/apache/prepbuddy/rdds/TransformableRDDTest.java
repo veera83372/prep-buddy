@@ -3,7 +3,6 @@ package org.apache.prepbuddy.rdds;
 import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
-import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
@@ -11,10 +10,9 @@ import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +23,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TransformableRDDTest extends SparkTestCase {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void shouldEncryptAColumn() {
@@ -168,45 +164,6 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void toDoubleRddShouldThrowExceptionIfColumnValuesAreNotNumeric() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "Smith,Male,USA,12345",
-                "John,Male,USA,12343",
-                "John,Male,India,12343",
-                "Smith,Male,USA,12342"
-        ));
-        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        exception.expect(ApplicationException.class);
-        initialRDD.toDoubleRDD(2);
-    }
-
-    @Test
-    public void toMultipliedRddShouldThrowExceptionIfGivenFirstColumnIsNotNumeric() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "Smith,Male,USA,12345",
-                "John,Male,USA,12343",
-                "John,Male,India,12343",
-                "Smith,Male,USA,12342"
-        ));
-        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        exception.expect(ApplicationException.class);
-        initialRDD.toMultipliedRdd(2, 3);
-    }
-
-    @Test
-    public void toMultipliedRddShouldThrowExceptionIfGivenSecondColumnIsNotNumeric() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "Smith,Male,USA,12345",
-                "John,Male,USA,12343",
-                "John,Male,India,12343",
-                "Smith,Male,USA,12342"
-        ));
-        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        exception.expect(ApplicationException.class);
-        initialRDD.toMultipliedRdd(3, 2);
-    }
-
-    @Test
     public void sizeShouldGiveTheNumberOfColumnInRdd() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
@@ -263,5 +220,28 @@ public class TransformableRDDTest extends SparkTestCase {
 
         int valueAtReadsLong = pivotTable.valueAt("reads", "long");
         Assert.assertEquals(valueAtReadsLong, 0);
+    }
+
+    @Test
+    public void map_reduce_andOtherJavaRDDfunctionsShouldBeAbleToReturnTransformableRDD() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("52,32,53", "23,42,64"));
+        TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
+
+        TransformableRDD mappedResult = transformableRDD.map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                return record + ",x";
+            }
+        });
+
+        TransformableRDD filterResult = mappedResult.filter(new Function<String, Boolean>() {
+            @Override
+            public Boolean call(String record) throws Exception {
+                return !record.equals("23,42,64,x");
+            }
+        });
+
+        assertEquals("52,32,53,x", filterResult.first());
+
     }
 }
