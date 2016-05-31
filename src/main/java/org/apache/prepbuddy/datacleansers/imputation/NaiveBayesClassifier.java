@@ -51,7 +51,7 @@ public class NaiveBayesClassifier implements Serializable {
     }
 
 
-    public String makeDecision(RowRecord record) {
+    public String classify(RowRecord record) {
         NumbersMap numbersMap = new NumbersMap();
         for (String permissibleValue : permissibleValues) {
             ProductOfNumbers productOfNumbers = new ProductOfNumbers(1);

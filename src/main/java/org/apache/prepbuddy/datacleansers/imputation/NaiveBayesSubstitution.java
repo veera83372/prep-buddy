@@ -29,7 +29,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
 
     @Override
     public String handleMissingData(RowRecord record) {
-        return naiveBayesClassifier.makeDecision(record);
+        return naiveBayesClassifier.classify(record);
     }
 
 }
