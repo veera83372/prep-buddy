@@ -20,14 +20,18 @@ import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
+import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.PivotTable;
+import org.apache.prepbuddy.utils.Replacement;
+import org.apache.prepbuddy.utils.RowRecord;
+import org.apache.spark.Partitioner;
 import org.apache.prepbuddy.utils.*;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.DoubleFunction;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.*;
+import org.apache.spark.rdd.RDD;
+import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 
 import java.util.*;
@@ -400,4 +404,168 @@ public class TransformableRDD extends JavaRDD<String> {
         return pivotTable;
 
     }
+
+    public TransformableRDD select(final int... columnIndexes) {
+        checkColumnIndexOutOfBoundException(columnIndexes);
+        JavaRDD<String> reducedRDD = map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] reducedRecord = new String[columnIndexes.length];
+                String[] columns = fileType.parseRecord(record);
+                for (int i = 0; i < columnIndexes.length; i++)
+                    reducedRecord[i] = (columns[columnIndexes[i]]);
+                return fileType.join(reducedRecord);
+            }
+        });
+        return new TransformableRDD(reducedRDD, fileType);
+    }
+
+    @Override
+    public TransformableRDD map(Function function) {
+        return new TransformableRDD(super.map(function), fileType);
+    }
+
+    @Override
+    public TransformableRDD filter(Function function) {
+        return new TransformableRDD(super.filter(function), fileType);
+    }
+
+    @Override
+    public TransformableRDD cache() {
+        return new TransformableRDD(super.cache(), fileType);
+    }
+
+    @Override
+    public TransformableRDD coalesce(int numPartitions) {
+        return new TransformableRDD(super.coalesce(numPartitions), fileType);
+    }
+
+    @Override
+    public TransformableRDD coalesce(int numPartitions, boolean shuffle) {
+        return new TransformableRDD(super.coalesce(numPartitions, shuffle), fileType);
+    }
+
+    @Override
+    public TransformableRDD distinct() {
+        return new TransformableRDD(super.distinct(), fileType);
+    }
+
+    @Override
+    public TransformableRDD distinct(int numPartition) {
+        return new TransformableRDD(super.distinct(numPartition), fileType);
+    }
+
+    @Override
+    public TransformableRDD flatMap(FlatMapFunction flatmapFunction) {
+        return new TransformableRDD(super.flatMap(flatmapFunction), fileType);
+    }
+
+    @Override
+    public TransformableRDD intersection(JavaRDD other) {
+        return new TransformableRDD(super.intersection(other), fileType);
+    }
+
+    public TransformableRDD intersection(TransformableRDD other) {
+        return new TransformableRDD(super.intersection(other), fileType);
+    }
+
+    @Override
+    public TransformableRDD persist(StorageLevel newLevel) {
+        return new TransformableRDD(super.persist(newLevel), fileType);
+    }
+
+    @Override
+    public TransformableRDD unpersist() {
+        return new TransformableRDD(super.unpersist(), fileType);
+    }
+
+    @Override
+    public TransformableRDD unpersist(boolean blocking) {
+        return new TransformableRDD(super.unpersist(blocking), fileType);
+    }
+
+    @Override
+    public TransformableRDD union(JavaRDD other) {
+        return new TransformableRDD(super.union(other), fileType);
+    }
+
+    public TransformableRDD union(TransformableRDD other) {
+        return new TransformableRDD(super.union(other), fileType);
+    }
+
+    @Override
+    public TransformableRDD mapPartitions(FlatMapFunction flatMapFunction) {
+        return new TransformableRDD(super.mapPartitions(flatMapFunction), fileType);
+    }
+
+    @Override
+    public TransformableRDD mapPartitions(FlatMapFunction flatMapFunction, boolean preservesPartitioning) {
+        return new TransformableRDD(super.mapPartitions(flatMapFunction, preservesPartitioning), fileType);
+    }
+
+    @Override
+    public TransformableRDD mapPartitionsWithIndex(Function2 function, boolean preservesPartitioning) {
+        return new TransformableRDD(super.mapPartitionsWithIndex(function, preservesPartitioning), fileType);
+    }
+
+    @Override
+    public TransformableRDD sortBy(Function function, boolean ascending, int numPartitions) {
+        return new TransformableRDD(super.sortBy(function, ascending, numPartitions), fileType);
+    }
+
+    @Override
+    public TransformableRDD setName(String name) {
+        return new TransformableRDD(super.setName(name), fileType);
+    }
+
+    @Override
+    public TransformableRDD subtract(JavaRDD other) {
+        return new TransformableRDD(super.subtract(other), fileType);
+    }
+
+    @Override
+    public TransformableRDD subtract(JavaRDD other, int numPartitions) {
+        return new TransformableRDD(super.subtract(other, numPartitions), fileType);
+    }
+
+    @Override
+    public TransformableRDD subtract(JavaRDD other, Partitioner partitioner) {
+        return new TransformableRDD(super.subtract(other, partitioner), fileType);
+    }
+
+    @Override
+    public TransformableRDD sample(boolean withReplacement, double fraction) {
+        return new TransformableRDD(super.sample(withReplacement, fraction), fileType);
+    }
+
+    @Override
+    public TransformableRDD sample(boolean withReplacement, double fraction, long seed) {
+        return new TransformableRDD(super.sample(withReplacement, fraction, seed), fileType);
+    }
+
+    @Override
+    public TransformableRDD repartition(int numPartitions) {
+        return new TransformableRDD(super.repartition(numPartitions), fileType);
+    }
+
+    @Override
+    public TransformableRDD pipe(String command) {
+        return new TransformableRDD(super.pipe(command), fileType);
+    }
+
+    @Override
+    public TransformableRDD pipe(List<String> command) {
+        return new TransformableRDD(super.pipe(command), fileType);
+    }
+
+    @Override
+    public TransformableRDD pipe(List<String> command, Map<String, String> env) {
+        return new TransformableRDD(super.pipe(command, env), fileType);
+    }
+
+    @Override
+    public TransformableRDD wrapRDD(RDD rdd) {
+        return new TransformableRDD(super.wrapRDD(rdd), fileType);
+    }
+
 }
