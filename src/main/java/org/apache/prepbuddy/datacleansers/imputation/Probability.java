@@ -17,21 +17,6 @@ public class Probability implements Serializable {
 
     }
 
-    public static Probability create(double probability) {
-        if (probability < 0 || probability > 1)
-            throw new ApplicationException(ErrorMessages.PROBABILITY_IS_NOT_IN_RANGE);
-        probability = Double.parseDouble(new DecimalFormat("##.####").format(probability));
-        return new Probability(probability);
-    }
-
-    public Probability multiply(Probability otherProbability) {
-        return Probability.create(otherProbability.probability * probability);
-    }
-
-    public boolean isGreaterThan(Probability other) {
-        return probability > other.probability;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
