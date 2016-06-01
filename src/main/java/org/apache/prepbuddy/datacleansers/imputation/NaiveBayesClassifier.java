@@ -57,7 +57,7 @@ public class NaiveBayesClassifier implements Serializable {
             ProductOfNumbers productOfNumbers = new ProductOfNumbers(1);
             Double permissibleProbabilityValue = probs.valueAt(permissibleValue, permissibleValue).value();
             for (int column : otherColumns) {
-                String columnValue = record.valueAt(column);
+                String columnValue = record.valueAt(column).trim();
                 Probability probability = probs.valueAt(permissibleValue, columnValue);
                 productOfNumbers.multiply(probability.value() / permissibleProbabilityValue);
             }

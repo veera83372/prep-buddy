@@ -37,8 +37,11 @@ public class NaiveBayesSubstitutionTest extends SparkTestCase {
         String mostProbable = naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord));
 
         assertEquals("N", mostProbable);
-        rowRecord = ("rain,hot,high,false,N").split(",");
+        rowRecord = ("rain,hot,high,false").split(",");
         assertEquals("N", naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)));
+
+        String[] record = ("overcast, hot, high, true").split(",");
+        assertEquals("P", naiveBayesSubstitution.handleMissingData(new RowRecord(record)));
 
     }
 }
