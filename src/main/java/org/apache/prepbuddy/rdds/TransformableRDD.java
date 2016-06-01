@@ -20,10 +20,7 @@ import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
-import org.apache.prepbuddy.utils.EncryptionKeyPair;
-import org.apache.prepbuddy.utils.PivotTable;
-import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
+import org.apache.prepbuddy.utils.*;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -105,6 +102,19 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD replace(final int columnIndex, final ReplacementFunction replacement) {
+        checkColumnIndexOutOfBoundException(columnIndex);
+        JavaRDD<String> transformed = this.map(new Function<String, String>() {
+
+            @Override
+            public String call(String record) throws Exception {
+                String[] recordAsArray = fileType.parseRecord(record);
+                recordAsArray[columnIndex] = replacement.replace(new RowRecord(recordAsArray));
+                return fileType.join(recordAsArray);
+            }
+        });
+        return new TransformableRDD(transformed, fileType);
+    }
     public TextFacets listFacets(final int columnIndex) {
         checkColumnIndexOutOfBoundException(columnIndex);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {

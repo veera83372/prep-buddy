@@ -15,6 +15,7 @@ import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.utils.Replacement;
+import org.apache.prepbuddy.utils.ReplacementFunction;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -80,9 +81,17 @@ public class SystemTest extends SparkTestCase {
         assertEquals("X,Y,Male", imputedRDD.first());
 
         TransformableRDD numericRDD = imputedRDD.replace(2, new Replacement<>("Male", 0), new Replacement<>("Female", 1));
-
         assertEquals(1, numericRDD.count());
         assertEquals("X,Y,0", numericRDD.first());
+
+        TransformableRDD replacedRdd = imputedRDD.replace(2, new ReplacementFunction() {
+            @Override
+            public String replace(RowRecord record) {
+                return "1";
+            }
+        });
+        assertEquals(1, replacedRdd.count());
+        assertEquals("X,Y,1", replacedRdd.first());
     }
 
     @Test
