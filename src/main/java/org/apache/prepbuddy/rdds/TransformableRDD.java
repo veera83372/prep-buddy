@@ -20,12 +20,8 @@ import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
-import org.apache.prepbuddy.utils.EncryptionKeyPair;
-import org.apache.prepbuddy.utils.PivotTable;
-import org.apache.prepbuddy.utils.Replacement;
-import org.apache.prepbuddy.utils.RowRecord;
-import org.apache.spark.Partitioner;
 import org.apache.prepbuddy.utils.*;
+import org.apache.spark.Partitioner;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -259,8 +255,9 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     private void checkColumnIndexOutOfBoundException(int... columnIndexes) {
+        int size = size();
         for (int index : columnIndexes) {
-            if (index < 0 || size() <= index)
+            if (index < 0 || size <= index)
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
         }
     }
