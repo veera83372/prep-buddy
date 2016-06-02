@@ -28,7 +28,6 @@ public class NaiveBayesClassifier implements Serializable {
         permissibleValues = facets.cardinalValues();
         List<Tuple2<String, Integer>> rowKeys = facets.rdd().collect();
 
-
         PivotTable<Integer> frequencyTable = trainingSet.pivotByCount(missingDataColumn, otherColumns);
         final long totalRows = trainingSet.count();
         probs = (PivotTable<Probability>) frequencyTable.transform(new TransformationFunction<Integer, Probability>() {
