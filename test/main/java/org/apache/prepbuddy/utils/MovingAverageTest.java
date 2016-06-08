@@ -18,8 +18,9 @@ public class MovingAverageTest extends SparkTestCase {
         MovingAverage movingAverage = new MovingAverage(3);
         JavaRDD<String> rdd = movingAverage.smooth(initialDataset);
 
-        String expected = "4.33";
+        String expected = "4.0";
         Assert.assertEquals(expected, rdd.first());
+        System.out.println(rdd.collect());
     }
 
 
