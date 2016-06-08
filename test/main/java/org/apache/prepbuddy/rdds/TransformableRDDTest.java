@@ -8,8 +8,8 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
-import org.apache.prepbuddy.utils.MovingAverage;
 import org.apache.prepbuddy.utils.PivotTable;
+import org.apache.prepbuddy.utils.SimpleMovingAverage;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.junit.Assert;
@@ -252,7 +252,7 @@ public class TransformableRDDTest extends SparkTestCase {
                 "52,3,53", "23,4,64", "23,5,64", "23,6,64", "23,7,64", "23,8,64", "23,9,64"
         ), 3);
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
-        JavaRDD<String> transformed = transformableRDD.smooth(1, new MovingAverage(3));
+        JavaRDD<String> transformed = transformableRDD.smooth(1, new SimpleMovingAverage(3));
         String excepted = "4.0";
         assertEquals(excepted, transformed.first());
         List<String> expectedList = Arrays.asList("4.0", "5.0", "6.0", "7.0", "8.0");

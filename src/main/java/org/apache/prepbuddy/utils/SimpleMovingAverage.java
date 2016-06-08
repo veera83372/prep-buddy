@@ -7,11 +7,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class MovingAverage implements Serializable {
+public class SimpleMovingAverage implements Serializable {
 
     private int window;
 
-    public MovingAverage(int window) {
+    public SimpleMovingAverage(int window) {
         this.window = window;
     }
 
