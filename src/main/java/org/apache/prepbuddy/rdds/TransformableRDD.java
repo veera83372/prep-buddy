@@ -416,7 +416,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(reducedRDD, fileType);
     }
 
-    public JavaRDD<String> smooth(int columnIndex, SimpleMovingAverage smoothingMethod) {
+    public JavaRDD<Double> smooth(int columnIndex, SimpleMovingAverage smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
     }

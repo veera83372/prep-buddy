@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SmoothingPreparation implements Serializable {
+public abstract class MovingAverage implements Serializable {
 
-    public static JavaRDD<String> prepare(JavaRDD<String> singleColumnDataset, final int windowSize) {
+    public JavaRDD<Double> prepare(JavaRDD<String> singleColumnDataset, final int windowSize) {
         JavaRDD<Tuple2<Integer, String>> duplicateRdd = singleColumnDataset.mapPartitionsWithIndex(new Function2<Integer, Iterator<String>, Iterator<Tuple2<Integer, String>>>() {
             @Override
             public Iterator<Tuple2<Integer, String>> call(Integer index, Iterator<String> iterator) throws Exception {
@@ -35,15 +35,15 @@ public class SmoothingPreparation implements Serializable {
             }
         }, true);
 
-        return keyPartition(duplicateRdd).map(new Function<Tuple2<Integer, String>, String>() {
+        return keyPartition(duplicateRdd).map(new Function<Tuple2<Integer, String>, Double>() {
             @Override
-            public String call(Tuple2<Integer, String> tuple) throws Exception {
-                return tuple._2();
+            public Double call(Tuple2<Integer, String> tuple) throws Exception {
+                return Double.parseDouble(tuple._2());
             }
         });
     }
 
-    private static JavaPairRDD<Integer, String> keyPartition(JavaRDD<Tuple2<Integer, String>> tupleJavaRDD) {
+    private JavaPairRDD<Integer, String> keyPartition(JavaRDD<Tuple2<Integer, String>> tupleJavaRDD) {
         return tupleJavaRDD.mapToPair(new PairFunction<Tuple2<Integer, String>, Integer, String>() {
             @Override
             public Tuple2<Integer, String> call(Tuple2<Integer, String> tuple) throws Exception {
@@ -51,4 +51,6 @@ public class SmoothingPreparation implements Serializable {
             }
         }).partitionBy(new KeyPartitioner(tupleJavaRDD.getNumPartitions()));
     }
+
+    public abstract JavaRDD<Double> smooth(JavaRDD<String> singleColumnDataset);
 }
