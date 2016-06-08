@@ -9,22 +9,15 @@ import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
-import org.apache.spark.Partitioner;
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
 import org.junit.Assert;
 import org.junit.Test;
-import scala.Tuple2;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -249,83 +242,6 @@ public class TransformableRDDTest extends SparkTestCase {
         });
 
         assertEquals("52,32,53,x", filterResult.first());
-
-    }
-
-    @Test
-    public void mapPartitions() {
-        final JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
-        ), 3);
-        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        JavaRDD<Tuple2<Integer, String>> rddWithDuplicates = initialDataset.mapPartitionsWithIndex(new Function2<Integer, Iterator<String>, Iterator<Tuple2<Integer, String>>>() {
-            @Override
-            public Iterator<Tuple2<Integer, String>> call(Integer index, Iterator<String> iterator) throws Exception {
-                int window = 3;
-                int count = 1;
-                List<Tuple2<Integer, String>> list = new ArrayList<>();
-                ArrayList<Tuple2<Integer, String>> duplicates = new ArrayList<>();
-
-                while (iterator.hasNext()) {
-                    String next = iterator.next();
-                    Tuple2<Integer, String> tuple = new Tuple2<>(index, next);
-                    list.add(tuple);
-                    if (count < window) {
-                        Tuple2<Integer, String> duplicateTuple = new Tuple2<>(index - 1, next);
-                        duplicates.add(duplicateTuple);
-                        count++;
-                    }
-                    duplicates.add(tuple);
-                }
-                if (index == 0)
-                    return list.iterator();
-                return duplicates.iterator();
-            }
-        }, true);
-        final int numPartitions = rddWithDuplicates.getNumPartitions();
-        JavaPairRDD finalRdd = rddWithDuplicates.mapToPair(new PairFunction<Tuple2<Integer, String>, Integer, String>() {
-            @Override
-            public Tuple2<Integer, String> call(Tuple2<Integer, String> tuple) throws Exception {
-                return tuple;
-            }
-        }).partitionBy(new Partitioner() {
-            @Override
-            public int numPartitions() {
-                return numPartitions;
-            }
-
-            @Override
-            public int getPartition(Object key) {
-                return (int) key;
-            }
-        });
-
-//        finalRdd.mapPartitions(new FlatMapFunction<Iterator<Tuple2<Integer,String>>, Tuple2<Integer,String>>() {
-//            @Override
-//            public Iterable<Tuple2<Integer,String>> call(Iterator<Tuple2<Integer, String>> tuple2Iterator) throws Exception {
-//                System.out.println("this os sdc ");
-//                ArrayList<Tuple2<Integer, String>> objects = new ArrayList<>();
-//
-//                while (tuple2Iterator.hasNext()){
-//                    Tuple2<Integer, String> next = tuple2Iterator.next();
-//                    objects.add(next);
-//                    System.out.println("next = " + next);
-//                }
-//                return objects;
-//            }
-//        })
-        JavaRDD javaRDD = finalRdd.mapPartitionsWithIndex(new Function2<Integer, Iterator<Tuple2<Integer, String>>, Iterator<String>>() {
-            @Override
-            public Iterator<String> call(Integer index, Iterator<Tuple2<Integer, String>> iterator) throws Exception {
-                ArrayList<String> objects = new ArrayList<>();
-                while (iterator.hasNext()) {
-                    Tuple2<Integer, String> next = iterator.next();
-//                    objects.add(next);
-                }
-                return objects.iterator();
-            }
-
-        }, true);
 
     }
 }
