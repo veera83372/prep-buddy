@@ -115,6 +115,7 @@ public class TransformableRDD extends JavaRDD<String> {
         });
         return new TransformableRDD(transformed, fileType);
     }
+
     public TextFacets listFacets(final int columnIndex) {
         checkColumnIndexOutOfBoundException(columnIndex);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
@@ -372,7 +373,6 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         }
         return getHighestCountKey(lengthWithCount);
-
     }
 
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
@@ -399,7 +399,6 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         }
         return pivotTable;
-
     }
 
     public TransformableRDD select(final int... columnIndexes) {
