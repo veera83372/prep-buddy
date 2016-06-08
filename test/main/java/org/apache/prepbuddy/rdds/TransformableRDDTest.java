@@ -224,7 +224,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void map_reduce_andOtherJavaRDDfunctionsShouldBeAbleToReturnTransformableRDD() {
+    public void map_reduce_andOtherJavaRDDFunctionsShouldBeAbleToReturnTransformableRDD() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("52,32,53", "23,42,64"));
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
 
