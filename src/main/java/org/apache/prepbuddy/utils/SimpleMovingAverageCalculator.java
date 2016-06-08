@@ -3,11 +3,11 @@ package org.apache.prepbuddy.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumberListClosure {
+public class SimpleMovingAverageCalculator {
     private int size;
     private List<Double> values;
 
-    public NumberListClosure(int size) {
+    public SimpleMovingAverageCalculator(int size) {
         values = new ArrayList<>(size);
         this.size = size;
     }

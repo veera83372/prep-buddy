@@ -21,7 +21,7 @@ public class MovingAverage implements Serializable {
             @Override
             public Iterable<String> call(Iterator<String> iterator) throws Exception {
                 ArrayList<String> averages = new ArrayList<>();
-                NumberListClosure numberClosure = new NumberListClosure(window);
+                SimpleMovingAverageCalculator numberClosure = new SimpleMovingAverageCalculator(window);
                 while (iterator.hasNext()) {
                     Double value = Double.parseDouble(iterator.next());
                     numberClosure.add(value);
