@@ -14,27 +14,24 @@ import java.util.List;
 
 public class SmoothingPreparation implements Serializable {
 
-    public static JavaRDD<String> prepare(JavaRDD<String> dataset, final int window) {
-        JavaRDD<Tuple2<Integer, String>> duplicateRdd = dataset.mapPartitionsWithIndex(new Function2<Integer, Iterator<String>, Iterator<Tuple2<Integer, String>>>() {
+    public static JavaRDD<String> prepare(JavaRDD<String> singleColumnDataset, final int windowSize) {
+        JavaRDD<Tuple2<Integer, String>> duplicateRdd = singleColumnDataset.mapPartitionsWithIndex(new Function2<Integer, Iterator<String>, Iterator<Tuple2<Integer, String>>>() {
             @Override
             public Iterator<Tuple2<Integer, String>> call(Integer index, Iterator<String> iterator) throws Exception {
+
                 List<Tuple2<Integer, String>> list = new ArrayList<>();
-                ArrayList<Tuple2<Integer, String>> duplicates = new ArrayList<>();
-                int count = 1;
                 while (iterator.hasNext()) {
                     String next = iterator.next();
                     Tuple2<Integer, String> tuple = new Tuple2<>(index, next);
                     list.add(tuple);
-                    if (count < window) {
-                        Tuple2<Integer, String> duplicateTuple = new Tuple2<>(index - 1, next);
-                        duplicates.add(duplicateTuple);
-                        count++;
-                    }
-                    duplicates.add(tuple);
                 }
-                if (index == 0)
-                    return list.iterator();
-                return duplicates.iterator();
+                if (index != 0) {
+                    for (int i = 0; i < windowSize - 1; i++) {
+                        Tuple2<Integer, String> toDuplicate = list.get(i);
+                        list.add(new Tuple2<>(toDuplicate._1() - 1, toDuplicate._2()));
+                    }
+                }
+                return list.iterator();
             }
         }, true);
 

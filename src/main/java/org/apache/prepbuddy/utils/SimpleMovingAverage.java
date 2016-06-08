@@ -6,31 +6,32 @@ import org.apache.spark.api.java.function.FlatMapFunction;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class SimpleMovingAverage implements Serializable {
 
-    private int window;
+    private int windowSize;
 
     public SimpleMovingAverage(int window) {
-        this.window = window;
+        this.windowSize = window;
     }
 
-    public JavaRDD<String> smooth(JavaRDD<String> dataset) {
-        JavaRDD<String> duplicateRdd = SmoothingPreparation.prepare(dataset, window);
+    public JavaRDD<String> smooth(JavaRDD<String> singleColumnDataset) {
+        JavaRDD<String> duplicateRdd = SmoothingPreparation.prepare(singleColumnDataset, windowSize);
         JavaRDD<String> smoothed = duplicateRdd.mapPartitions(new FlatMapFunction<Iterator<String>, String>() {
             @Override
             public Iterable<String> call(Iterator<String> iterator) throws Exception {
-                ArrayList<String> averages = new ArrayList<>();
-                SimpleMovingAverageCalculator numberClosure = new SimpleMovingAverageCalculator(window);
+                List<String> movingAverages = new ArrayList<>();
+                SlidingWindow slidingWindow = new SlidingWindow(windowSize);
                 while (iterator.hasNext()) {
                     Double value = Double.parseDouble(iterator.next());
-                    numberClosure.add(value);
-                    if (numberClosure.isFull()) {
-                        String average = String.valueOf(numberClosure.average());
-                        averages.add(average);
+                    slidingWindow.add(value);
+                    if (slidingWindow.isFull()) {
+                        String average = String.valueOf(slidingWindow.average());
+                        movingAverages.add(average);
                     }
                 }
-                return averages;
+                return movingAverages;
             }
         });
         return smoothed;

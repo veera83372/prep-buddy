@@ -247,14 +247,16 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void smoothShouldSmoothData() {
+    public void smoothShouldSmoothDataUsingSimpleMovingAverages() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "52,3,53", "23,4,64", "23,5,64", "23,6,64", "23,7,64", "23,8,64", "23,9,64"
         ), 3);
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
         JavaRDD<String> transformed = transformableRDD.smooth(1, new SimpleMovingAverage(3));
+
         String excepted = "4.0";
         assertEquals(excepted, transformed.first());
+
         List<String> expectedList = Arrays.asList("4.0", "5.0", "6.0", "7.0", "8.0");
         assertEquals(expectedList, transformed.collect());
     }
