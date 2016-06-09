@@ -1,10 +1,15 @@
 package org.apache.prepbuddy.smoothingops;
 
+import org.apache.prepbuddy.exceptions.ApplicationException;
+import org.apache.prepbuddy.exceptions.ErrorMessages;
+
 public class WeightedSlidingWindow extends SlidingWindow {
     private Weights weights;
 
     public WeightedSlidingWindow(int size, Weights weights) {
         super(size);
+        if (weights.size() != size)
+            throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING);
         this.weights = weights;
     }
 
