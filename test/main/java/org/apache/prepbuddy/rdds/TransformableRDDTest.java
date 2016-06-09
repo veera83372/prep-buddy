@@ -15,17 +15,18 @@ import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TransformableRDDTest extends SparkTestCase {
 
@@ -100,7 +101,7 @@ public class TransformableRDDTest extends SparkTestCase {
 
         List<String> listOfValues = afterMergeCluster.collect();
 
-        Assert.assertTrue(listOfValues.contains("Finger print"));
+        assertTrue(listOfValues.contains("Finger print"));
     }
 
     @Test
@@ -222,10 +223,10 @@ public class TransformableRDDTest extends SparkTestCase {
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         PivotTable<Integer> pivotTable = initialRDD.pivotByCount(4, new int[]{0, 1, 2, 3});
         int valueAtSkipsLong = pivotTable.valueAt("skips", "long");
-        Assert.assertEquals(valueAtSkipsLong, 7);
+        assertEquals(valueAtSkipsLong, 7);
 
         int valueAtReadsLong = pivotTable.valueAt("reads", "long");
-        Assert.assertEquals(valueAtReadsLong, 0);
+        assertEquals(valueAtReadsLong, 0);
     }
 
     @Test
@@ -281,23 +282,41 @@ public class TransformableRDDTest extends SparkTestCase {
 
         Double expected = 13.66;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
     }
 
     @Test
     public void smoothShouldSmoothDataUsingExponentialAverages() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "52,10,53", "23,12,64", "23,16,64", "23,13,64", "23,17,64", "23,19,64", "23,15,64"
-        ), 3);
+                "52,23,53", "23,40,64", "23,25,64", "23,27,64", "23,32,64", "23,48,64", "23,33,64"
+        ), 1);
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
 
         JavaRDD<Double> transformed = transformableRDD.smooth(1, new ExponentialAverage(0.2));
 
-        Double expected = 13.66;
+        Double expected = 26.4;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
+
+        List<Double> expectedList = Arrays.asList(
+                26.4,
+                26.12,
+                26.3,
+                27.44,
+                31.55,
+                31.84
+        );
+
+        List<Double> collected = transformed.collect();
+        List<Double> actualList = new ArrayList<>();
+        for (int i = 0; i < collected.size(); i++) {
+            Double value = Double.parseDouble(new DecimalFormat("##.##").format(collected.get(i)));
+            actualList.add(value);
+        }
+
+        assertEquals(expectedList, actualList);
     }
 
 }
