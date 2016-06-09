@@ -20,6 +20,7 @@ public class NaiveBayesSubstitution implements ImputationStrategy {
             @Override
             public Boolean evaluate(RowRecord record) {
                 return record.hasEmptyColumn();
+
             }
         });
 

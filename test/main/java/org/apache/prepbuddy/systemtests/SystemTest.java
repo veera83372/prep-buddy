@@ -14,7 +14,6 @@ import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
 import org.apache.prepbuddy.typesystem.DataType;
-import org.apache.prepbuddy.utils.Replacement;
 import org.apache.prepbuddy.utils.ReplacementFunction;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
@@ -80,9 +79,6 @@ public class SystemTest extends SparkTestCase {
         });
         assertEquals("X,Y,Male", imputedRDD.first());
 
-        TransformableRDD numericRDD = imputedRDD.replace(2, new Replacement<>("Male", 0), new Replacement<>("Female", 1));
-        assertEquals(1, numericRDD.count());
-        assertEquals("X,Y,0", numericRDD.first());
 
         TransformableRDD replacedRdd = imputedRDD.replace(2, new ReplacementFunction() {
             @Override
@@ -175,7 +171,13 @@ public class SystemTest extends SparkTestCase {
         });
         assertTrue(imputedRDD.collect().contains("07434677419,1234567890,Incoming,211,Wed Sep 15 19:17:44 +0100 2010"));
 
-        TransformableRDD replacedRDD = imputedRDD.replace(3, new Replacement("0", "Zero"));
+        TransformableRDD replacedRDD = imputedRDD.replace(3, new ReplacementFunction() {
+            @Override
+            public String replace(RowRecord record) {
+                String columnVal = record.valueAt(3);
+                return columnVal.equals("0") ? "Zero" : columnVal;
+            }
+        });
         assertTrue(replacedRDD.collect().contains("07641036117,01666472054,Outgoing,Zero,Mon Feb 11 07:18:23 +0000 1980"));
         assertTrue(imputedRDD.collect().contains("07434677419,1234567890,Incoming,211,Wed Sep 15 19:17:44 +0100 2010"));
 

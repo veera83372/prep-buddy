@@ -86,22 +86,6 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD replace(final int columnIndex, final Replacement... replacements) {
-        checkColumnIndexOutOfBoundException(columnIndex);
-        JavaRDD<String> transformed = this.map(new Function<String, String>() {
-
-            @Override
-            public String call(String record) throws Exception {
-                String[] recordAsArray = fileType.parseRecord(record);
-                for (Replacement replacement : replacements) {
-                    recordAsArray[columnIndex] = replacement.replace(recordAsArray[columnIndex]);
-                }
-                return fileType.join(recordAsArray);
-            }
-        });
-        return new TransformableRDD(transformed, fileType);
-    }
-
     public TransformableRDD replace(final int columnIndex, final ReplacementFunction replacement) {
         checkColumnIndexOutOfBoundException(columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
