@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datasmoothers;
+package org.apache.prepbuddy.smoothingops;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;

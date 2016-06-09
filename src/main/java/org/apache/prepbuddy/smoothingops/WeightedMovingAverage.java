@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datasmoothers;
+package org.apache.prepbuddy.smoothingops;
 
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;
