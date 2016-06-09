@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.datasmoothers;
 
+import org.apache.prepbuddy.exceptions.ApplicationException;
+import org.apache.prepbuddy.exceptions.ErrorMessages;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
 
@@ -11,8 +13,10 @@ public class WeightedMovingAverage extends MovingAverage {
     private int windowSize;
     private WeightedSlidingWindow slidingWindow;
 
-    public WeightedMovingAverage(int windowSize, Weights weights) {
+    public WeightedMovingAverage(int windowSize, final Weights weights) {
         this.windowSize = windowSize;
+        if (weights.size() != windowSize)
+            throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING);
         slidingWindow = new WeightedSlidingWindow(windowSize, weights);
     }
 
