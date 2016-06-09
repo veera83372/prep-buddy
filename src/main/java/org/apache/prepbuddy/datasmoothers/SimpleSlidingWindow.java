@@ -3,11 +3,12 @@ package org.apache.prepbuddy.datasmoothers;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class SlidingWindow {
+public class SimpleSlidingWindow {
+
     private int size;
     private Queue<Double> queue;
 
-    public SlidingWindow(int size) {
+    public SimpleSlidingWindow(int size) {
         queue = new LinkedList<>();
         this.size = size;
     }
@@ -18,13 +19,8 @@ public class SlidingWindow {
         queue.add(value);
     }
 
-
     public boolean isFull() {
         return queue.size() == size;
-    }
-
-    public Double average() {
-        return Double.valueOf(sum() / size);
     }
 
     public int sum() {
@@ -33,6 +29,10 @@ public class SlidingWindow {
             sum += oneValue;
         }
         return sum;
+    }
+
+    public Double average() {
+        return Double.valueOf(sum() / size);
     }
 
 }

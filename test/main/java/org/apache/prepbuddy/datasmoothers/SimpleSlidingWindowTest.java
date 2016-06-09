@@ -5,10 +5,10 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-public class SlidingWindowTest extends SparkTestCase {
+public class SimpleSlidingWindowTest extends SparkTestCase {
     @Test
     public void shouldAddValueTillFullThanSwapTheValues() {
-        SlidingWindow slidingWindow = new SlidingWindow(3);
+        SimpleSlidingWindow slidingWindow = new SimpleSlidingWindow(3);
         slidingWindow.add(3);
         slidingWindow.add(3);
         slidingWindow.add(3);
