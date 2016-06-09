@@ -9,9 +9,11 @@ import java.util.List;
 
 public class WeightedMovingAverage extends MovingAverage {
     private int windowSize;
+    private WeightedSlidingWindow slidingWindow;
 
-    public WeightedMovingAverage(int windowSize) {
+    public WeightedMovingAverage(int windowSize, Weights weights) {
         this.windowSize = windowSize;
+        slidingWindow = new WeightedSlidingWindow(windowSize, weights);
     }
 
     @Override
@@ -21,7 +23,6 @@ public class WeightedMovingAverage extends MovingAverage {
             @Override
             public Iterable<Double> call(Iterator<Double> iterator) throws Exception {
                 List<Double> weightedMovingAverages = new ArrayList<>();
-                WeightedSlidingWindow slidingWindow = new WeightedSlidingWindow(windowSize);
                 while (iterator.hasNext()) {
                     Double value = iterator.next();
                     slidingWindow.add(value);

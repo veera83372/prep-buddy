@@ -1,13 +1,16 @@
 package org.apache.prepbuddy.datasmoothers;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class WeightedSlidingWindow {
+public class WeightedSlidingWindow implements Serializable {
     private int size;
     private Queue<Double> queue;
+    private Weights weights;
 
-    public WeightedSlidingWindow(int size) {
+    public WeightedSlidingWindow(int size, Weights weights) {
+        this.weights = weights;
         queue = new LinkedList<>();
         this.size = size;
     }
@@ -15,15 +18,16 @@ public class WeightedSlidingWindow {
     public void add(double value) {
         if (isFull())
             queue.remove();
-        queue.add(value);
+        int index = queue.size();
+        queue.add(value * weights.get(index));
     }
 
     public boolean isFull() {
         return queue.size() == size;
     }
 
-    public int sum() {
-        int sum = 0;
+    public Double sum() {
+        Double sum = 0.0;
         for (Double oneValue : queue) {
             sum += oneValue;
         }
@@ -31,23 +35,6 @@ public class WeightedSlidingWindow {
     }
 
     public Double average() {
-        return weightedSum() / sumOfWeights();
-    }
-
-    private int sumOfWeights() {
-        int sumOfWeights = 0;
-        for (int i = 1; i <= size; i++)
-            sumOfWeights += i;
-        return sumOfWeights;
-    }
-
-    private double weightedSum() {
-        int weight = 1;
-        int sum = 0;
-        for (Double oneValue : queue) {
-            sum += oneValue * weight;
-            weight++;
-        }
-        return sum;
+        return sum();
     }
 }
