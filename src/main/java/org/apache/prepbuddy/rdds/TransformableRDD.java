@@ -5,6 +5,7 @@ import com.n1analytics.paillier.PaillierPublicKey;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.datacleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
+import org.apache.prepbuddy.datasmoothers.SimpleMovingAverage;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;

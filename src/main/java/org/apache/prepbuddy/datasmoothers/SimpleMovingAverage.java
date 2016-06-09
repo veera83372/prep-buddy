@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.datasmoothers;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;

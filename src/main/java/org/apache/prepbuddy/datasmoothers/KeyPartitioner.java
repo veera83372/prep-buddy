@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.datasmoothers;
 
 import org.apache.spark.Partitioner;
 
