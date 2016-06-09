@@ -15,10 +15,11 @@ public class WeightedSlidingWindow extends SlidingWindow {
 
     @Override
     public void add(double value) {
-        if (isFull())
+        if (isFull()) {
             queue.remove();
+        }
         int size = queue.size();
-        Double weightValue = weights.get(size);
+        Double weightValue = weights.get(size) * value;
         queue.add(weightValue);
     }
 

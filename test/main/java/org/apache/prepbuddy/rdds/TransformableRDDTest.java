@@ -7,6 +7,8 @@ import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.smoothingops.SimpleMovingAverage;
+import org.apache.prepbuddy.smoothingops.WeightedMovingAverage;
+import org.apache.prepbuddy.smoothingops.Weights;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
@@ -18,6 +20,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -261,4 +264,25 @@ public class TransformableRDDTest extends SparkTestCase {
         List<Double> expectedList = Arrays.asList(4.0, 5.0, 6.0, 7.0, 8.0);
         assertEquals(expectedList, transformed.collect());
     }
+
+    @Test
+    public void smoothShouldSmoothDataUsingWeightedMovingAverages() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "52,10,53", "23,12,64", "23,16,64", "23,13,64", "23,17,64", "23,19,64", "23,15,64"
+        ), 3);
+        TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
+
+        Weights weights = new Weights(3);
+        weights.add(0.166);
+        weights.add(0.333);
+        weights.add(0.5);
+        JavaRDD<Double> transformed = transformableRDD.smooth(1, new WeightedMovingAverage(3, weights));
+
+        Double expected = 13.66;
+        Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
+        Assert.assertEquals(expected, actual);
+
+    }
+
+
 }

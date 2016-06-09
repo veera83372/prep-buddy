@@ -13,7 +13,7 @@ import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
-import org.apache.prepbuddy.smoothingops.SimpleMovingAverage;
+import org.apache.prepbuddy.smoothingops.MovingAverage;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
@@ -417,7 +417,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(reducedRDD, fileType);
     }
 
-    public JavaRDD<Double> smooth(int columnIndex, SimpleMovingAverage smoothingMethod) {
+    public JavaRDD<Double> smooth(int columnIndex, MovingAverage smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
     }
