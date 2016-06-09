@@ -6,6 +6,7 @@ import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
+import org.apache.prepbuddy.smoothingops.ExponentialAverage;
 import org.apache.prepbuddy.smoothingops.SimpleMovingAverage;
 import org.apache.prepbuddy.smoothingops.WeightedMovingAverage;
 import org.apache.prepbuddy.smoothingops.Weights;
@@ -284,5 +285,19 @@ public class TransformableRDDTest extends SparkTestCase {
 
     }
 
+    @Test
+    public void smoothShouldSmoothDataUsingExponentialAverages() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "52,10,53", "23,12,64", "23,16,64", "23,13,64", "23,17,64", "23,19,64", "23,15,64"
+        ), 3);
+        TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
+
+        JavaRDD<Double> transformed = transformableRDD.smooth(1, new ExponentialAverage(0.2));
+
+        Double expected = 13.66;
+        Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
+        Assert.assertEquals(expected, actual);
+
+    }
 
 }

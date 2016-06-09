@@ -2,11 +2,10 @@ package org.apache.prepbuddy.smoothingops;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public abstract class SlidingWindow implements Serializable {
     protected int size;
-    protected Queue<Double> queue;
+    protected LinkedList<Double> queue;
 
     public SlidingWindow(int size) {
         this.size = size;
