@@ -7,8 +7,8 @@ import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.smoothingops.ExponentialAverage;
-import org.apache.prepbuddy.smoothingops.SimpleMovingAverage;
-import org.apache.prepbuddy.smoothingops.WeightedMovingAverage;
+import org.apache.prepbuddy.smoothingops.SimpleMovingAverageMethod;
+import org.apache.prepbuddy.smoothingops.WeightedMovingAverageMethod;
 import org.apache.prepbuddy.smoothingops.Weights;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
@@ -258,7 +258,7 @@ public class TransformableRDDTest extends SparkTestCase {
                 "52,3,53", "23,4,64", "23,5,64", "23,6,64", "23,7,64", "23,8,64", "23,9,64"
         ), 3);
         TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
-        JavaRDD<Double> transformed = transformableRDD.smooth(1, new SimpleMovingAverage(3));
+        JavaRDD<Double> transformed = transformableRDD.smooth(1, new SimpleMovingAverageMethod(3));
 
         Double excepted = 4.0;
         assertEquals(excepted, transformed.first());
@@ -278,7 +278,7 @@ public class TransformableRDDTest extends SparkTestCase {
         weights.add(0.166);
         weights.add(0.333);
         weights.add(0.5);
-        JavaRDD<Double> transformed = transformableRDD.smooth(1, new WeightedMovingAverage(3, weights));
+        JavaRDD<Double> transformed = transformableRDD.smooth(1, new WeightedMovingAverageMethod(3, weights));
 
         Double expected = 13.66;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));

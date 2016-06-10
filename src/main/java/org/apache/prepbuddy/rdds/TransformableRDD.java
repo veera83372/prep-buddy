@@ -13,7 +13,7 @@ import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
-import org.apache.prepbuddy.smoothingops.MovingAverage;
+import org.apache.prepbuddy.smoothingops.SmoothingMethod;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
@@ -21,7 +21,10 @@ import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
-import org.apache.prepbuddy.utils.*;
+import org.apache.prepbuddy.utils.EncryptionKeyPair;
+import org.apache.prepbuddy.utils.PivotTable;
+import org.apache.prepbuddy.utils.ReplacementFunction;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.Partitioner;
 import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -401,7 +404,7 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(reducedRDD, fileType);
     }
 
-    public JavaRDD<Double> smooth(int columnIndex, MovingAverage smoothingMethod) {
+    public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
     }

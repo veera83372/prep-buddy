@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ExponentialAverage extends MovingAverage {
+public class ExponentialAverage extends SmoothingMethod {
     private ExponentialSlidingWindow slidingWindow;
     private final int windowSize = 2;
 
