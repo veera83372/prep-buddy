@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SimpleMovingAverage extends MovingAverage {
+public class SimpleMovingAverageMethod extends SmoothingMethod {
 
     private int windowSize;
 
-    public SimpleMovingAverage(int window) {
+    public SimpleMovingAverageMethod(int window) {
         this.windowSize = window;
     }
 

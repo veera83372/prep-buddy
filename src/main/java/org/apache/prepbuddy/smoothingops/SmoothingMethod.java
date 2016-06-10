@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class MovingAverage implements Serializable {
+public abstract class SmoothingMethod implements Serializable {
 
     public JavaRDD<Double> prepare(JavaRDD<String> singleColumnDataset, final int windowSize) {
         JavaRDD<Tuple2<Integer, String>> duplicateRdd = singleColumnDataset.mapPartitionsWithIndex(new Function2<Integer, Iterator<String>, Iterator<Tuple2<Integer, String>>>() {

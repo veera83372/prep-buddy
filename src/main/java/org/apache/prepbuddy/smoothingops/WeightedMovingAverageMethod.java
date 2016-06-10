@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class WeightedMovingAverage extends MovingAverage {
+public class WeightedMovingAverageMethod extends SmoothingMethod {
     private int windowSize;
     private WeightedSlidingWindow slidingWindow;
 
-    public WeightedMovingAverage(int windowSize, final Weights weights) {
+    public WeightedMovingAverageMethod(int windowSize, final Weights weights) {
         this.windowSize = windowSize;
         if (weights.size() != windowSize)
             throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING);
