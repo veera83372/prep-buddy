@@ -18,9 +18,9 @@ public class Weights implements Serializable {
     }
 
     public void add(double value) {
-        if (weights.size() == limit)
+        if (size() == limit)
             throw new ApplicationException(ErrorMessages.SIZE_LIMIT_IS_EXCEEDED);
-        if (weights.size() == limit - 1 && sumWith(value) != 1.0)
+        if (size() == limit - 1 && sumWith(value) != 1.0)
             throw new ApplicationException(ErrorMessages.WEIGHTS_SUM_IS_NOT_EQUAL_TO_ONE);
         weights.add(value);
     }

@@ -21,7 +21,7 @@ public class WeightsTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldTrowExceptionWhileGettingAnyWeightAndSumIsNotEqualToOne() {
+    public void shouldTrowExceptionWhileAddingWeightAndSumIsNotEqualToOne() {
         Weights weights = new Weights(2);
         weights.add(0.2);
 
@@ -38,6 +38,6 @@ public class WeightsTest extends SparkTestCase {
         Weights weight1 = new Weights(2);
         weight1.add(0.777);
         exception.expect(ApplicationException.class);
-        weight1.add(0.3);
+        weight1.add(0.333);
     }
 }
