@@ -4,40 +4,38 @@ import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Weights implements Serializable {
-    private int size;
+    private int limit;
     private List<Double> weights;
 
-    public Weights(int windowSize) {
-        size = windowSize;
-        weights = new ArrayList<>(size);
+    public Weights(int limit) {
+        this.limit = limit;
+        weights = new ArrayList<>(this.limit);
     }
 
     public void add(double value) {
-        if (weights.size() == size)
+        if (size() == limit)
             throw new ApplicationException(ErrorMessages.SIZE_LIMIT_IS_EXCEEDED);
+        if (size() == limit - 1 && sumWith(value) != 1.0)
+            throw new ApplicationException(ErrorMessages.WEIGHTS_SUM_IS_NOT_EQUAL_TO_ONE);
         weights.add(value);
     }
 
     public double get(int index) {
-        if (!sumIsUpToOne())
-            throw new ApplicationException(ErrorMessages.WEIGHTS_SUM_IS_NOT_EQUAL_TO_ONE);
         return weights.get(index);
     }
 
-    public boolean sumIsUpToOne() {
-        return sum() == 1;
-    }
-
-    private long sum() {
+    private double sumWith(double value) {
         Double sum = 0.0;
-        for (Double value : weights) {
-            sum += value;
+        for (Double oneValue : weights) {
+            sum += oneValue;
         }
-        return Math.round(sum);
+        sum += value;
+        return Double.parseDouble(new DecimalFormat("##.#").format(sum));
     }
 
     public int size() {

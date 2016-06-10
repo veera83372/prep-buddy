@@ -6,7 +6,6 @@ import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.groupingops.Cluster;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
-import org.apache.prepbuddy.smoothingops.ExponentialAverage;
 import org.apache.prepbuddy.smoothingops.SimpleMovingAverageMethod;
 import org.apache.prepbuddy.smoothingops.WeightedMovingAverageMethod;
 import org.apache.prepbuddy.smoothingops.Weights;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -284,39 +282,6 @@ public class TransformableRDDTest extends SparkTestCase {
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
         assertEquals(expected, actual);
 
-    }
-
-    @Test
-    public void smoothShouldSmoothDataUsingExponentialAverages() {
-        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
-                "52,23,53", "23,40,64", "23,25,64", "23,27,64", "23,32,64", "23,48,64", "23,33,64"
-        ), 1);
-        TransformableRDD transformableRDD = new TransformableRDD(initialDataset);
-
-        JavaRDD<Double> transformed = transformableRDD.smooth(1, new ExponentialAverage(0.2));
-
-        Double expected = 26.4;
-        Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
-        assertEquals(expected, actual);
-
-
-        List<Double> expectedList = Arrays.asList(
-                26.4,
-                26.12,
-                26.3,
-                27.44,
-                31.55,
-                31.84
-        );
-
-        List<Double> collected = transformed.collect();
-        List<Double> actualList = new ArrayList<>();
-        for (int i = 0; i < collected.size(); i++) {
-            Double value = Double.parseDouble(new DecimalFormat("##.##").format(collected.get(i)));
-            actualList.add(value);
-        }
-
-        assertEquals(expectedList, actualList);
     }
 
 }
