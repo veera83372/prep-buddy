@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.smoothingops;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SimpleMovingAverage extends MovingAverage {
+public class SimpleMovingAverageMethod extends SmoothingMethod {
 
     private int windowSize;
 
-    public SimpleMovingAverage(int window) {
+    public SimpleMovingAverageMethod(int window) {
         this.windowSize = window;
     }
 
@@ -22,7 +22,7 @@ public class SimpleMovingAverage extends MovingAverage {
             @Override
             public Iterable<Double> call(Iterator<Double> iterator) throws Exception {
                 List<Double> movingAverages = new ArrayList<>();
-                SlidingWindow slidingWindow = new SlidingWindow(windowSize);
+                SimpleSlidingWindow slidingWindow = new SimpleSlidingWindow(windowSize);
                 while (iterator.hasNext()) {
                     Double value = iterator.next();
                     slidingWindow.add(value);

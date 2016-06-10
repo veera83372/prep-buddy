@@ -1,15 +1,15 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.smoothingops;
 
+import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.Queue;
 
-public class SlidingWindow {
-    private int size;
-    private Queue<Double> queue;
+public abstract class SlidingWindow implements Serializable {
+    protected int size;
+    protected LinkedList<Double> queue;
 
     public SlidingWindow(int size) {
-        queue = new LinkedList<>();
         this.size = size;
+        queue = new LinkedList<>();
     }
 
     public void add(double value) {
@@ -18,21 +18,17 @@ public class SlidingWindow {
         queue.add(value);
     }
 
-
     public boolean isFull() {
         return queue.size() == size;
     }
 
-    public Double average() {
-        return Double.valueOf(sum() / size);
-    }
-
-    public int sum() {
-        int sum = 0;
+    public Double sum() {
+        Double sum = 0.0;
         for (Double oneValue : queue) {
             sum += oneValue;
         }
         return sum;
     }
 
+    public abstract Double average();
 }

@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.smoothingops;
 
 import org.apache.spark.Partitioner;
 
