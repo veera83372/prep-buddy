@@ -13,7 +13,7 @@ public class SimpleMovingAverageTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
         ), 3);
-        SimpleMovingAverage movingAverage = new SimpleMovingAverage(3);
+        SimpleMovingAverageMethod movingAverage = new SimpleMovingAverageMethod(3);
         JavaRDD<Double> rdd = movingAverage.smooth(initialDataset);
 
         Double expected = 4.0;

@@ -23,7 +23,7 @@ public class WeightedMovingAverageTest extends SparkTestCase {
         weights.add(0.333);
         weights.add(0.5);
 
-        WeightedMovingAverage movingAverage = new WeightedMovingAverage(3, weights);
+        WeightedMovingAverageMethod movingAverage = new WeightedMovingAverageMethod(3, weights);
         JavaRDD<Double> rdd = movingAverage.smooth(initialDataset);
 
         Double expected = 13.66;
@@ -38,6 +38,6 @@ public class WeightedMovingAverageTest extends SparkTestCase {
     public void shouldThrowExceptionInConstructionIfWeightSizeIsNotEqualToWindowSize() {
         Weights weights = new Weights(3);
         exception.expect(ApplicationException.class);
-        new WeightedMovingAverage(3, weights);
+        new WeightedMovingAverageMethod(3, weights);
     }
 }
