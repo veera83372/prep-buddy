@@ -1,9 +1,12 @@
 package org.apache.prepbuddy.smoothingops;
 
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -26,5 +29,15 @@ public class WeightedMovingAverageTest extends SparkTestCase {
         Double expected = 13.66;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(rdd.first()));
         Assert.assertEquals(expected, actual);
+    }
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void shouldThrowExceptionInConstructionIfWeightSizeIsNotEqualToWindowSize() {
+        Weights weights = new Weights(3);
+        exception.expect(ApplicationException.class);
+        new WeightedMovingAverage(3, weights);
     }
 }

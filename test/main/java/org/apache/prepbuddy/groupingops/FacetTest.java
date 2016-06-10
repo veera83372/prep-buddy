@@ -1,7 +1,7 @@
-package org.apache.prepbuddy.rdds;
+package org.apache.prepbuddy.groupingops;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 import scala.Tuple2;
