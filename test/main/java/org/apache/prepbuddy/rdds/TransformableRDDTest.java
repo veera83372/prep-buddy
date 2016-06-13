@@ -177,7 +177,7 @@ public class TransformableRDDTest extends SparkTestCase {
                 "Smith,Male,USA,12342"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        int size = initialRDD.size();
+        int size = initialRDD.getNumberOfColumns();
         assertEquals(4, size);
     }
 

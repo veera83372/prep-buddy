@@ -48,6 +48,13 @@ public class TransformableRDD extends JavaRDD<String> {
         this(rdd, FileType.CSV);
     }
 
+    /**
+     * Returns a HomomorphicallyEncryptedRDD containing encrypted values of @columnIndex using @keyPair
+     *
+     * @param keyPair
+     * @param columnIndex
+     * @return
+     */
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
         validateColumnIndex(columnIndex);
         final PaillierPublicKey publicKey = keyPair.getPublicKey();
@@ -64,6 +71,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new HomomorphicallyEncryptedRDD(encryptedRDD, keyPair, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing only unique elements.
+     * @return
+     */
     public TransformableRDD deduplicate() {
         JavaRDD transformed = DuplicationHandler.deduplicate(this);
         return new TransformableRDD(transformed, fileType);
@@ -74,6 +85,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing the duplicate elements of this TransformableRDD.
+     * @return
+     */
     public TransformableRDD getDuplicates() {
         JavaRDD duplicates = DuplicationHandler.detectDuplicates(this);
         return new TransformableRDD(duplicates);
@@ -84,6 +99,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed);
     }
 
+    /**
+     * Returns a new TransformableRDD containing only the elements that satisfy the predicate.
+     * @param predicate
+     * @return
+     */
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
         JavaRDD<String> transformed = new RowPurger(predicate).apply(this, fileType);
         return new TransformableRDD(transformed, fileType);
@@ -103,6 +123,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TextFacet containing the facets of @columnIndex
+     * @param columnIndex
+     * @return
+     */
     public TextFacets listFacets(final int columnIndex) {
         validateColumnIndex(columnIndex);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
@@ -121,6 +146,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
+    /**
+     * Returns a new TextFacet containing the facets of @columnIndexes
+     * @param columnIndexes
+     * @return
+     */
     public TextFacets listFacets(final int[] columnIndexes) {
         validateColumnIndex(columnIndexes);
         JavaPairRDD<String, Integer> columnValuePair = this.mapToPair(new PairFunction<String, String, Integer>() {
@@ -143,6 +173,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TextFacets(facets);
     }
 
+    /**
+     * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
+     * @param columnIndex
+     * @param algorithm
+     * @return
+     */
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
         validateColumnIndex(columnIndex);
         TextFacets textFacets = this.listFacets(columnIndex);
@@ -152,6 +188,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return algorithm.getClusters(tuples);
     }
 
+    /**
+     * Returns a new TransformableRDD containing split columns using @splitPlan
+     * @param splitPlan
+     * @return
+     */
     public TransformableRDD splitColumn(final SplitPlan splitPlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
@@ -164,6 +205,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing the merged column using @mergePlan
+     * @param mergePlan
+     * @return
+     */
     public TransformableRDD mergeColumns(final MergePlan mergePlan) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
@@ -176,6 +222,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD that contains records flagged by @symbol
+     * based on the evaluation of @markerPredicate
+     * @param symbol
+     * @param markerPredicate
+     * @return
+     */
     public TransformableRDD flag(final String symbol, final MarkerPredicate markerPredicate) {
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
             @Override
@@ -189,6 +242,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD by applying the function on all rows marked as @flag
+     * @param flag
+     * @param symbolColumnIndex
+     * @param mapFunction
+     * @return
+     */
     public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
         JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
             @Override
@@ -201,6 +261,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mappedRDD, fileType);
     }
 
+    /**
+     * Returns a inferred DataType of given column index
+     * @param columnIndex
+     * @return
+     */
     public DataType inferType(final int columnIndex) {
         validateColumnIndex(columnIndex);
         List<String> columnSamples = takeSampleSet(columnIndex);
@@ -208,6 +273,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return typeAnalyzer.getType();
     }
 
+    /**
+     * Returns a new TransformableRDD by dropping the column at given index
+     * @param columnIndex
+     * @return
+     */
     public TransformableRDD dropColumn(final int columnIndex) {
         validateColumnIndex(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
@@ -227,6 +297,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD by replacing the @cluster's text with specified @newValue
+     * @param cluster
+     * @param newValue
+     * @param columnIndex
+     * @return
+     */
     public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
         validateColumnIndex(columnIndex);
         JavaRDD<String> mapped = this.map(new Function<String, String>() {
@@ -242,6 +319,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(mapped, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+     * @param columnIndex
+     * @param strategy
+     * @return
+     */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
         validateColumnIndex(columnIndex);
         strategy.prepareSubstitute(this, columnIndex);
@@ -263,14 +346,18 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     private void validateColumnIndex(int... columnIndexes) {
-        int size = size();
+        int size = getNumberOfColumns();
         for (int index : columnIndexes) {
             if (index < 0 || size <= index)
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
         }
     }
 
-
+    /**
+     * Returns a JavaDoubleRdd of given column index
+     * @param columnIndex
+     * @return
+     */
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
         if (!isNumericColumn(columnIndex))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
@@ -303,24 +390,37 @@ public class TransformableRDD extends JavaRDD<String> {
         return columnSamples;
     }
 
-    public JavaDoubleRDD multiplyColumns(final int columnIndex, final int anotherColumn) {
-        if (!isNumericColumn(columnIndex) || !isNumericColumn(anotherColumn))
+    /**
+     * Returns a JavaDoubleRDD which is a product of the values in @fistColumn and @secondColumn
+     *
+     * @param fistColumn
+     * @param secondColumn
+     * @return
+     */
+    public JavaDoubleRDD multiplyColumns(final int fistColumn, final int secondColumn) {
+        if (!isNumericColumn(fistColumn) || !isNumericColumn(secondColumn))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
 
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String row) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(row);
-                String columnValue = recordAsArray[columnIndex];
-                String otherColumnValue = recordAsArray[anotherColumn];
+                String columnValue = recordAsArray[fistColumn];
+                String otherColumnValue = recordAsArray[secondColumn];
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
-                return Double.parseDouble(recordAsArray[columnIndex]) * Double.parseDouble(recordAsArray[anotherColumn]);
+                return Double.parseDouble(recordAsArray[fistColumn]) * Double.parseDouble(recordAsArray[secondColumn]);
 
             }
         });
     }
 
+    /**
+     * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
+     * @param columnIndex
+     * @param normalizer
+     * @return
+     */
     public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
         validateColumnIndex(columnIndex);
         normalizer.prepare(this, columnIndex);
@@ -337,6 +437,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(normalized);
     }
 
+    /**
+     * Returns a JavaRDD of given column
+     * @param columnIndex
+     * @return
+     */
     public JavaRDD<String> select(final int columnIndex) {
         return map(new Function<String, String>() {
             @Override
@@ -346,20 +451,25 @@ public class TransformableRDD extends JavaRDD<String> {
         });
     }
 
-    public int size() {
-        List<String> sampleString = this.takeSample(false, 10);
-        Map<Integer, Integer> lengthWithCount = new HashMap<>();
-        for (String row : sampleString) {
-            Set<Integer> lengths = lengthWithCount.keySet();
+    /**
+     * Returns the number of columns in this RDD
+     *
+     * @return
+     */
+    public int getNumberOfColumns() {
+        List<String> sample = this.takeSample(false, 5);
+        Map<Integer, Integer> noOfColsAndCount = new HashMap<>();
+        for (String row : sample) {
+            Set<Integer> lengths = noOfColsAndCount.keySet();
             int rowLength = fileType.parseRecord(row).length;
             if (!lengths.contains(rowLength))
-                lengthWithCount.put(rowLength, 1);
+                noOfColsAndCount.put(rowLength, 1);
             else {
-                Integer count = lengthWithCount.get(rowLength);
-                lengthWithCount.put(rowLength, count + 1);
+                Integer count = noOfColsAndCount.get(rowLength);
+                noOfColsAndCount.put(rowLength, count + 1);
             }
         }
-        return getHighestCountKey(lengthWithCount);
+        return getHighestCountKey(noOfColsAndCount);
     }
 
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
@@ -375,6 +485,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return highestKey;
     }
 
+    /**
+     * Generates a PivotTable by pivoting data in the pivotalColumn
+     * @param pivotalColumn
+     * @param independentColumnIndexes
+     * @return
+     */
     public PivotTable pivotByCount(int pivotalColumn, int[] independentColumnIndexes) {
         PivotTable<Integer> pivotTable = new PivotTable<>(0);
         for (int index : independentColumnIndexes) {
@@ -388,6 +504,11 @@ public class TransformableRDD extends JavaRDD<String> {
         return pivotTable;
     }
 
+    /**
+     * Returns a new TransformableRDD containing values of @columnIndexes
+     * @param columnIndexes
+     * @return
+     */
     public TransformableRDD select(final int... columnIndexes) {
         validateColumnIndex(columnIndexes);
         JavaRDD<String> reducedRDD = map(new Function<String, String>() {
@@ -403,6 +524,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(reducedRDD, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing smoothed values of @columnIndex using @smoothingMethod
+     * @param columnIndex
+     * @param smoothingMethod
+     * @return
+     */
     public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
