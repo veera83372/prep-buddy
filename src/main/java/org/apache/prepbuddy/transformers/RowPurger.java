@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.datacleansers;
+package org.apache.prepbuddy.transformers;
 
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.RowRecord;

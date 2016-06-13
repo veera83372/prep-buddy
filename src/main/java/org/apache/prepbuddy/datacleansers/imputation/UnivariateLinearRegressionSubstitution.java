@@ -1,8 +1,8 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.rdds.TransformableRDD;
+import org.apache.prepbuddy.transformers.RowPurger;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 

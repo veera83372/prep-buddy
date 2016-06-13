@@ -1,7 +1,6 @@
 package org.apache.prepbuddy.systemtests;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
@@ -10,9 +9,10 @@ import org.apache.prepbuddy.normalizers.DecimalScalingNormalization;
 import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
 import org.apache.prepbuddy.normalizers.ZScoreNormalization;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.transformations.MarkerPredicate;
-import org.apache.prepbuddy.transformations.MergePlan;
-import org.apache.prepbuddy.transformations.SplitPlan;
+import org.apache.prepbuddy.transformers.MarkerPredicate;
+import org.apache.prepbuddy.transformers.MergePlan;
+import org.apache.prepbuddy.transformers.RowPurger;
+import org.apache.prepbuddy.transformers.SplitPlan;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.utils.ReplacementFunction;
 import org.apache.prepbuddy.utils.RowRecord;

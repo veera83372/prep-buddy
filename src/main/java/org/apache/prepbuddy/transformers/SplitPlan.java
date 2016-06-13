@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.transformations;
+package org.apache.prepbuddy.transformers;
 
 import java.io.Serializable;
 import java.util.ArrayList;

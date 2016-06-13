@@ -1,8 +1,8 @@
 package org.apache.prepbuddy.examples;
 
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.datacleansers.imputation.NaiveBayesClassifier;
 import org.apache.prepbuddy.rdds.TransformableRDD;
+import org.apache.prepbuddy.transformers.RowPurger;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;

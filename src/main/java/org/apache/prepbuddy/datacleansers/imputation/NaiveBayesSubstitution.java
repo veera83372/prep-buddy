@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.rdds.TransformableRDD;
+import org.apache.prepbuddy.transformers.RowPurger;
 import org.apache.prepbuddy.utils.RowRecord;
 
 public class NaiveBayesSubstitution implements ImputationStrategy {
