@@ -23,6 +23,15 @@ Our aim is to provide a set of algorithms for cleaning and transforming very lar
 - Mailing list: prep-buddy@googlegroups.com
 - Slack channel: 
 
+#### Usage
+To use this library, add a dependency to spark-metrics in your project:
+<dependency>
+    <groupId>com.groupon.dse</groupId>
+    <artifactId>spark-metrics</artifactId>
+    <version>1.0</version>
+</dependency>
+This library is currently built for Spark 1.5.2, but is also compatible with 1.4.1. This is important to note because this library uses Spark's internal APIs, and compatibility with other major Spark versions has not been fully tested.
+
 #### Dependencies
 The library depends on a few other Java libraries.
 
