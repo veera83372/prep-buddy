@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.smoothingops;
+package org.apache.prepbuddy.smoothers;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;

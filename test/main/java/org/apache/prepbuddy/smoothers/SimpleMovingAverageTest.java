@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.smoothingops;
+package org.apache.prepbuddy.smoothers;
 
 import org.apache.prepbuddy.SparkTestCase;
 import org.apache.spark.api.java.JavaRDD;
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-public class SimpleSmoothingMethodTest extends SparkTestCase {
+public class SimpleMovingAverageTest extends SparkTestCase {
     @Test
     public void shouldSmoothDataSetBySimpleMovingAverage() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(

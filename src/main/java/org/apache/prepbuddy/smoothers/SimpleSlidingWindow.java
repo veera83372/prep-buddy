@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.smoothingops;
+package org.apache.prepbuddy.smoothers;
 
 public class SimpleSlidingWindow extends SlidingWindow {
 

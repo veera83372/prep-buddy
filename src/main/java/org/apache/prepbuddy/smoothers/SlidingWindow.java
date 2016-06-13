@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.smoothingops;
+package org.apache.prepbuddy.smoothers;
 
 import java.io.Serializable;
 import java.util.LinkedList;

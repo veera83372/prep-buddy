@@ -13,7 +13,7 @@ import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
 import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
-import org.apache.prepbuddy.smoothingops.SmoothingMethod;
+import org.apache.prepbuddy.smoothers.SmoothingMethod;
 import org.apache.prepbuddy.transformations.MarkerPredicate;
 import org.apache.prepbuddy.transformations.MergePlan;
 import org.apache.prepbuddy.transformations.SplitPlan;
