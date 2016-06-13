@@ -40,7 +40,7 @@ public enum FileType {
         }
     };
 
-    private static String[] trimAll(String[] record) {
+    String[] trimAll(String[] record) {
         for (int i = 0; i < record.length; i++) {
             String each = record[i];
             record[i] = each.trim();
@@ -48,13 +48,10 @@ public enum FileType {
         return record;
     }
 
-
     public abstract String[] parseRecord(String record);
 
     public abstract String join(String[] record);
 
-
     public abstract String appendDelimiter(String row);
-
 
 }
