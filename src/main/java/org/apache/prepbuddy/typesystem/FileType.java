@@ -7,7 +7,8 @@ public enum FileType {
     CSV {
         @Override
         public String[] parseRecord(String record) {
-            return record.split(",", -1);
+            String[] recordAsArray = record.split(",", -1);
+            return trimAll(recordAsArray);
         }
 
         @Override
@@ -24,7 +25,8 @@ public enum FileType {
     TSV {
         @Override
         public String[] parseRecord(String record) {
-            return record.split("\t", -1);
+            String[] recordAsArray = record.split("\t", -1);
+            return trimAll(recordAsArray);
         }
 
         @Override
@@ -37,6 +39,15 @@ public enum FileType {
             return row + "\t";
         }
     };
+
+    private static String[] trimAll(String[] record) {
+        for (int i = 0; i < record.length; i++) {
+            String each = record[i];
+            record[i] = each.trim();
+        }
+        return record;
+    }
+
 
     public abstract String[] parseRecord(String record);
 

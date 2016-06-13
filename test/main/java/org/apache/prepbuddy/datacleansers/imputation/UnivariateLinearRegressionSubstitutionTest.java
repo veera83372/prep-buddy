@@ -28,7 +28,7 @@ public class UnivariateLinearRegressionSubstitutionTest extends SparkTestCase {
     @Test
     public void shouldPredictMissingValue() {
         JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
-                "3.4,5.67", "3.9 ,4.81", "2.6 ,4.93", "1.9, 6.21", "2.2,6.83", "3.3,5.61", "1.7,5.45", "2.4,4.94", "2.8,5.73"
+                "3.4,5.67", "3.9 ,4.81", "2.6,4.93", "1.9, 6.21", "2.2,6.83", "3.3,5.61", "1.7,5.45", "2.4,4.94", "2.8,5.73"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
         UnivariateLinearRegressionSubstitution strategy = new UnivariateLinearRegressionSubstitution(0);
