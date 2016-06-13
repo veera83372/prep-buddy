@@ -1,5 +1,5 @@
 ## Prep Buddy 
-[![Build Status](https://travis-ci.org/data-commons/prep-buddy)]
+[![Build Status(https://travis-ci.org/data-commons/prep-buddy)]]
 #### Data Preparation Library for Spark
 
 A Scala / Java / Python library for cleaning, transforming and executing other preparation tasks for large datasets on Apache Spark.
