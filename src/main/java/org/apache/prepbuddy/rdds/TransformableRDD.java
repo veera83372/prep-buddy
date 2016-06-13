@@ -64,7 +64,6 @@ public class TransformableRDD extends JavaRDD<String> {
         return new HomomorphicallyEncryptedRDD(encryptedRDD, keyPair, fileType);
     }
 
-
     public TransformableRDD deduplicate() {
         JavaRDD transformed = DuplicationHandler.deduplicate(this);
         return new TransformableRDD(transformed, fileType);
