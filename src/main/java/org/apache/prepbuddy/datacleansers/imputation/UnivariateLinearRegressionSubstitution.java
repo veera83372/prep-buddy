@@ -1,5 +1,6 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -9,13 +10,13 @@ import java.text.DecimalFormat;
 
 public class UnivariateLinearRegressionSubstitution implements ImputationStrategy {
 
-    public static final String BLANK_STRING = "";
+    private static final String BLANK_STRING = "";
     private int independentColumnIndex;
     private double slope;
     private double intercept;
 
-    public UnivariateLinearRegressionSubstitution(int _XColumnIndex) {
-        this.independentColumnIndex = _XColumnIndex;
+    public UnivariateLinearRegressionSubstitution(int independentColumnIndex) {
+        this.independentColumnIndex = independentColumnIndex;
     }
 
     @Override
@@ -23,9 +24,9 @@ public class UnivariateLinearRegressionSubstitution implements ImputationStrateg
         TransformableRDD rddForRegression = inputDataset.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                String _XColumnValue = record.valueAt(independentColumnIndex);
-                String _YColumnValue = record.valueAt(missingDataColumnIndex);
-                return _XColumnValue.trim().isEmpty() || _YColumnValue.trim().isEmpty();
+                String xColumnValue = record.valueAt(independentColumnIndex);
+                String yColumnValue = record.valueAt(missingDataColumnIndex);
+                return !NumberUtils.isNumber(xColumnValue) || xColumnValue.trim().isEmpty() || yColumnValue.trim().isEmpty();
             }
         });
         long count = rddForRegression.count();
