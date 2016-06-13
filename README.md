@@ -28,18 +28,15 @@ The library depends on a few other Java libraries.
 
 - Javallier - A Java library for Paillier partially homomorphic encryption based on python-paillier.
 - Apache Commons Math for general math and statistics functionality.
-- Apache Spark for distributed computation with in-memory capabilities.
-
-#### Install
-- Apache Spark for distributed computation with in-memory capabilities.
+- Apache Spark for all the distributed computation capabilities.
 
 #### Download
 
-- Latest Stable 2.5
+- Latest Stable 0.5. Coming soon!
 
 #### Documentation Wiki
-- Apache Spark for distributed computation with in-memory capabilities.
+- http://data-commons.github.io/prep-buddy
 
 #### Contributing
-- Apache Spark for distributed computation with in-memory capabilities.
+- Coming Soon!
 
