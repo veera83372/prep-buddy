@@ -5,6 +5,9 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clusters contains all cluster of a column.
+ */
 public class Clusters {
     private List<Cluster> clusters = new ArrayList<>();
 

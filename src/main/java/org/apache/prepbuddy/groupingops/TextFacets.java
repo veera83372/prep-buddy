@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TextFacets contain the cardinal values of the column with their
+ * number of occurrence in that column.
+ */
 public class TextFacets implements Serializable {
     private final JavaPairRDD<String, Integer> facets;
 
