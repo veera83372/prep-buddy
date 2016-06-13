@@ -78,7 +78,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
-        initialRDD.toMultipliedRdd(2, 3);
+        initialRDD.multiplyColumns(2, 3);
     }
 
     @Test
@@ -91,6 +91,6 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
-        initialRDD.toMultipliedRdd(3, 2);
+        initialRDD.multiplyColumns(3, 2);
     }
 }

@@ -9,53 +9,59 @@ import java.text.DecimalFormat;
 
 public class UnivariateLinearRegressionSubstitution implements ImputationStrategy {
 
-    private int _XColumnIndex;
-    private double slop;
+    public static final String BLANK_STRING = "";
+    private int independentColumnIndex;
+    private double slope;
     private double intercept;
 
     public UnivariateLinearRegressionSubstitution(int _XColumnIndex) {
-        this._XColumnIndex = _XColumnIndex;
+        this.independentColumnIndex = _XColumnIndex;
     }
 
     @Override
-    public void prepareSubstitute(TransformableRDD rdd, final int missingDataColumn) {
-        TransformableRDD withoutMissingValue = rdd.removeRows(new RowPurger.Predicate() {
+    public void prepareSubstitute(TransformableRDD inputDataset, final int missingDataColumnIndex) {
+        TransformableRDD rddForRegression = inputDataset.removeRows(new RowPurger.Predicate() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                String _XColumnValue = record.valueAt(_XColumnIndex);
-                String _YColumnValue = record.valueAt(missingDataColumn);
+                String _XColumnValue = record.valueAt(independentColumnIndex);
+                String _YColumnValue = record.valueAt(missingDataColumnIndex);
                 return _XColumnValue.trim().isEmpty() || _YColumnValue.trim().isEmpty();
             }
         });
-        long count = withoutMissingValue.count();
+        long count = rddForRegression.count();
 
-        JavaDoubleRDD _XYRdd = withoutMissingValue.toMultipliedRdd(missingDataColumn, _XColumnIndex);
-        JavaDoubleRDD _XXRdd = withoutMissingValue.toMultipliedRdd(_XColumnIndex, _XColumnIndex);
-        JavaDoubleRDD _YRdd = withoutMissingValue.toDoubleRDD(missingDataColumn);
-        JavaDoubleRDD _XRdd = withoutMissingValue.toDoubleRDD(_XColumnIndex);
+        JavaDoubleRDD xyRDD = rddForRegression.multiplyColumns(missingDataColumnIndex, independentColumnIndex);
+        JavaDoubleRDD xSquaredRDD = rddForRegression.multiplyColumns(independentColumnIndex, independentColumnIndex);
+        JavaDoubleRDD yRDD = rddForRegression.toDoubleRDD(missingDataColumnIndex);
+        JavaDoubleRDD xRDD = rddForRegression.toDoubleRDD(independentColumnIndex);
 
-        Double squareRddSum = _XXRdd.sum();
-        Double _XYRddSum = _XYRdd.sum();
-        Double _YRddSum = _YRdd.sum();
-        Double _XRddSum = _XRdd.sum();
+        Double squareRddSum = xSquaredRDD.sum();
+        Double sumOfXY = xyRDD.sum();
+        Double sumOfY = yRDD.sum();
+        Double sumOfX = xRDD.sum();
 
-        setSlop(_XRddSum, _YRddSum, _XYRddSum, squareRddSum, count);
-        setIntercept(_XRddSum, _YRddSum, count);
+        setSlope(sumOfX, sumOfY, sumOfXY, squareRddSum, count);
+        setIntercept(sumOfX, sumOfY, count);
     }
 
-    private void setIntercept(Double xRddSum, Double yRddSum, long count) {
-        intercept = (yRddSum - (slop * xRddSum)) / count;
+    private void setIntercept(Double sumOfXs, Double sumOfYs, long count) {
+        intercept = (sumOfYs - (slope * sumOfXs)) / count;
     }
 
-    private void setSlop(Double xRddSum, Double yRddSum, Double xyRddSum, Double squareRddSum, long count) {
-        slop = ((count * xyRddSum) - (xRddSum * yRddSum)) / ((count * squareRddSum) - xRddSum * xRddSum);
+    private void setSlope(Double sumOfXs, Double sumOfYs, Double sumOfXYs, Double sumOfXSquared, long count) {
+        slope = ((count * sumOfXYs) - (sumOfXs * sumOfYs)) / ((count * sumOfXSquared) - sumOfXs * sumOfXs);
     }
 
     @Override
     public String handleMissingData(RowRecord record) {
-        Double value = Double.parseDouble(record.valueAt(_XColumnIndex));
-        Double imputeValue = intercept + slop * value;
-        imputeValue = Double.parseDouble(new DecimalFormat("##.##").format(imputeValue));
-        return imputeValue.toString();
+        String dependentValue = record.valueAt(independentColumnIndex);
+        try {
+            Double value = Double.parseDouble(dependentValue);
+            Double imputedValue = intercept + slope * value;
+            imputedValue = Double.parseDouble(new DecimalFormat("##.##").format(imputedValue));
+            return imputedValue.toString();
+        } catch (NumberFormatException e) {
+            return BLANK_STRING;
+        }
     }
 }

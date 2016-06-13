@@ -8,18 +8,18 @@ It is currently maintained by a team of volunteers.
 
 Post questions and comments to the Google group, or email them directly to prep-buddy@googlegroups.com.
 
-Docs are available at http://srihari.github.io/prep-buddy
+Docs are available at http://data-commons.github.io/prep-buddy
 Or check out the Scaladoc, Javadoc, or Python doc.
 
 Our aim is to provide a set of algorithms for cleaning and transforming very large data sets, inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 
 #### Important links
 
-- Official source code repo: https://github.com/srihari/prep-buddy
+- Official source code repo: https://github.com/data-commons/prep-buddy
 - HTML documentation (stable release): 
 - HTML documentation (development version): 
 - Download releases: 
-- Issue tracker: https://github.com/srihari/prep-buddy/issues
+- Issue tracker: https://github.com/data-commons/prep-buddy/issues
 - Mailing list: prep-buddy@googlegroups.com
 - Slack channel: 
 

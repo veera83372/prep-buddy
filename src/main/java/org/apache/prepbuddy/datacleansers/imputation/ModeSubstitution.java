@@ -8,16 +8,16 @@ import scala.Tuple2;
 import java.util.List;
 
 public class ModeSubstitution implements ImputationStrategy {
-    private  Tuple2 highest;
+    private  Tuple2 mode;
     @Override
     public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
         TextFacets textFacets = rdd.listFacets(missingDataColumn);
         List<Tuple2> listOfHighest = textFacets.highest();
-        highest = listOfHighest.get(0);
+        mode = listOfHighest.get(0);
     }
 
     @Override
     public String handleMissingData(RowRecord record) {
-        return highest._1().toString();
+        return mode._1().toString();
     }
 }
