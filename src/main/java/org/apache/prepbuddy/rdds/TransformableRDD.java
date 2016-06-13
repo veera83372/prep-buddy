@@ -75,12 +75,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
-    public TransformableRDD detectDuplicates() {
-        JavaRDD transformed = DuplicationHandler.detectDuplicates(this);
-        return new TransformableRDD(transformed);
+    public TransformableRDD getDuplicates() {
+        JavaRDD duplicates = DuplicationHandler.detectDuplicates(this);
+        return new TransformableRDD(duplicates);
     }
 
-    public TransformableRDD detectDuplicates(List<Integer> primaryColumnIndexes) {
+    public TransformableRDD getDuplicates(List<Integer> primaryColumnIndexes) {
         JavaRDD transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
         return new TransformableRDD(transformed);
     }

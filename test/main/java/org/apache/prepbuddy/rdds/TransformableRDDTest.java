@@ -137,7 +137,7 @@ public class TransformableRDDTest extends SparkTestCase {
                 "Smith,Male,USA,12342"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        TransformableRDD duplicates = initialRDD.detectDuplicates(Arrays.asList(0, 3));
+        TransformableRDD duplicates = initialRDD.getDuplicates(Arrays.asList(0, 3));
         assertEquals(1, duplicates.count());
     }
 
@@ -150,7 +150,7 @@ public class TransformableRDDTest extends SparkTestCase {
                 "Smith,Male,USA,12342"
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
-        TransformableRDD duplicates = initialRDD.detectDuplicates();
+        TransformableRDD duplicates = initialRDD.getDuplicates();
         assertEquals(0, duplicates.count());
     }
 
