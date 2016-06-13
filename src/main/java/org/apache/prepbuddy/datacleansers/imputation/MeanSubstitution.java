@@ -4,6 +4,10 @@ import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
+/**
+ * This imputation strategy impute the missing column value with the mean
+ * of that column
+ */
 public class MeanSubstitution implements ImputationStrategy {
 
     private Double mean;

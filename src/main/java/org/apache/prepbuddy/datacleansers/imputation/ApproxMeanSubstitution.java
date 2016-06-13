@@ -4,6 +4,10 @@ import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
+/**
+ * This strategy uses meanApprox method of JavaDoubleRDD to impute the missing
+ * value by approx mean.
+ */
 public class ApproxMeanSubstitution implements ImputationStrategy {
     private Double approximateMean;
 

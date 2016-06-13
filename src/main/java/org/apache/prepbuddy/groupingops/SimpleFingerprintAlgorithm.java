@@ -8,6 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+/**
+ * This algorithm generates a key using Simple Fingerprint Algorithm for
+ * every cardinal value (facet) in column and add them to the Cluster.
+ */
 public class SimpleFingerprintAlgorithm extends FingerprintAlgorithm {
     public static String generateSimpleFingerprint(String someString) {
         someString = someString.trim();

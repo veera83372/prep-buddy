@@ -4,6 +4,11 @@ import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.utils.RowRecord;
 
+/**
+ * This imputation strategy is based on Naive Bayes Algorithm which
+ * is the probabilistic classifier. And this implementation is only
+ * for impute the categorical values.
+ */
 public class NaiveBayesSubstitution implements ImputationStrategy {
 
     private NaiveBayesClassifier naiveBayesClassifier;

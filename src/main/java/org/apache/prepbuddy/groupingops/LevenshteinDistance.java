@@ -6,6 +6,10 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This algorithm makes cardinal value as a key but grouped those values
+ * together whom Lenenshtein Distance is less than 4.
+ */
 public class LevenshteinDistance implements ClusteringAlgorithm {
     @Override
     public Clusters getClusters(List<Tuple2<String, Integer>> tuples) {
