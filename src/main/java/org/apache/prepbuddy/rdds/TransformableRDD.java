@@ -525,7 +525,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing smoothed values of @columnIndex using @smoothingMethod
+     * Returns a new JavaRDD containing smoothed values of @columnIndex using @smoothingMethod
      * @param columnIndex
      * @param smoothingMethod
      * @return JavaRDD<Double>
