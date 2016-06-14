@@ -5,7 +5,7 @@ import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
 /**
- * A imputation strategy that imputes the missing column value by
+ * An imputation strategy that imputes the missing column value by
  * approx mean of the specified column.
  */
 public class ApproxMeanSubstitution implements ImputationStrategy {

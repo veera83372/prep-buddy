@@ -8,7 +8,7 @@ import scala.Tuple2;
 import java.util.List;
 
 /**
- * A imputation strategy that imputes the column value by the mode of specified column
+ * An imputation strategy that imputes the column value by the mode of specified column
  */
 public class ModeSubstitution implements ImputationStrategy {
     private  Tuple2 mode;
