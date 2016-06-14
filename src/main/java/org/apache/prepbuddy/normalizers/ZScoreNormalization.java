@@ -5,6 +5,10 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.DoubleFunction;
 
+/**
+ * A normalizer technique which normalizes data by their standard score.
+ * Formula for Z Score Normalization : (X - Mean) / Standard Deviation.
+ */
 public class ZScoreNormalization implements NormalizationStrategy {
 
     private Double standardDeviation;

@@ -7,7 +7,9 @@ import org.apache.spark.api.java.function.DoubleFunction;
 
 import static java.lang.Double.parseDouble;
 
-
+/**
+ * A normalizer which normalizes the data between a specified range.
+ */
 public class MinMaxNormalizer implements NormalizationStrategy {
     private final int minRange;
     private final int maxRange;

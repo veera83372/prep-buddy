@@ -5,6 +5,9 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.DoubleFunction;
 
+/**
+ * A normalizer strategy which normalizes the data by multiplying it to 10 ^ -i.
+ */
 public class DecimalScalingNormalization implements NormalizationStrategy {
 
     private int length;
