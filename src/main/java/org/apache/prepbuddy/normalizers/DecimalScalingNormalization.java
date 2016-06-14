@@ -2,8 +2,6 @@ package org.apache.prepbuddy.normalizers;
 
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.api.java.JavaDoubleRDD;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.DoubleFunction;
 
 public class DecimalScalingNormalization implements NormalizationStrategy {
 
@@ -11,13 +9,7 @@ public class DecimalScalingNormalization implements NormalizationStrategy {
 
     @Override
     public void prepare(TransformableRDD transformableRDD, int columnIndex) {
-        JavaRDD<String> columnValues = transformableRDD.select(columnIndex);
-        JavaDoubleRDD doubleRDD = columnValues.mapToDouble(new DoubleFunction<String>() {
-            @Override
-            public double call(String element) throws Exception {
-                return Double.parseDouble(element);
-            }
-        });
+        JavaDoubleRDD doubleRDD = transformableRDD.toDoubleRDD(columnIndex);
         length = String.valueOf(doubleRDD.max().intValue()).length();
     }
 
