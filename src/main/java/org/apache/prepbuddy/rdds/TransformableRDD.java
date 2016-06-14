@@ -72,7 +72,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing only unique elements.
+     * Returns a new TransformableRDD containing only unique elements by considering all the columns as the primary key.
      * @return TransformableRDD
      */
     public TransformableRDD deduplicate() {
@@ -80,6 +80,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing only unique elements by considering the given the columns as the primary key.
+     *
+     * @param primaryColumnIndexes
+     * @return TransformableRDD
+     */
     public TransformableRDD deduplicate(List<Integer> primaryColumnIndexes) {
         JavaRDD transformed = DuplicationHandler.deduplicateByColumns(this, primaryColumnIndexes, fileType);
         return new TransformableRDD(transformed, fileType);
