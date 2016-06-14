@@ -5,6 +5,10 @@ import scala.Tuple2;
 import java.util.List;
 import java.util.TreeSet;
 
+/**
+ * This algorithm generates a key using N Gram Fingerprint Algorithm for
+ * every cardinal value (facet) in column and add them to the Cluster.
+ */
 public class NGramFingerprintAlgorithm extends FingerprintAlgorithm {
 
     private final int nGram;

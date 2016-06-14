@@ -1,5 +1,8 @@
 package org.apache.prepbuddy.utils;
 
+/**
+ * Contains the values of a row.
+ */
 public class RowRecord {
     private String[] columnValues;
 

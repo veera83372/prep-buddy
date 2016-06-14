@@ -6,7 +6,7 @@ A Scala / Java / Python library for cleaning, transforming and executing other p
 
 It is currently maintained by a team of volunteers.
 
-Post questions and comments to the Google group, or email them directly to prep-buddy@googlegroups.com.
+Post questions and comments to the Google group, or email them directly to data-commons-toolchain@googlegroups.com
 
 Docs are available at http://data-commons.github.io/prep-buddy
 Or check out the Scaladoc, Javadoc, or Python doc.
@@ -20,7 +20,7 @@ Our aim is to provide a set of algorithms for cleaning and transforming very lar
 - HTML documentation (development version): 
 - Download releases: 
 - Issue tracker: https://github.com/data-commons/prep-buddy/issues
-- Mailing list: prep-buddy@googlegroups.com
+- Mailing list: data-commons-toolchain@googlegroups.com
 - Slack channel: 
 
 #### Usage

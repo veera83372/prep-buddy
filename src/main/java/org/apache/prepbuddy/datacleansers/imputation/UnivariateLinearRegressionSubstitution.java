@@ -8,6 +8,12 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 
 import java.text.DecimalFormat;
 
+/**
+ * An imputation strategy that is based on Linear Regression which is an approach
+ * for modeling the relationship between a scalar dependent variable y and an explanatory
+ * variable x.
+ * This strategy imputes the value of y by : slope * x + intercept
+ */
 public class UnivariateLinearRegressionSubstitution implements ImputationStrategy {
 
     private static final String BLANK_STRING = "";

@@ -3,6 +3,9 @@ package org.apache.prepbuddy.typesystem;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * File formats that are supported by TransformableRDD
+ */
 public enum FileType {
     CSV {
         @Override

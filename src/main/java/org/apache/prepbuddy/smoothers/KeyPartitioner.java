@@ -2,6 +2,9 @@ package org.apache.prepbuddy.smoothers;
 
 import org.apache.spark.Partitioner;
 
+/**
+ * A Patitioner that puts each row in a partition that we specify by key.
+ */
 public class KeyPartitioner extends Partitioner {
     private int numPartitions;
 

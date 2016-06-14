@@ -3,7 +3,7 @@ package org.apache.prepbuddy.groupingops;
 import org.apache.prepbuddy.SparkTestCase;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class NGramFingerprintAlgorithmTest extends SparkTestCase {
     @Test
