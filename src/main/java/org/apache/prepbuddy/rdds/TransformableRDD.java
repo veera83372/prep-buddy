@@ -136,7 +136,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TextFacet containing the facets of @columnIndex
+     * Returns a new TextFacet containing the cardinal values of @columnIndex
      * @param columnIndex
      * @return TextFacets
      */
@@ -537,7 +537,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing smoothed values of @columnIndex using @smoothingMethod
+     * Returns a new JavaRDD containing smoothed values of @columnIndex using @smoothingMethod
      * @param columnIndex
      * @param smoothingMethod
      * @return JavaRDD<Double>

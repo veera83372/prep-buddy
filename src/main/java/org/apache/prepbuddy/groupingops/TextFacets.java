@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TextFacets contain the cardinal values of the column with their
+ * TextFacets contains the cardinal values of the column with their
  * number of occurrence in that column.
  */
 public class TextFacets implements Serializable {

@@ -5,7 +5,7 @@ import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
 /**
- * This strategy uses meanApprox method of JavaDoubleRDD to impute the missing
+ * A imputation strategy that uses meanApprox method of JavaDoubleRDD to impute the missing
  * value by approx mean.
  */
 public class ApproxMeanSubstitution implements ImputationStrategy {
