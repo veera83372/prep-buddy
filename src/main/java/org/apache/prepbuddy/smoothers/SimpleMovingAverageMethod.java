@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A smoothing method which smooths data based on Simple Moving Average which is the unweighted mean of
+ * the previous n data. this method ensure that variations in the mean are aligned
+ * with the variations in the data rather than being shifted in time.
+ */
 public class SimpleMovingAverageMethod extends SmoothingMethod {
 
     private int windowSize;

@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains weights in sequence for the weighted sliding window.
+ */
 public class Weights implements Serializable {
     private int limit;
     private List<Double> weights;
