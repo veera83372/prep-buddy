@@ -124,7 +124,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TextFacet containing the facets of @columnIndex
+     * Returns a new TextFacet containing the cardinal values of @columnIndex
      * @param columnIndex
      * @return TextFacets
      */

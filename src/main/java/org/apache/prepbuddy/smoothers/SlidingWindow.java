@@ -3,6 +3,9 @@ package org.apache.prepbuddy.smoothers;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+/**
+ * A window for smoothing data.
+ */
 public abstract class SlidingWindow implements Serializable {
     protected int size;
     protected LinkedList<Double> queue;
