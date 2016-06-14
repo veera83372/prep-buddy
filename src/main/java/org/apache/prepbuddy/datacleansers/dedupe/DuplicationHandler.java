@@ -34,7 +34,7 @@ public class DuplicationHandler implements Serializable {
         return uniqueRecordsWithKeys.values();
     }
 
-    public static JavaRDD deduplicate(JavaRDD<String> inputRDD) {
+    public static JavaRDD<String> deduplicate(JavaRDD<String> inputRDD) {
         return deduplicateByColumns(inputRDD, null, null);
     }
 
@@ -66,7 +66,6 @@ public class DuplicationHandler implements Serializable {
                 return numberOfOccurrence != 1;
             }
         });
-//
         return duplicateRecords.values().map(new Function<Tuple2<String, Integer>, String>() {
             @Override
             public String call(Tuple2<String, Integer> recordCountPair) throws Exception {
