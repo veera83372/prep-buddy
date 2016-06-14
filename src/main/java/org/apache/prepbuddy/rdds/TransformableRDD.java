@@ -115,6 +115,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD by replacing the @columnIndex values with value returned by @replacement
+     *
+     * @param columnIndex
+     * @param replacement
+     * @return TransformableRDD
+     */
     public TransformableRDD replace(final int columnIndex, final ReplacementFunction replacement) {
         validateColumnIndex(columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {

@@ -6,8 +6,8 @@ import org.apache.prepbuddy.utils.RowRecord;
 
 /**
  * A imputation strategy that is based on Naive Bayes Algorithm which
- * is the probabilistic classifier. And this implementation is only
- * for impute the categorical values.
+ * is the probabilistic classifier. This implementation is only
+ * for imputing the categorical values.
  */
 public class NaiveBayesSubstitution implements ImputationStrategy {
 
