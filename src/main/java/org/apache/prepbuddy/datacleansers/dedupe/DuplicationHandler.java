@@ -16,8 +16,8 @@ import java.util.List;
 
 public class DuplicationHandler implements Serializable {
 
-    public static JavaRDD deduplicateByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
-        final JavaPairRDD fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {
+    public static JavaRDD<String> deduplicateByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
+        final JavaPairRDD<Long, String> fingerprintedRecords = inputRecords.mapToPair(new PairFunction<String, Long, String>() {
             @Override
             public Tuple2<Long, String> call(String record) throws Exception {
                 long fingerprint = generateFingerprint(record, columnIndexes, fileType);
@@ -25,7 +25,7 @@ public class DuplicationHandler implements Serializable {
             }
         });
 
-        JavaPairRDD uniqueRecordsWithKeys = fingerprintedRecords.reduceByKey(new Function2<String, String, String>() {
+        JavaPairRDD<Long, String> uniqueRecordsWithKeys = fingerprintedRecords.reduceByKey(new Function2<String, String, String>() {
             @Override
             public String call(String accumulator, String fullRecord) throws Exception {
                 return fullRecord;
@@ -39,8 +39,8 @@ public class DuplicationHandler implements Serializable {
     }
 
 
-    public static JavaRDD detectDuplicatesByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
-        JavaPairRDD fingerprintedRDD = inputRecords.mapToPair(new PairFunction<String, Long, Tuple2<String, Integer>>() {
+    public static JavaRDD<String> detectDuplicatesByColumns(JavaRDD<String> inputRecords, final List<Integer> columnIndexes, final FileType fileType) {
+        final JavaPairRDD<Long, Tuple2<String, Integer>> fingerprintedRDD = inputRecords.mapToPair(new PairFunction<String, Long, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<Long, Tuple2<String, Integer>> call(String record) throws Exception {
                 long fingerprint = generateFingerprint(record, columnIndexes, fileType);
@@ -50,7 +50,7 @@ public class DuplicationHandler implements Serializable {
             }
         });
 
-        JavaPairRDD fingerprintedRecordCount = fingerprintedRDD.reduceByKey(new Function2<Tuple2<String, Integer>, Tuple2<String, Integer>, Tuple2<String, Integer>>() {
+        final JavaPairRDD<Long, Tuple2<String, Integer>> fingerprintedRecordCount = fingerprintedRDD.reduceByKey(new Function2<Tuple2<String, Integer>, Tuple2<String, Integer>, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<String, Integer> call(Tuple2<String, Integer> accumulator, Tuple2<String, Integer> currentRecordOnePair) throws Exception {
                 int totalRecordOccurrence = accumulator._2() + currentRecordOnePair._2();
@@ -58,16 +58,15 @@ public class DuplicationHandler implements Serializable {
             }
         });
 
-        JavaPairRDD duplicateRecords = fingerprintedRecordCount.filter(new Function<Tuple2<String, Tuple2<String, Integer>>, Boolean>() {
+        JavaPairRDD<Long, Tuple2<String, Integer>> duplicateRecords = fingerprintedRecordCount.filter(new Function<Tuple2<Long, Tuple2<String, Integer>>, Boolean>() {
             @Override
-            public Boolean call(Tuple2<String, Tuple2<String, Integer>> fingerprintRecordPair) throws Exception {
-                Tuple2<String, Integer> recordOccurrencePair = fingerprintRecordPair._2();
-                Integer numberOfOccurrence = recordOccurrencePair._2();
-
+            public Boolean call(Tuple2<Long, Tuple2<String, Integer>> fingerprintRecordPair) throws Exception {
+                Tuple2<String, Integer> recordWithOccurrence = fingerprintRecordPair._2();
+                Integer numberOfOccurrence = recordWithOccurrence._2();
                 return numberOfOccurrence != 1;
             }
         });
-
+//
         return duplicateRecords.values().map(new Function<Tuple2<String, Integer>, String>() {
             @Override
             public String call(Tuple2<String, Integer> recordCountPair) throws Exception {

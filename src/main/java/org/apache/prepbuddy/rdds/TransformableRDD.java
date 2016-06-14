@@ -39,12 +39,12 @@ import java.util.*;
 public class TransformableRDD extends JavaRDD<String> {
     private FileType fileType;
 
-    public TransformableRDD(JavaRDD rdd, FileType fileType) {
+    public TransformableRDD(JavaRDD<String> rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
         this.fileType = fileType;
     }
 
-    public TransformableRDD(JavaRDD rdd) {
+    public TransformableRDD(JavaRDD<String> rdd) {
         this(rdd, FileType.CSV);
     }
 
