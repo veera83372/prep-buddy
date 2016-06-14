@@ -10,9 +10,9 @@ import java.text.DecimalFormat;
 
 /**
  * An imputation strategy that is based on Linear Regression which is an approach
- * for modeling the relationship between a scalar dependent variable y and one explanatory
+ * for modeling the relationship between a scalar dependent variable y and an explanatory
  * variable x.
- * This strategy impute the value of y by : slope * x + intercept
+ * This strategy imputes the value of y by : slope * x + intercept
  */
 public class UnivariateLinearRegressionSubstitution implements ImputationStrategy {
 
