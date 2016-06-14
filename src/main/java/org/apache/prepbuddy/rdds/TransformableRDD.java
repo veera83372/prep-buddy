@@ -39,12 +39,12 @@ import java.util.*;
 public class TransformableRDD extends JavaRDD<String> {
     private FileType fileType;
 
-    public TransformableRDD(JavaRDD rdd, FileType fileType) {
+    public TransformableRDD(JavaRDD<String> rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
         this.fileType = fileType;
     }
 
-    public TransformableRDD(JavaRDD rdd) {
+    public TransformableRDD(JavaRDD<String> rdd) {
         this(rdd, FileType.CSV);
     }
 
@@ -72,16 +72,22 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing only unique elements.
+     * Returns a new TransformableRDD containing only unique elements by considering all the columns as the primary key.
      * @return TransformableRDD
      */
     public TransformableRDD deduplicate() {
-        JavaRDD transformed = DuplicationHandler.deduplicate(this);
+        JavaRDD<String> transformed = DuplicationHandler.deduplicate(this);
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing only unique elements by considering the given the columns as the primary key.
+     *
+     * @param primaryColumnIndexes
+     * @return TransformableRDD
+     */
     public TransformableRDD deduplicate(List<Integer> primaryColumnIndexes) {
-        JavaRDD transformed = DuplicationHandler.deduplicateByColumns(this, primaryColumnIndexes, fileType);
+        JavaRDD<String> transformed = DuplicationHandler.deduplicateByColumns(this, primaryColumnIndexes, fileType);
         return new TransformableRDD(transformed, fileType);
     }
 
@@ -90,12 +96,12 @@ public class TransformableRDD extends JavaRDD<String> {
      * @return TransformableRDD
      */
     public TransformableRDD getDuplicates() {
-        JavaRDD duplicates = DuplicationHandler.detectDuplicates(this);
+        JavaRDD<String> duplicates = DuplicationHandler.detectDuplicates(this);
         return new TransformableRDD(duplicates);
     }
 
     public TransformableRDD getDuplicates(List<Integer> primaryColumnIndexes) {
-        JavaRDD transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
+        JavaRDD<String> transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
         return new TransformableRDD(transformed);
     }
 
