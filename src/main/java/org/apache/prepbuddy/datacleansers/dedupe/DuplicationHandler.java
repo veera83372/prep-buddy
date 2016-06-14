@@ -74,7 +74,7 @@ public class DuplicationHandler implements Serializable {
         });
     }
 
-    public static JavaRDD detectDuplicates(JavaRDD<String> inputRecords) {
+    public static JavaRDD<String> detectDuplicates(JavaRDD<String> inputRecords) {
         return detectDuplicatesByColumns(inputRecords, null, null);
     }
 

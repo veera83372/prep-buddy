@@ -72,7 +72,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing only unique elements by considering all the columns as the primary key.
+     * Returns a new TransformableRDD containing only unique records by considering all the columns as the primary key.
      * @return TransformableRDD
      */
     public TransformableRDD deduplicate() {
@@ -81,7 +81,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing only unique elements by considering the given the columns as the primary key.
+     * Returns a new TransformableRDD containing only unique records by considering the given the columns as the primary key.
      *
      * @param primaryColumnIndexes
      * @return TransformableRDD
@@ -92,7 +92,7 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     /**
-     * Returns a new TransformableRDD containing the duplicate elements of this TransformableRDD.
+     * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering all the columns as primary key.
      * @return TransformableRDD
      */
     public TransformableRDD getDuplicates() {
@@ -100,6 +100,12 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(duplicates);
     }
 
+    /**
+     * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering the given columns as primary key.
+     *
+     * @param primaryColumnIndexes
+     * @return TransformableRDD
+     */
     public TransformableRDD getDuplicates(List<Integer> primaryColumnIndexes) {
         JavaRDD<String> transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
         return new TransformableRDD(transformed);
