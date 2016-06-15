@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A setup how the split will happen
+ */
 public class SplitPlan implements Serializable {
     private List<Integer> fieldLengths = null;
     private int columnIndex;
@@ -11,6 +14,14 @@ public class SplitPlan implements Serializable {
     private Integer maxNumberOfSplit;
     private boolean retainColumn;
 
+    /**
+     * Split plan specifying how the split will happen
+     *
+     * @param columnIndex      The column which will be split
+     * @param separator        The separator which will be used to split the column value
+     * @param maxNumberOfSplit Maximum number of split value
+     * @param retainColumn     False when you want to remove the original columns specified in @columnIndex
+     */
     public SplitPlan(int columnIndex, String separator, Integer maxNumberOfSplit, boolean retainColumn) {
         this.columnIndex = columnIndex;
         this.separator = separator;
@@ -18,10 +29,22 @@ public class SplitPlan implements Serializable {
         this.maxNumberOfSplit = maxNumberOfSplit;
     }
 
+    /**
+     * Split plan specifying how the split will happen
+     * @param columnIndex The column which will be split
+     * @param separator The separator which will be used to split the column value
+     * @param retainColumn False when you want to remove the original columns specified in @columnIndex
+     */
     public SplitPlan(int columnIndex, String separator, boolean retainColumn) {
         this(columnIndex, separator, null, retainColumn);
     }
 
+    /**
+     * Split plan specifying how the split will happen
+     * @param columnIndex The column which will be split
+     * @param fieldLengths A list of integers which will be used to split the field into the specified length of values
+     * @param retainColumn False when you want to remove the original columns specified in @columnIndex
+     */
     public SplitPlan(int columnIndex, List<Integer> fieldLengths, boolean retainColumn) {
         this.columnIndex = columnIndex;
         this.fieldLengths = fieldLengths;
