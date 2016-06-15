@@ -2,7 +2,6 @@ package org.apache.prepbuddy.rdds;
 
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.datacleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
@@ -14,16 +13,13 @@ import org.apache.prepbuddy.groupingops.Clusters;
 import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
 import org.apache.prepbuddy.smoothers.SmoothingMethod;
-import org.apache.prepbuddy.transformations.MarkerPredicate;
-import org.apache.prepbuddy.transformations.MergePlan;
-import org.apache.prepbuddy.transformations.SplitPlan;
+import org.apache.prepbuddy.transformers.*;
 import org.apache.prepbuddy.typesystem.BaseDataType;
 import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.typesystem.TypeAnalyzer;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
-import org.apache.prepbuddy.utils.ReplacementFunction;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.Partitioner;
 import org.apache.spark.api.java.JavaDoubleRDD;
@@ -121,6 +117,13 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD by replacing the @columnIndex values with value returned by @replacement
+     *
+     * @param columnIndex
+     * @param replacement
+     * @return TransformableRDD
+     */
     public TransformableRDD replace(final int columnIndex, final ReplacementFunction replacement) {
         validateColumnIndex(columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {

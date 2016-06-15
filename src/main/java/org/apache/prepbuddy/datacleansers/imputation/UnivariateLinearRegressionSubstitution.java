@@ -1,18 +1,18 @@
 package org.apache.prepbuddy.datacleansers.imputation;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.prepbuddy.datacleansers.RowPurger;
 import org.apache.prepbuddy.rdds.TransformableRDD;
+import org.apache.prepbuddy.transformers.RowPurger;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaDoubleRDD;
 
 import java.text.DecimalFormat;
 
 /**
- * A imputation strategy that is based on Linear Regression which is an approach
- * for modeling the relationship between a scalar dependent variable y and one explanatory
+ * An imputation strategy that is based on Linear Regression which is an approach
+ * for modeling the relationship between a scalar dependent variable y and an explanatory
  * variable x.
- * This strategy impute the value of y by : slope * x + intercept
+ * This strategy imputes the value of y by : slope * x + intercept
  */
 public class UnivariateLinearRegressionSubstitution implements ImputationStrategy {
 

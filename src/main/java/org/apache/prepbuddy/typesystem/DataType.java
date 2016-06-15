@@ -3,6 +3,9 @@ package org.apache.prepbuddy.typesystem;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Data types that can be inferred by the TransformableRDD.
+ */
 public enum DataType implements Serializable {
     INTEGER {
         @Override

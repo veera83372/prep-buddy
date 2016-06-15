@@ -6,7 +6,7 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import static java.lang.Double.parseDouble;
 
 /**
- * A normalizer which normalizes the data between a specified range.
+ * A normalizer which scales the data within the specified range.
  */
 public class MinMaxNormalizer implements NormalizationStrategy {
     private final int minRange;

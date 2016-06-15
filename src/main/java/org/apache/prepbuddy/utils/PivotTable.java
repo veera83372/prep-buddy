@@ -1,5 +1,7 @@
 package org.apache.prepbuddy.utils;
 
+import org.apache.prepbuddy.transformers.TransformationFunction;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

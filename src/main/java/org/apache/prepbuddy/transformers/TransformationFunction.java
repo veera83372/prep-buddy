@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.utils;
+package org.apache.prepbuddy.transformers;
 
 public interface TransformationFunction<Input, Output> {
 
