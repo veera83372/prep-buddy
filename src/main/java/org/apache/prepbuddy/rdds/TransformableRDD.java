@@ -51,8 +51,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a HomomorphicallyEncryptedRDD containing encrypted values of @columnIndex using @keyPair
      *
-     * @param keyPair
-     * @param columnIndex
+     * @param keyPair A pair of private and public key for encryption
+     * @param columnIndex The column index on which the encryption will be applied
      * @return HomomorphicallyEncryptedRDD
      */
     public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
@@ -73,7 +73,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TransformableRDD containing only unique records by considering all the columns as the primary key.
-     * @return TransformableRDD
+     * @return TransformableRDD A new TransformableRDD consisting only the unique records
      */
     public TransformableRDD deduplicate() {
         JavaRDD<String> transformed = DuplicationHandler.deduplicate(this);
@@ -83,8 +83,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a new TransformableRDD containing only unique records by considering the given the columns as the primary key.
      *
-     * @param primaryColumnIndexes
-     * @return TransformableRDD
+     * @param primaryColumnIndexes A list of integers specifying the columns that will be combined to create the primary key
+     * @return TransformableRDD A new TransformableRDD consisting records by eliminating all duplicates depending upon the primary key
      */
     public TransformableRDD deduplicate(List<Integer> primaryColumnIndexes) {
         JavaRDD<String> transformed = DuplicationHandler.deduplicateByColumns(this, primaryColumnIndexes, fileType);
