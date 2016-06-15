@@ -79,8 +79,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a new TransformableRDD containing only unique records by considering the given the columns as the primary key.
      *
-     * @param primaryColumnIndexes A list of integers specifying the columns that will be combined to create the primary key
-     * @return TransformableRDD A new TransformableRDD consisting records by eliminating all duplicates depending upon the primary key
+     * @param primaryColumnIndexes A list of integers specifying the columns that will be combined to create the primary key.
+     * @return TransformableRDD A new TransformableRDD consisting records by eliminating all duplicates depending upon the primary key.
      */
     public TransformableRDD deduplicate(List<Integer> primaryColumnIndexes) {
         JavaRDD<String> transformed = DuplicationHandler.deduplicateByColumns(this, primaryColumnIndexes, fileType);
@@ -89,7 +89,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering all the columns as primary key.
-     * @return TransformableRDD
+     * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
      */
     public TransformableRDD getDuplicates() {
         JavaRDD<String> duplicates = DuplicationHandler.detectDuplicates(this);
@@ -99,8 +99,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering the given columns as primary key.
      *
-     * @param primaryColumnIndexes
-     * @return TransformableRDD
+     * @param primaryColumnIndexes A list of integers specifying the columns that will be combined to create the primary key
+     * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
      */
     public TransformableRDD getDuplicates(List<Integer> primaryColumnIndexes) {
         JavaRDD<String> transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
@@ -109,7 +109,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TransformableRDD containing only the elements that satisfy the predicate.
-     * @param predicate
+     * @param predicate A predicate function, Removes the row when returns true.
      * @return TransformableRDD
      */
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
@@ -120,8 +120,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a new TransformableRDD by replacing the @columnIndex values with value returned by @replacement
      *
-     * @param columnIndex
-     * @param replacement
+     * @param columnIndex The column index where the replacement will occur
+     * @param replacement A function which will return the replacement value
      * @return TransformableRDD
      */
     public TransformableRDD replace(final int columnIndex, final ReplacementFunction replacement) {
