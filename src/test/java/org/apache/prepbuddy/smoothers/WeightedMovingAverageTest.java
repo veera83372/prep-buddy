@@ -12,6 +12,9 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class WeightedMovingAverageTest extends SparkTestCase {
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     @Test
     public void shouldSmoothDataByWeightedMovingAverage() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
@@ -30,9 +33,6 @@ public class WeightedMovingAverageTest extends SparkTestCase {
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(rdd.first()));
         Assert.assertEquals(expected, actual);
     }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void shouldThrowExceptionInConstructionIfWeightSizeIsNotEqualToWindowSize() {
