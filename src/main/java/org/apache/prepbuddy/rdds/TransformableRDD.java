@@ -222,7 +222,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TransformableRDD containing the merged column using @mergePlan
-     * @param mergePlan
+     * @param mergePlan A plan which describes how the marge operation will be done
      * @return TransformableRDD
      */
     public TransformableRDD mergeColumns(final MergePlan mergePlan) {
@@ -240,8 +240,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a new TransformableRDD that contains records flagged by @symbol
      * based on the evaluation of @markerPredicate
-     * @param symbol
-     * @param markerPredicate
+     * @param symbol    Symbol that will be used to flag
+     * @param markerPredicate A predicate which will determine whether to flag a row or not
      * @return TransformableRDD
      */
     public TransformableRDD flag(final String symbol, final MarkerPredicate markerPredicate) {
@@ -278,7 +278,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a inferred DataType of given column index
-     * @param columnIndex
+     * @param columnIndex The column where the inference will be done.
      * @return DataType
      */
     public DataType inferType(final int columnIndex) {
@@ -290,7 +290,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TransformableRDD by dropping the column at given index
-     * @param columnIndex
+     * @param columnIndex   The column that will be droped.
      * @return TransformableRDD
      */
     public TransformableRDD dropColumn(final int columnIndex) {
@@ -408,8 +408,8 @@ public class TransformableRDD extends JavaRDD<String> {
     /**
      * Returns a JavaDoubleRDD which is a product of the values in @fistColumn and @secondColumn
      *
-     * @param fistColumn
-     * @param secondColumn
+     * @param fistColumn    First Column Index
+     * @param secondColumn  Second Column Index
      * @return JavaDoubleRDD
      */
     public JavaDoubleRDD multiplyColumns(final int fistColumn, final int secondColumn) {
@@ -454,7 +454,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a JavaRDD of given column
-     * @param columnIndex
+     * @param columnIndex   Column index
      * @return JavaRDD<String>
      */
     public JavaRDD<String> select(final int columnIndex) {
@@ -464,6 +464,26 @@ public class TransformableRDD extends JavaRDD<String> {
                 return fileType.parseRecord(record)[columnIndex];
             }
         });
+    }
+
+    /**
+     * Returns a new TransformableRDD containing values of @columnIndexes
+     * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
+     * @return TransformableRDD
+     */
+    public TransformableRDD select(final int... columnIndexes) {
+        validateColumnIndex(columnIndexes);
+        JavaRDD<String> reducedRDD = map(new Function<String, String>() {
+            @Override
+            public String call(String record) throws Exception {
+                String[] reducedRecord = new String[columnIndexes.length];
+                String[] columns = fileType.parseRecord(record);
+                for (int i = 0; i < columnIndexes.length; i++)
+                    reducedRecord[i] = (columns[columnIndexes[i]]);
+                return fileType.join(reducedRecord);
+            }
+        });
+        return new TransformableRDD(reducedRDD, fileType);
     }
 
     /**
@@ -517,26 +537,6 @@ public class TransformableRDD extends JavaRDD<String> {
             }
         }
         return pivotTable;
-    }
-
-    /**
-     * Returns a new TransformableRDD containing values of @columnIndexes
-     * @param columnIndexes
-     * @return TransformableRDD
-     */
-    public TransformableRDD select(final int... columnIndexes) {
-        validateColumnIndex(columnIndexes);
-        JavaRDD<String> reducedRDD = map(new Function<String, String>() {
-            @Override
-            public String call(String record) throws Exception {
-                String[] reducedRecord = new String[columnIndexes.length];
-                String[] columns = fileType.parseRecord(record);
-                for (int i = 0; i < columnIndexes.length; i++)
-                    reducedRecord[i] = (columns[columnIndexes[i]]);
-                return fileType.join(reducedRecord);
-            }
-        });
-        return new TransformableRDD(reducedRDD, fileType);
     }
 
     /**

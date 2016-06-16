@@ -7,6 +7,7 @@ class UnitTestForDeDuplication(PySparkTestCase):
     def test_uniform(self):
         rdd = self.sc.textFile("../../data/calls.csv")
         count = rdd.count()
-        transformable_rdd = TransformableRDD(rdd)
-        deduplicate_count = transformable_rdd.deduplicate().count()
-        self.assertEquals(count, deduplicate_count)
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        deduplicate = transformable_rdd.deduplicate()
+
+        self.assertEquals(count, deduplicate.count())
