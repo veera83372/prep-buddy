@@ -24,14 +24,14 @@ inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 - Slack channel: Coming soon!
 
 #### Usage - Coming Soon!
-To use this library, add a dependency to data-commons-prep in your project:
-```xml
-<dependency>
-    <groupId>org.apache.datacommons</groupId>
-    <artifactId>prep-buddy</artifactId>
-    <version>0.5</version>
-</dependency>
-```
+[//]: # (To use this library, add a dependency to data-commons-prep in your project:)
+[//]: # (```xml)
+[//]: # (<dependency>)
+[//]: # (    <groupId>org.apache.datacommons</groupId>)
+[//]: # (    <artifactId>prep-buddy</artifactId>)
+[//]: # (    <version>0.5</version>)
+[//]: # (</dependency>)
+[//]: # (```)
 This library is currently built for Spark 1.6.0, but is also compatible with 1.4.1. 
 
 #### Dependencies
