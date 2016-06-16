@@ -4,7 +4,7 @@
 
 A Scala / Java / Python library for cleaning, transforming and executing other preparation tasks for large datasets on Apache Spark.
 
-It is currently maintained by a team of volunteers.
+It is currently maintained by a team of developers from ThoughtWorks.
 
 Post questions and comments to the Google group, or email them directly to data-commons-toolchain@googlegroups.com
 
