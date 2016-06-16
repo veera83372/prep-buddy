@@ -10,18 +10,6 @@ repositories {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-    }
-    test {
-        java {
-            srcDir 'test/main/java'
-        }
-    }
-}
 
 dependencies {
     compile 'org.apache.spark:spark-core_2.11:1.6.0'
