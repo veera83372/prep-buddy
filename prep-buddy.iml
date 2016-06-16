@@ -21,6 +21,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="Gradle: com.databricks:spark-avro_2.11:2.0.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.databricks:spark-csv_2.11:1.4.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-mllib_2.11:1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: :javallier_2.10-0.4.0:" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro-mapred:1.7.7:hadoop2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.twitter:chill_2.11:0.5.0" level="project" />
@@ -66,10 +67,29 @@
     <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-hadoop:1.7.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-csv:1.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.univocity:univocity-parsers:1.5.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro-ipc:1.7.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro-ipc:1.7.7:tests" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-streaming_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-graphx_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.scalanlp:breeze_2.11:0.11.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-model:1.1.15" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.codehaus.jackson:jackson-core-asl:1.9.13" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.codehaus.jackson:jackson-mapper-asl:1.9.13" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-compress:1.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.fommil.netlib:core:1.1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.scalanlp:breeze-macros_2.11:0.11.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: net.sf.opencsv:opencsv:2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.github.rwl:jtransforms:2.4.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.spire-math:spire_2.11:0.7.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-agent:1.1.15" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-schema:1.1.15" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.tukaani:xz:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.spire-math:spire-macros_2.11:0.7.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-core_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro-ipc:1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro-ipc:1.7.7:tests" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.esotericsoftware.kryo:kryo:2.21" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.hadoop:hadoop-common:2.2.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.hadoop:hadoop-hdfs:2.2.0" level="project" />
@@ -78,8 +98,6 @@
     <orderEntry type="library" exported="" name="Gradle: org.apache.hadoop:hadoop-mapreduce-client-core:2.2.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.hadoop:hadoop-mapreduce-client-jobclient:2.2.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.hadoop:hadoop-annotations:2.2.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.fusesource.leveldbjni:leveldbjni-all:1.8" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.4.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-httpclient:commons-httpclient:3.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.curator:curator-framework:2.4.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.zookeeper:zookeeper:3.4.5" level="project" />
@@ -91,17 +109,11 @@
     <orderEntry type="library" exported="" name="Gradle: org.json4s:json4s-core_2.11:3.2.10" level="project" />
     <orderEntry type="library" exported="" name="Gradle: asm:asm:3.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.4.4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.thoughtworks.paranamer:paranamer:2.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.4.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.tachyonproject:tachyon-underfs-hdfs:0.8.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.tachyonproject:tachyon-underfs-s3:0.8.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.tachyonproject:tachyon-underfs-local:0.8.2" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.janino:janino:2.7.8" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-common:1.7.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-encoding:1.7.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-format:2.3.0-incubating" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-jackson:1.7.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-compress:1.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.esotericsoftware.reflectasm:reflectasm:1.07:shaded" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.esotericsoftware.minlog:minlog:1.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.objenesis:objenesis:1.2" level="project" />
@@ -119,9 +131,6 @@
     <orderEntry type="library" exported="" name="Gradle: com.typesafe:config:1.2.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.json4s:json4s-ast_2.11:3.2.10" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.scala-lang:scalap:2.11.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.janino:commons-compiler:2.7.8" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-generator:1.7.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.tukaani:xz:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-digester:commons-digester:1.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-beanutils:commons-beanutils-core:1.8.0" level="project" />
@@ -155,40 +164,31 @@
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.grizzly:grizzly-rcm:2.1.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.gmbal:gmbal-api-only:3.0.0-b023" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.external:management-api:3.0.0-b012" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:2.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.scala-lang:scala-reflect:2.11.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.5" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro:1.7.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-net:commons-net:3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: commons-lang:commons-lang:2.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-mllib_2.11:1.6.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-streaming_2.11:1.6.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-graphx_2.11:1.6.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.scalanlp:breeze_2.11:0.11.2" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-model:1.1.15" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.github.fommil.netlib:core:1.1.2" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.scalanlp:breeze-macros_2.11:0.11.2" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: net.sf.opencsv:opencsv:2.3" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.github.rwl:jtransforms:2.4.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.spire-math:spire_2.11:0.7.4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-agent:1.1.15" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jpmml:pmml-schema:1.1.15" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.spire-math:spire-macros_2.11:0.7.4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-core_2.11:1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-sql_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-common:1.7.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-encoding:1.7.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-format:2.3.0-incubating" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-jackson:1.7.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.parquet:parquet-generator:1.7.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-launcher_2.11:1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-network-common_2.11:1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-network-shuffle_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.fusesource.leveldbjni:leveldbjni-all:1.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-unsafe_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.thoughtworks.paranamer:paranamer:2.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:2.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.avro:avro:1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-net:commons-net:3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-lang:commons-lang:2.5" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.xml.bind:jsr173_api:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.spark:spark-catalyst_2.11:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.janino:janino:2.7.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.janino:commons-compiler:2.7.8" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.scala-lang:scala-reflect:2.11.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.11" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>
 </module>
