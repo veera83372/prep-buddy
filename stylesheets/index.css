@@ -1,0 +1,18 @@
+body {
+	font-family: sans-serif;
+}
+.main {
+	width: 80%;
+	padding: 0.5% 10% 2% 10%;
+}
+.aboutUs {
+	padding: 2% 0 0 0%;
+	font-size: 20px;
+	font-weight: 100;
+}
+.prep-buddy {
+	font-size: 20px;
+}
+.title {
+	font-size: 30px;
+}
