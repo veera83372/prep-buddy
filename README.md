@@ -4,38 +4,40 @@
 
 A Scala / Java / Python library for cleaning, transforming and executing other preparation tasks for large datasets on Apache Spark.
 
-It is currently maintained by a team of developers from ThoughtWorks.
+It is currently maintained by a team of developers from [ThoughtWorks](http://www.thoughtworks.com).
 
 Post questions and comments to the Google group, or email them directly to data-commons-toolchain@googlegroups.com
 
 Docs are available at http://data-commons.github.io/prep-buddy
-Or check out the Scaladoc, Javadoc, or Python doc.
+Or check out the [Javadocs] (http://data-commons.github.io/prep-buddy/javadocs) or Python doc (coming soon!).
 
-Our aim is to provide a set of algorithms for cleaning and transforming very large data sets, inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
+Our aim is to provide a set of algorithms for cleaning and transforming very large data sets, 
+inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 
 #### Important links
 
 - Official source code repo: https://github.com/data-commons/prep-buddy
-- HTML documentation (stable release): 
-- HTML documentation (development version): 
-- Download releases: 
+- Javadocs (development version): http://data-commons.github.io/prep-buddy/javadocs 
+- Download releases: Coming soon!
 - Issue tracker: https://github.com/data-commons/prep-buddy/issues
 - Mailing list: data-commons-toolchain@googlegroups.com
-- Slack channel: 
+- Slack channel: Coming soon!
 
-#### Usage
-To use this library, add a dependency to spark-metrics in your project:
+#### Usage - Coming Soon!
+To use this library, add a dependency to data-commons-prep in your project:
+```xml
 <dependency>
-    <groupId>com.groupon.dse</groupId>
-    <artifactId>spark-metrics</artifactId>
-    <version>1.0</version>
+    <groupId>org.apache.datacommons</groupId>
+    <artifactId>prep-buddy</artifactId>
+    <version>0.5</version>
 </dependency>
-This library is currently built for Spark 1.5.2, but is also compatible with 1.4.1. This is important to note because this library uses Spark's internal APIs, and compatibility with other major Spark versions has not been fully tested.
+```
+This library is currently built for Spark 1.6.0, but is also compatible with 1.4.1. 
 
 #### Dependencies
 The library depends on a few other Java libraries.
 
-- Javallier - A Java library for Paillier partially homomorphic encryption based on python-paillier.
+- [Javallier] (http://githubcom/NICTA/javallier) - A Java library for Paillier partially homomorphic encryption based on python-paillier.
 - Apache Commons Math for general math and statistics functionality.
 - Apache Spark for all the distributed computation capabilities.
 
