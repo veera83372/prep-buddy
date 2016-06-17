@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Getting Started</title>
+	<link rel="stylesheet" type="text/css" href="../stylesheets/menuBar.css"> 
+	<link rel="stylesheet" type="text/css" href="../stylesheets/gettingStarted.css"> 
+	<script type="text/javascript" src="../javascripts/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="../javascripts/documentGenaretors.js"></script>
+    <script type="text/javascript" src="../javascripts/document.js"></script>
+</head>
+<body>
+	<section class="main">
+		<header>
+          <h1 class="title">Getting Started</h1>
+          <p class="prep-buddy">With Java</p>
+          <ul class="menu">
+              <div class="dropdown">
+                <div class="dropdown-content">
+                    <a href="#" download="">Source</a>
+                    <a href="#" do>Binary</a>
+                </div>
+                <li class="item dropbtn"><a href="">Download</a></li>
+              </div>
+              <div class="dropdown">
+                <div class="dropdown-content">
+                    <a href="#">Java Doc</a>
+                    <a href="#">Scala Doc</a>
+                    <a href="#">Python Doc</a>
+                    
+                </div>
+                <li class="item dropbtn"><a href="">Documentation</a></li>
+              </div>
+              <div class="dropdown">
+                <div class="dropdown-content">
+                    <a href="#">Java</a>
+                    <a href="#">Scala</a>
+                    <a href="#">Python</a>
+                </div>
+                <li class="item dropbtn"><a href="">Getting Started</a></li>
+              </div>
+              
+                <li class="item dropbtn"><a href="https://github.com/data-commons">Community</a></li>
+                <li class="item dropbtn"><a href="https://github.com/data-commons/prep-buddy">Git Hub</a></li>
+              
+          </ul>
+        </header>
+        <section class="documentation">
+        	<p>Download the prep-buddy jar and add it to your project library.</p>
+        	<p>You can start writing spark program with prep buddy by writing the following code</p>	
+        	<div class="code">
+        		<p>TransformableRDD customRDD = new TransformableRDD(initialDataset);</p>
+        	</div>
+        	<p>The TransformableRDD is extended from JavaRDD. So, you will have all the methods available in JavaRDD in TransformableRDD. You will also have the functions that are provided by prep-buddy.</p>
+        	<p>The initialDataset is a JavaRDD of string records. By default TransformableRDD treats the given JavaRDD as comma separated value (csv). You can also specify the record format as tab separated value (tsv) by providing FileType.TSV as the second parameter of the TransformableRDD constructor.</p>
+
+        	<h3>Functionalities: </h3>
+        	<p>The TransformableRDD holds all the functionality that could be done over a JavaRDD. It takes an JavaRDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
+        	<p></p>
+        	<h4 class="method">Imputation</h4>
+        	<p>It is the process of replacing missing data with substituted values. The following imputation algorithms have been implemented:</p>
+        	<ul class="variation">
+				<li >Approx Mean Based Substitution</li>
+				<li>Mode Based Substitution</li>
+				<li>Naive Bayes Classifier Based Substitution</li>
+				<li>Univariate Linear Regression Based Substitution</li>
+        		<li>Mean Based Substitution</li>
+        	</ul>
+        	<h4 class="method">Faceting: </h4>
+        	<p>It is helpful to find the number of occurrences for each value of a field.</p>
+        	<h4 class="method">Clustering:</h4>
+        	<p>It is the process Finding the group of different items but could be the alternative representation of the same item.The following imputation algorithms have been implemented</p>
+        	<ul class="variation">
+        		<li>Simple Fingerprint algorithm</li>
+				<li>N-Gram Fingerprint algorithm</li>	
+				<li>Levenshtein distance algorithm</li>
+        	</ul>
+        	<h4 class="method">Deduplicate:</h4>
+        	<p>Is the process of removing duplicates from a dataset.</p>
+
+        	<h4 class="method">Duplicate:</h4>	
+        	<p>It provides only the records which has duplicates entry in the given dataset</p>
+
+        	<h4 class="method">Replace:</h4>
+        	<p>Is the process of replacing given value with substituted value.</p>
+
+        	<h4 class="method">Split Column:</h4>
+        	<p>Is the process of split a field into multiple field.</p>
+        	<ul class="variation">
+        		<li>By delimiter</li>
+				<li>By length</li>
+        	</ul>
+
+        	<h4 class="method">Join Column:</h4>
+        	<p>Is the process of merging two or more fields into one field.</p>
+
+        	<h4 class="method">Flag:</h4>
+        	<p>Mark rows by a symbol for a given condition.</p>
+
+        	<h4 class="method">Map ByFlag:</h4>
+        	<p>Map on marked (flag) row.</p>
+
+        	<h4 class="method">Remove Rows:</h4>
+        	<p>Removes rows from dataset for a given condition</p>
+
+        	<h4 class="method">Normalization:</h4>
+        	<ul class="variation">
+        		<li>Min Max Normalizer</li>
+				<li>Z Score Normalizer</li>
+				<li>Decimal Scaling Normalizer</li>
+        	</ul>
+        	
+        	<h4 class="method">Smoothing:</h4>
+        	<ul class="variation">
+        		<li>Simple Moving Average</li>
+				<li>Weighted Moving Average	</li>
+        	</ul>
+
+        	<h4>Examples</h4>
+        	<p>Let's take a sample CSV dataset with filename <spam class="light">calls.csv</spam> consisting attributes :</p>
+        	
+        	<div class="code">
+        	 	<p>User,other,direction,duration,timestamp<br>
+        		07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010<br>
+        		07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010<br>
+				07122915122,07220374233,Missed,0,Sun Oct 24 08:13:45 +0100 2010<br>
+				07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011<br>
+				07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011<br>
+				07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010<br>
+				07456622368,07331532487,Missed,24,Sat Sep 18 13:34:09 +0100 2010<br>
+
+        		</p>
+        	</div>
+            <h4>Deduplicate</h4>
+            <p>It gives a new TransformableRDD with unique values by eliminating the duplicate records.</p>
+
+            <h4>Example:</h4>
+            <div class="code">
+                <li>JavaRDD<String> callDataset= sc.textFile("calls.csv");</li> 
+                <li>TransformableRDD initialRDD = new TransformableRDD(callDataset);</li>
+                <li>TransformableRDD deduplicatedRDD = initialRDD.deduplicate();</li>
+                <li>deduplicatedRDD.saveAsTextFile(“output”);</li>
+            </div>
+
+
+
+        </section>
+
+
+
+		
+	</section>
+</body>
+</html>

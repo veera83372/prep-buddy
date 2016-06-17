@@ -1,0 +1,22 @@
+.code {
+	background-color: #C3B8AA;
+	padding: 3%;
+	overflow: hidden;
+}
+
+.main {
+	align-self: center;
+	width: 60%;
+	padding: 0.5% 10% 2% 20%;
+}
+.method {
+	cursor: pointer;
+}
+
+.variation li {
+	cursor: pointer;
+}
+
+.light {
+	color: red;
+}
