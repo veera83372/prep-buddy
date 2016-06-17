@@ -1,9 +1,13 @@
 .code {
-	background-color: #C3B8AA;
+	font-size: 18px;
+	background-color: #E4E3DE;
 	padding: 3%;
 	overflow: hidden;
 }
-
+body {
+	font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;
+	font-weight: 400;
+}
 .main {
 	align-self: center;
 	width: 60%;
@@ -18,5 +22,9 @@
 }
 
 .light {
-	color: red;
+	color: rebeccapurple;
+}
+
+.documentation {
+
 }

@@ -135,10 +135,10 @@
 
             <h4>Example:</h4>
             <div class="code">
-                <li>JavaRDD<String> callDataset= sc.textFile("calls.csv");</li> 
-                <li>TransformableRDD initialRDD = new TransformableRDD(callDataset);</li>
-                <li>TransformableRDD deduplicatedRDD = initialRDD.deduplicate();</li>
-                <li>deduplicatedRDD.saveAsTextFile(“output”);</li>
+                JavaRDD<String> callDataset= sc.textFile("calls.csv"); 
+                TransformableRDD initialRDD = new TransformableRDD(callDataset);
+                TransformableRDD deduplicatedRDD = initialRDD.deduplicate();
+                deduplicatedRDD.saveAsTextFile("output");
             </div>
 
 

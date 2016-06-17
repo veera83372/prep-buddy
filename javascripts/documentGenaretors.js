@@ -7,7 +7,7 @@ var appendHeading = function(heading, headTag) {
 	haddingHTML = haddingHTML.replace(/heading|headTag/g, function(x) {
 		return 	replacement[x];
 	})
-	$('.main').append(haddingHTML);
+	$('.documentation').append(haddingHTML);
 }
 
 var appendList = function(list, className) {
@@ -17,7 +17,7 @@ var appendList = function(list, className) {
 	}
 	html = html + '</ul>';
 	html = html.replace(/className/, className);
-	$('.main').append(html);
+	$('.documentation').append(html);
 }
 
 var appendCode = function(list) {
@@ -27,11 +27,11 @@ var appendCode = function(list) {
 		html += list[i] + '<br>';
 	}
 	html += '</div>';
-	$('.main').append(html);
+	$('.documentation').append(html);
 }
 
 var appendParagraph = function(toAppend) {
 	var html = '<p>' + toAppend + '</p>';
-	$('.main').append(html);	
+	$('.documentation').append(html);	
 }
 
