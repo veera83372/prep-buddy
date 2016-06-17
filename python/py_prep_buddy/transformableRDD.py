@@ -35,7 +35,10 @@ class TransformableRDD(RDD):
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(), sc=self.spark_context)
 
     def impute(self, column_index, imputation_strategy):
+        strategy_apply = imputation_strategy.get_strategy(self.spark_context)
         return TransformableRDD(None,
                                 self.__file_type,
-                                self._transformable_rdd.impute(column_index, imputation_strategy),
+                                self._transformable_rdd.impute(column_index, strategy_apply),
                                 sc=self.spark_context)
+
+
