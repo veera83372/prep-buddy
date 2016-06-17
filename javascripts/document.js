@@ -271,7 +271,55 @@ var appendAll = function() {
 	appendHeading('Output:', 'h3');
 	appendCode(['MOBILE_NUMBER']);						
 
+	appendHeading('smooth(int columnIndex, SmoothingMethod smoothingMethod):', 'h3');
+	appendParagraph('Smoothing is very popular in data analysis by being able to extract more information from the dataset.');
+	appendParagraph('We are introducing two moving average methods for smoothing:');
+	
+	appendParagraph('We have sales dataset called sales.csv');
+	var simpleSmoothingDataset = ['Year,Sale','2002,4',
+									'2003,6',
+									'2004,5', 
+									'2005,3',
+									'2006,7',
+									'2007,5'
+								];
+	appendCode(simpleSmoothingDataset);
+	appendHeading('Smoothing By Simple Moving Average:', 'h3');
+	appendParagraph('To smooth data by Simple Moving Average we need to specify the window size to the constructor');
+	var simpleSmoothingCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
+								'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+								'JavaRDD<Double> smoothed = initialRDD.smooth(0, new SompleMovingAverageMethod(3));',
+								'smoothed.saveAsTextFile(“smoothed”);'
+								];
+	appendCode(simpleSmoothingCode);
+	appendHeading('Output:', 'h3');
+	var simpleSmoothingOutput = ['5.0',
+								'4.666',
+								'5.0',
+								'5.0'
+									];
+	appendCode(simpleSmoothingOutput);
 
+	appendHeading('By Weighted Moving Average:', 'h3');
+	appendParagraph('To smooth data by this method we need to pass  Weights to the constructor which contains the weight values according to the window position.');
+	appendParagraph('Note: Sum of the weights should be up to one.');
+	var weightedCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
+						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+						'Weights weights = new Weights(3);',
+						'weights.add(0.166);',
+						'weights.add(0.333);',
+						'weights.add(0.5);',
+						'JavaRDD<Double> smoothed = initialRDD.smooth(1, new WeightedMovingAverageMethod(3, weights));',
+						'smoothed.saveAsTextFile(“smoothed”);'
+						];
+	appendCode(weightedCode);
+	appendHeading('Output:', 'h3');
+	var weightedOutput = ['5.162',
+						'5.998',
+						'5.329',
+						'6.999'
+							];
+	appendCode(weightedOutput);					
 }
 
 
