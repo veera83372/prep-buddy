@@ -30,7 +30,7 @@ class TransformableRDD(RDD):
             'TSV': jvm.FileType.TSV
         }
 
-        if file_types.has_key(file_type.upper()):
+        if file_type.upper() in file_types:
             self.__file_type = file_types[file_type.upper()]
         else:
             raise ValueError('"%s" is not a valid file type\nValid file types are CSV and TSV' % file_type)
