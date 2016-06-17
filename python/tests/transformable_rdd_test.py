@@ -1,5 +1,6 @@
 from utils.pythontestcase import PySparkTestCase
 from py_prep_buddy.transformableRDD import TransformableRDD
+from py_prep_buddy.imputation import ImputationStrategy
 import tests
 
 
@@ -19,3 +20,9 @@ class UnitTestForDeDuplication(PySparkTestCase):
         transformable_rdd = TransformableRDD(rdd, 'csv')
         deduplicate_rdd = transformable_rdd.deduplicate()
         self.assertEquals(6, deduplicate_rdd.count())
+
+    def test_transformableRDD_can_impute_the_missing_values(self):
+        rdd = self.sc.parallelize(["Ram,23", "Joe,45", "Jill,67", "Soa,"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        imputed_rdd = transformable_rdd.impute(1, ImputationStrategy)
+        collect = imputed_rdd.collect()

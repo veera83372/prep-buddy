@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.pythonConnector;
+package org.apache.prepbuddy.python.connector;
 
 import org.apache.spark.api.java.function.Function;
 
