@@ -10,6 +10,9 @@ import java.util.*;
  * todo :
  * Add the following new types
  * LATITUDE_LONGITUDE_PAIR
+ * CATEGORICAL_INTEGER
+ * CATEGORICAL_STRING
+ *
  */
 public enum DataType implements Serializable {
     INTEGER {
