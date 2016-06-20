@@ -1,8 +1,8 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.exceptions.ApplicationException;
-import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Rule;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.examples;
 
+import org.apache.prepbuddy.qualityanalyzers.DataType;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.typesystem.DataType;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;

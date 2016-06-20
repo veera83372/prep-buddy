@@ -16,7 +16,7 @@ class TransformableRDD(RDD):
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm
-            self.__file_type = file_type
+            self.__set_file_type(jvm, file_type)
             self._transformable_rdd = t_rdd
             rdd = t_rdd.map(jvm.org.apache.prepbuddy.python.connector.StringToBytes())
             RDD.__init__(self, rdd, sc, BuddySerializer())
@@ -26,8 +26,9 @@ class TransformableRDD(RDD):
             'CSV': jvm.org.apache.prepbuddy.typesystem.FileType.CSV,
             'TSV': jvm.org.apache.prepbuddy.typesystem.FileType.TSV
         }
-
-        if file_type.upper() in file_types:
+        if file_type in file_types.values():
+            self.__file_type = file_type
+        elif file_type.upper() in file_types:
             self.__file_type = file_types[file_type.upper()]
         else:
             raise ValueError('"%s" is not a valid file type\nValid file types are CSV and TSV' % file_type)

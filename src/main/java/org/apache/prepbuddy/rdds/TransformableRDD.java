@@ -2,22 +2,22 @@ package org.apache.prepbuddy.rdds;
 
 import com.n1analytics.paillier.PaillierContext;
 import com.n1analytics.paillier.PaillierPublicKey;
-import org.apache.prepbuddy.datacleansers.dedupe.DuplicationHandler;
-import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
+import org.apache.prepbuddy.cleansers.dedupe.DuplicationHandler;
+import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
+import org.apache.prepbuddy.cluster.Cluster;
+import org.apache.prepbuddy.cluster.ClusteringAlgorithm;
+import org.apache.prepbuddy.cluster.Clusters;
+import org.apache.prepbuddy.cluster.TextFacets;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;
-import org.apache.prepbuddy.groupingops.Cluster;
-import org.apache.prepbuddy.groupingops.ClusteringAlgorithm;
-import org.apache.prepbuddy.groupingops.Clusters;
-import org.apache.prepbuddy.groupingops.TextFacets;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
+import org.apache.prepbuddy.qualityanalyzers.BaseDataType;
+import org.apache.prepbuddy.qualityanalyzers.DataType;
+import org.apache.prepbuddy.qualityanalyzers.FileType;
+import org.apache.prepbuddy.qualityanalyzers.TypeAnalyzer;
 import org.apache.prepbuddy.smoothers.SmoothingMethod;
 import org.apache.prepbuddy.transformers.*;
-import org.apache.prepbuddy.typesystem.BaseDataType;
-import org.apache.prepbuddy.typesystem.DataType;
-import org.apache.prepbuddy.typesystem.FileType;
-import org.apache.prepbuddy.typesystem.TypeAnalyzer;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.prepbuddy.utils.RowRecord;
@@ -140,7 +140,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TextFacet containing the cardinal values of @columnIndex
-     * @param columnIndex
+     * @param columnIndex index of the column
      * @return TextFacets
      */
     public TextFacets listFacets(final int columnIndex) {
@@ -163,7 +163,7 @@ public class TransformableRDD extends JavaRDD<String> {
 
     /**
      * Returns a new TextFacet containing the facets of @columnIndexes
-     * @param columnIndexes
+     * @param columnIndexes index of the column
      * @return TextFacets
      */
     public TextFacets listFacets(final int[] columnIndexes) {
@@ -283,7 +283,7 @@ public class TransformableRDD extends JavaRDD<String> {
      */
     public DataType inferType(final int columnIndex) {
         validateColumnIndex(columnIndex);
-        List<String> columnSamples = takeSampleSet(columnIndex);
+        List<String> columnSamples = sample(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
@@ -390,18 +390,23 @@ public class TransformableRDD extends JavaRDD<String> {
     }
 
     private boolean isNumericColumn(int columnIndex) {
-        List<String> columnSamples = takeSampleSet(columnIndex);
+        List<String> columnSamples = sample(columnIndex);
         BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
         return baseType.equals(BaseDataType.NUMERIC);
     }
 
-    private List<String> takeSampleSet(int columnIndex) {
-        List<String> rowSamples = this.takeSample(false, 100);
+    public List<String> sample(int columnIndex, int sampleSize) {
+        List<String> rowSamples = this.takeSample(false, sampleSize);
         List<String> columnSamples = new LinkedList<>();
         for (String row : rowSamples) {
             String[] strings = fileType.parseRecord(row);
             columnSamples.add(strings[columnIndex]);
         }
+        return columnSamples;
+    }
+
+    private List<String> sample(int columnIndex) {
+        List<String> columnSamples = sample(columnIndex, 100);
         return columnSamples;
     }
 
@@ -663,12 +668,10 @@ public class TransformableRDD extends JavaRDD<String> {
         return new TransformableRDD(super.subtract(other, partitioner), fileType);
     }
 
-    @Override
     public TransformableRDD sample(boolean withReplacement, double fraction) {
         return new TransformableRDD(super.sample(withReplacement, fraction), fileType);
     }
 
-    @Override
     public TransformableRDD sample(boolean withReplacement, double fraction, long seed) {
         return new TransformableRDD(super.sample(withReplacement, fraction, seed), fileType);
     }

@@ -2,14 +2,14 @@ package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.cluster.Cluster;
+import org.apache.prepbuddy.cluster.Clusters;
+import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
-import org.apache.prepbuddy.groupingops.Cluster;
-import org.apache.prepbuddy.groupingops.Clusters;
-import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
+import org.apache.prepbuddy.qualityanalyzers.FileType;
 import org.apache.prepbuddy.smoothers.SimpleMovingAverageMethod;
 import org.apache.prepbuddy.smoothers.WeightedMovingAverageMethod;
 import org.apache.prepbuddy.smoothers.Weights;
-import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.spark.api.java.JavaRDD;
