@@ -1,3 +1,4 @@
+from py_prep_buddy.groupingops.clustering_algorithm import SimpleFingerprintAlgorithm
 from utils.pythontestcase import PySparkTestCase
 from py_prep_buddy.transformableRDD import TransformableRDD
 from py_prep_buddy.imputation import *
@@ -58,3 +59,10 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         transformable_rdd = TransformableRDD(rdd, 'csv')
         imputed_rdd = transformable_rdd.impute(4, NaiveBayesSubstitution(0, 1, 2, 3))
         self.assertTrue(imputed_rdd.collect().__contains__("Drew,Yes,Blue,Long,Female"))
+
+    def test_clusters_should_give_clusters_of_given_column_index(self):
+        rdd  = self.sc.parallelize(["CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        clusters = transformable_rdd.clusters(0, SimpleFingerprintAlgorithm())
+        list_of_clusters = clusters.get_all_clusters()
+

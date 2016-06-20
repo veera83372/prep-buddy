@@ -1,6 +1,7 @@
 from pyspark import RDD
 
 from buddySerializer import BuddySerializer
+from py_prep_buddy.groupingops.clusters import Clusters
 
 
 class TransformableRDD(RDD):
@@ -40,5 +41,9 @@ class TransformableRDD(RDD):
                                 self.__file_type,
                                 self._transformable_rdd.impute(column_index, strategy_apply),
                                 sc=self.spark_context)
+
+    def clusters(self, column_index, clusteringAlgorithm):
+        algorithm = clusteringAlgorithm.get_algorithm(self.spark_context)
+        return Clusters( self._transformable_rdd.clusters(column_index, algorithm))
 
 
