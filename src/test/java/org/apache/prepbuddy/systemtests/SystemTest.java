@@ -1,14 +1,14 @@
 package org.apache.prepbuddy.systemtests;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.analyzers.DataType;
-import org.apache.prepbuddy.datacleansers.imputation.ImputationStrategy;
-import org.apache.prepbuddy.groupingops.Clusters;
-import org.apache.prepbuddy.groupingops.SimpleFingerprintAlgorithm;
-import org.apache.prepbuddy.groupingops.TextFacets;
+import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
+import org.apache.prepbuddy.cluster.Clusters;
+import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
+import org.apache.prepbuddy.cluster.TextFacets;
 import org.apache.prepbuddy.normalizers.DecimalScalingNormalization;
 import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
 import org.apache.prepbuddy.normalizers.ZScoreNormalization;
+import org.apache.prepbuddy.qualityanalyzers.DataType;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformers.*;
 import org.apache.prepbuddy.utils.RowRecord;

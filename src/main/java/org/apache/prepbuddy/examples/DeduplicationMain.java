@@ -1,6 +1,5 @@
 package org.apache.prepbuddy.examples;
 
-import org.apache.prepbuddy.datacleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;

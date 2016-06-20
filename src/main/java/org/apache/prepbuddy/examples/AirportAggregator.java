@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.examples;
 
-import org.apache.prepbuddy.analyzers.FileType;
+import org.apache.prepbuddy.qualityanalyzers.FileType;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;

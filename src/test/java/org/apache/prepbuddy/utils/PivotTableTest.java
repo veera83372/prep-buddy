@@ -1,7 +1,7 @@
 package org.apache.prepbuddy.utils;
 
 import org.apache.prepbuddy.SparkTestCase;
-import org.apache.prepbuddy.datacleansers.imputation.Probability;
+import org.apache.prepbuddy.cleansers.imputation.Probability;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformers.TransformationFunction;
 import org.apache.spark.api.java.JavaRDD;
