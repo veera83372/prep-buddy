@@ -1,7 +1,7 @@
 from pyspark import RDD
 
 from buddySerializer import BuddySerializer
-from py_prep_buddy.groupingops.clusters import Clusters
+from py_prep_buddy.cluster.clusters import Clusters
 
 
 class TransformableRDD(RDD):
@@ -23,8 +23,8 @@ class TransformableRDD(RDD):
 
     def __set_file_type(self, jvm, file_type):
         file_types = {
-            'CSV': jvm.org.apache.prepbuddy.typesystem.FileType.CSV,
-            'TSV': jvm.org.apache.prepbuddy.typesystem.FileType.TSV
+            'CSV': jvm.org.apache.prepbuddy.qualityanalyzers.FileType.CSV,
+            'TSV': jvm.org.apache.prepbuddy.qualityanalyzers.FileType.TSV
         }
         if file_type in file_types.values():
             self.__file_type = file_type
@@ -45,6 +45,6 @@ class TransformableRDD(RDD):
 
     def clusters(self, column_index, clusteringAlgorithm):
         algorithm = clusteringAlgorithm.get_algorithm(self.spark_context)
-        return Clusters( self._transformable_rdd.clusters(column_index, algorithm))
+        return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
 

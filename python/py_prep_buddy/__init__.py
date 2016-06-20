@@ -4,3 +4,5 @@ def py2java_int_array(sc, args):
     for i in range(0, len(args)):
         result[i] = int(args[i])
     return result
+import os
+os.environ['SPARK_HOME']="/usr/local/opt/apache-spark/libexec"
