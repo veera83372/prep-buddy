@@ -39,9 +39,9 @@ public class AnalyzableRDD extends AbstractRDD {
             @Override
             public Tuple2<Integer, Integer> call(String record) throws Exception {
                 String[] columnValues = fileType.parseRecord(record);
-                Integer missingCount = new Integer(0);
+                Integer missingCount = 0;
                 if (hasMissingData(columnValues, columnIndex)) {
-                    missingCount = new Integer(1);
+                    missingCount = 1;
                 }
                 return new Tuple2<>(columnIndex, missingCount);
             }
