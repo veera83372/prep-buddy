@@ -119,6 +119,6 @@ public class TypeAnalyzerTest {
     @Test
     public void shouldNotClassifyAsLatitudeOrLongitude() {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("40.2201", "40.7415", "19.05939", "100", "182"));
-        assertEquals(DataType.INTEGER, typeAnalyzer.getType());
+        assertEquals(DataType.DECIMAL, typeAnalyzer.getType());
     }
 }

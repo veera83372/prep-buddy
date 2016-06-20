@@ -46,7 +46,9 @@ public enum BaseDataType implements Serializable {
     }
 
     public DataType actualType(List<String> sampleData) {
-        for (DataType subtype : this.subtypes) if (subtype.isOfType(sampleData)) return subtype;
+        for (DataType subtype : this.subtypes)
+            if (subtype.isOfType(sampleData))
+                return subtype;
         return DataType.ALPHANUMERIC_STRING;
     }
 }

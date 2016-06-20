@@ -16,7 +16,15 @@ public enum DataType implements Serializable {
         @Override
         public boolean isOfType(List<String> sampleData) {
             final String INT_PATTERN = "^[+-]?\\d+$";
-            return matchesWith(INT_PATTERN, sampleData);
+            boolean matches = matchesWith(INT_PATTERN, sampleData);
+            return matches && extraChecksAreSuccessful(sampleData);
+        }
+
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
+            for (String dataPoint : sampleData) {
+                if (dataPoint.contains(".")) return false;
+            }
+            return true;
         }
     },
     URL {
@@ -131,13 +139,13 @@ public enum DataType implements Serializable {
         public boolean isOfType(List<String> sampleData) {
             final String PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$";
             boolean matched = matchesWith(PATTERN, sampleData);
-            return matched ? validateCorrectness(sampleData) : matched;
+            return matched && extraChecksAreSuccessful(sampleData);
         }
 
-        private boolean validateCorrectness(List<String> sampleData) {
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
             Range range = new Range(-90, 90);
             for (String dataPoint : sampleData) {
-                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+                if (!range.contains(Double.parseDouble(dataPoint))) return false;
             }
             return true;
         }
@@ -146,25 +154,24 @@ public enum DataType implements Serializable {
         public boolean isOfType(List<String> sampleData) {
             final String PATTERN = "^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
             boolean matched = matchesWith(PATTERN, sampleData);
-            return matched ? validateCorrectness(sampleData) : matched;
-
+            return matched && extraChecksAreSuccessful(sampleData);
         }
 
-        private boolean validateCorrectness(List<String> sampleData) {
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
             Range range = new Range(-180, 180);
             for (String dataPoint : sampleData) {
-                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+                if (!range.contains(Double.parseDouble(dataPoint))) return false;
             }
             return true;
         }
     };
 
-    protected boolean predicate(List<String> sampleData, Set<String> originalData) {
+    protected boolean predicate(List<String> sampleData, Set<String> sourceOfTruth) {
         int tolerance = sampleData.size() / 4;
-        int threshold = originalData.size() + tolerance;
+        int threshold = sourceOfTruth.size() + tolerance;
         Set<String> sample = new TreeSet<>();
         for (String element : sampleData) sample.add(element.toLowerCase());
-        for (String element : originalData) sample.add(element.toLowerCase());
+        for (String element : sourceOfTruth) sample.add(element.toLowerCase());
         return (sample.size() <= threshold);
     }
 
