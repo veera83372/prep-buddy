@@ -78,3 +78,9 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(one_cluster.__contains__("CLUSTER Of Finger print"))
         self.assertTrue(one_cluster.__contains__("finger print for cluster"))
 
+    def test_list_facets_should_give_facets(self):
+        initialDataset = self.sc.parallelize(["X,Y", "A,B", "X,Z", "A,Q", "A,E"])
+        transformable_rdd = TransformableRDD(initialDataset)
+        textFacets = transformable_rdd.listFacets(0)
+        self.assertEquals(2, textFacets.count());
+

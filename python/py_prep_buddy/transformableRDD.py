@@ -2,6 +2,7 @@ from pyspark import RDD
 
 from buddySerializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
+from py_prep_buddy.cluster.text_facets import TextFacets
 
 
 class TransformableRDD(RDD):
@@ -46,5 +47,8 @@ class TransformableRDD(RDD):
     def clusters(self, column_index, clusteringAlgorithm):
         algorithm = clusteringAlgorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
+
+    def listFacets(self, column_index):
+        return TextFacets(self._transformable_rdd.listFacets(column_index))
 
 
