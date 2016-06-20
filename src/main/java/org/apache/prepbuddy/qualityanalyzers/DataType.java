@@ -1,10 +1,15 @@
 package org.apache.prepbuddy.qualityanalyzers;
 
+import org.apache.prepbuddy.utils.Range;
+
 import java.io.Serializable;
 import java.util.*;
 
 /**
  * Data types that can be inferred by the TransformableRDD.
+ * todo :
+ * Add the following new types
+ * LATITUDE_LONGITUDE_PAIR
  */
 public enum DataType implements Serializable {
     INTEGER {
@@ -125,13 +130,32 @@ public enum DataType implements Serializable {
         @Override
         public boolean isOfType(List<String> sampleData) {
             final String PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$";
-            return matchesWith(PATTERN, sampleData);
+            boolean matched = matchesWith(PATTERN, sampleData);
+            return matched ? validateCorrectness(sampleData) : matched;
+        }
+
+        private boolean validateCorrectness(List<String> sampleData) {
+            Range range = new Range(-90, 90);
+            for (String dataPoint : sampleData) {
+                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+            }
+            return true;
         }
     }, LONGITUDE {
         @Override
         public boolean isOfType(List<String> sampleData) {
             final String PATTERN = "^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
-            return matchesWith(PATTERN, sampleData);
+            boolean matched = matchesWith(PATTERN, sampleData);
+            return matched ? validateCorrectness(sampleData) : matched;
+
+        }
+
+        private boolean validateCorrectness(List<String> sampleData) {
+            Range range = new Range(-180, 180);
+            for (String dataPoint : sampleData) {
+                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+            }
+            return true;
         }
     };
 

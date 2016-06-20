@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * It analyses the type of sample data
+ * It tries to infer the data type of the column
  */
 public class TypeAnalyzer implements Serializable {
     private List<String> sampleData;

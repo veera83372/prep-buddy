@@ -5,14 +5,15 @@ import org.apache.prepbuddy.utils.Range;
 public class AnalysisResult {
 
     private int columnIndex;
+    private DataType dataType;
 
-    public AnalysisResult(int columnIndex) {
-
+    public AnalysisResult(int columnIndex, DataType dataType) {
         this.columnIndex = columnIndex;
+        this.dataType = dataType;
     }
 
-    public DataType getDataType() {
-        return null;
+    public DataType dataType() {
+        return dataType;
     }
 
     public Double percentageOfMissingValues() {

@@ -115,4 +115,10 @@ public class TypeAnalyzerTest {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("40.2201", "40.7415", "19.05939", "36.994098822572425", "-82.180507982090035"));
         assertEquals(DataType.LATITUDE, typeAnalyzer.getType());
     }
+
+    @Test
+    public void shouldNotClassifyAsLatitudeOrLongitude() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("40.2201", "40.7415", "19.05939", "100", "182"));
+        assertEquals(DataType.INTEGER, typeAnalyzer.getType());
+    }
 }
