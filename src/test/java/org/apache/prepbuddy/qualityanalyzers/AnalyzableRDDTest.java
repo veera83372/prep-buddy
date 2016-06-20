@@ -22,11 +22,40 @@ public class AnalyzableRDDTest extends SparkTestCase {
         ));
 
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
-        AnalysisResult report = inputRDD.analyzeColumn(3);
+        AnalysisResult report = inputRDD.analyzeColumns(3);
         assertEquals(DataType.INTEGER, report.dataType());
+    }
+
+    @Test
+    public void shouldDetermineExtentOfMissingValuesInAColumn() throws Exception {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,,Incoming,211,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,0,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
+                "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,,Outgoing,421,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546431,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
+                "07641036117,07371326235,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326236,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546437,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
+                "07641036117,07371326238,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980"
+        ));
+        AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
+        AnalysisResult report = inputRDD.analyzeColumns(1);
+        assertEquals(new Double(20), report.percentageOfMissingValues());
+    }
 
 
-//        assertEquals(new Double(10), report.percentageOfMissingValues());
 //        assertEquals(new Double(10), report.percentageOfInconsistentValues());
 //        assertEquals(new Double(10), report.percentageOfDuplicateValues());
 //        Range range = report.rangeOfValues();
@@ -37,5 +66,4 @@ public class AnalyzableRDDTest extends SparkTestCase {
 //        assertEquals(DataShape.NORMAL, dataShape);
 //        Outliers outliers = report.outliers();
 //        assertNotNull(outliers);
-    }
 }
