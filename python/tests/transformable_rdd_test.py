@@ -1,4 +1,4 @@
-from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprintAlgorithm
+from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprintAlgorithm, NGramFingerprintAlgorithm
 from utils.pythontestcase import PySparkTestCase
 from py_prep_buddy.transformableRDD import TransformableRDD
 from py_prep_buddy.imputation import *
@@ -68,3 +68,13 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         one_cluster = list_of_clusters[0]
         self.assertTrue(one_cluster.__contains__("CLUSTER Of Finger print"))
         self.assertFalse(one_cluster.__contains__("finger print for cluster"))
+
+    def test_clusters_should_give_clusters_By_n_gram_fingerprint(self):
+        rdd = self.sc.parallelize(["CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        clusters = transformable_rdd.clusters(0, NGramFingerprintAlgorithm(1))
+        list_of_clusters = clusters.get_all_clusters()
+        one_cluster = list_of_clusters[0]
+        self.assertTrue(one_cluster.__contains__("CLUSTER Of Finger print"))
+        self.assertTrue(one_cluster.__contains__("finger print for cluster"))
+
