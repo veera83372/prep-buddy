@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.transformers;
 
-import org.apache.prepbuddy.typesystem.FileType;
+import org.apache.prepbuddy.analyzers.FileType;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;

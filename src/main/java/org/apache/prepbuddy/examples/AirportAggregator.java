@@ -1,18 +1,15 @@
 package org.apache.prepbuddy.examples;
 
+import org.apache.prepbuddy.analyzers.FileType;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.r.StringRRDD;
 import scala.Tuple2;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class AirportAggregator implements Serializable {
     public static void main(String[] args) {

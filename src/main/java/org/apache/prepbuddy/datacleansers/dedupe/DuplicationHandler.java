@@ -1,6 +1,6 @@
 package org.apache.prepbuddy.datacleansers.dedupe;
 
-import org.apache.prepbuddy.typesystem.FileType;
+import org.apache.prepbuddy.analyzers.FileType;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;

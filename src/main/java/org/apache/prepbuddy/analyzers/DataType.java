@@ -1,4 +1,4 @@
-package org.apache.prepbuddy.typesystem;
+package org.apache.prepbuddy.analyzers;
 
 import java.io.Serializable;
 import java.util.*;

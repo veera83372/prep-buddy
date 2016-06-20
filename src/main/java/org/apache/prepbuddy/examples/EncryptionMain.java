@@ -1,8 +1,8 @@
 package org.apache.prepbuddy.examples;
 
+import org.apache.prepbuddy.analyzers.FileType;
 import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.rdds.TransformableRDD;
-import org.apache.prepbuddy.typesystem.FileType;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
