@@ -2,6 +2,7 @@ package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.cluster.Cluster;
 import org.apache.prepbuddy.cluster.Clusters;
 import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
@@ -12,6 +13,7 @@ import org.apache.prepbuddy.smoothers.WeightedMovingAverageMethod;
 import org.apache.prepbuddy.smoothers.Weights;
 import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
+import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
@@ -284,4 +286,35 @@ public class TransformableRDDTest extends SparkTestCase {
 
     }
 
+    @Test
+    public void shouldImputeTheMissingValueByConsideringGivenHints() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "1,NULL,2,3,4",
+                "2,N/A,23,21,23",
+                "3,N/A,21,32,32",
+                "4,-,2,3,4",
+                "5,,54,32,54",
+                "6,32,22,33,23"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
+
+        List<String> imputedRDD = initialRDD.impute(1, new ImputationStrategy() {
+            @Override
+            public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
+
+            }
+
+            @Override
+            public String handleMissingData(RowRecord record) {
+                return "X";
+            }
+        }, Arrays.asList("N/A", "-", "NA", "NULL")).collect();
+
+        assertTrue(imputedRDD.contains("1,X,2,3,4"));
+        assertTrue(imputedRDD.contains("2,X,23,21,23"));
+        assertTrue(imputedRDD.contains("3,X,21,32,32"));
+        assertTrue(imputedRDD.contains("4,X,2,3,4"));
+        assertTrue(imputedRDD.contains("5,X,54,32,54"));
+        assertTrue(imputedRDD.contains("6,32,22,33,23"));
+    }
 }

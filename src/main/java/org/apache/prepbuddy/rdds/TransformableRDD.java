@@ -27,6 +27,7 @@ import org.apache.spark.rdd.RDD;
 import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -192,8 +193,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
      *
-     * @param columnIndex
-     * @param algorithm
+     * @param columnIndex Column Index
+     * @param algorithm Algorithm to be used to form clusters
      * @return Clusters
      */
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
@@ -208,7 +209,7 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD containing split columns using @splitPlan
      *
-     * @param splitPlan
+     * @param splitPlan Plan specifying how to split the column
      * @return TransformableRDD
      */
     public TransformableRDD splitColumn(final SplitPlan splitPlan) {
@@ -265,9 +266,9 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by applying the function on all rows marked as @flag
      *
-     * @param flag
-     * @param symbolColumnIndex
-     * @param mapFunction
+     * @param flag Symbol that has been used for flagging.
+     * @param symbolColumnIndex Symbol column index
+     * @param mapFunction map function
      * @return TransformableRDD
      */
     public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
@@ -310,9 +311,9 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by replacing the @cluster's text with specified @newValue
      *
-     * @param cluster
-     * @param newValue
-     * @param columnIndex
+     * @param cluster Cluster of similar values to be replaced
+     * @param newValue Value that will be used to replace all the cluster value
+     * @param columnIndex Column index
      * @return TransformableRDD
      */
     public TransformableRDD replaceValues(final Cluster cluster, final String newValue, final int columnIndex) {
@@ -333,11 +334,23 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
      *
-     * @param columnIndex
-     * @param strategy
+     * @param columnIndex Column index
+     * @param strategy Imputation strategy
      * @return TransformableRDD
      */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        return impute(columnIndex, strategy, Collections.EMPTY_LIST);
+    }
+
+    /**
+     * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+     *
+     * @param columnIndex   Column Index
+     * @param strategy      Imputation Strategy
+     * @param missingHints  List of Strings that may mean empty
+     * @return TransformableRDD
+     */
+    public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy, final List<String> missingHints) {
         validateColumnIndex(columnIndex);
         strategy.prepareSubstitute(this, columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
@@ -347,7 +360,7 @@ public class TransformableRDD extends AbstractRDD {
                 String[] recordAsArray = fileType.parseRecord(record);
                 String value = recordAsArray[columnIndex];
                 String replacementValue = value;
-                if (value == null || value.trim().isEmpty()) {
+                if (value == null || value.trim().isEmpty() || missingHints.contains(value)) {
                     replacementValue = strategy.handleMissingData(new RowRecord(recordAsArray));
                 }
                 recordAsArray[columnIndex] = replacementValue;
@@ -385,8 +398,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
      *
-     * @param columnIndex
-     * @param normalizer
+     * @param columnIndex   Column Index
+     * @param normalizer    Normalization Strategy
      * @return TransformableRDD
      */
     public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
@@ -444,8 +457,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Generates a PivotTable by pivoting data in the pivotalColumn
      *
-     * @param pivotalColumn
-     * @param independentColumnIndexes
+     * @param pivotalColumn     Pivotal Column
+     * @param independentColumnIndexes  Independent Column Indexes
      * @return PivotTable
      */
     public PivotTable pivotByCount(int pivotalColumn, int[] independentColumnIndexes) {
@@ -464,8 +477,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new JavaRDD containing smoothed values of @columnIndex using @smoothingMethod
      *
-     * @param columnIndex
-     * @param smoothingMethod
+     * @param columnIndex   Column Index
+     * @param smoothingMethod Method that will be used for smoothing of the data
      * @return JavaRDD<Double>
      */
     public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {

@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TextFacets contains the cardinal values of the column with their
- * number of occurrence in that column.
+ * TextFacets is a collection of unique strings and the number of times the string appears in a column
  */
 public class TextFacets implements Serializable {
     private final JavaPairRDD<String, Integer> facets;
