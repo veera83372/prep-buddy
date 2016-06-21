@@ -39,7 +39,7 @@ public class AnalyzableRDDTest extends SparkTestCase {
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
-                "07641036117,,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,N/A,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,,Outgoing,421,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07681546431,Missed,12,Mon Feb 11 08:04:42 +0000 1980",
                 "07641036117,07371326235,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
@@ -52,7 +52,7 @@ public class AnalyzableRDDTest extends SparkTestCase {
                 "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980"
         ));
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
-        AnalysisPlan analysisPlan = new AnalysisPlan(1);
+        AnalysisPlan analysisPlan = new AnalysisPlan(1, Arrays.asList("N/A", "NULL"));
         AnalysisResult report = inputRDD.analyzeColumns(analysisPlan);
         assertEquals(new Double(20), report.percentageOfMissingValues());
     }
