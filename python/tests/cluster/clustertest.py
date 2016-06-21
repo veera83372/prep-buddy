@@ -1,5 +1,5 @@
-from py_prep_buddy.transformableRDD import TransformableRDD
-from utils.pythontestcase import PySparkTestCase
+from py_prep_buddy.transformable_rdd import TransformableRDD
+from utils.python_test_case import PySparkTestCase
 import tests
 
 class ClusterTest(PySparkTestCase):

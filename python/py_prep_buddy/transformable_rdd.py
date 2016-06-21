@@ -1,6 +1,6 @@
 from pyspark import RDD
 
-from buddySerializer import BuddySerializer
+from serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
 
