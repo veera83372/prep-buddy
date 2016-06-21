@@ -9,6 +9,7 @@ import java.util.*;
  * Data types that can be inferred -
  * todo :
  * Add the following new types
+ * BOOLEAN
  * LATITUDE_LONGITUDE_PAIR
  * CATEGORICAL_INTEGER
  * CATEGORICAL_STRING
@@ -93,6 +94,7 @@ public enum DataType implements Serializable {
         @Override
         public boolean isOfType(List<String> sampleData) {
             TreeSet<String> char2countryCodes = new TreeSet<>(Arrays.asList(Locale.getISOCountries()));
+
             return predicate(sampleData, char2countryCodes);
         }
     },
@@ -173,12 +175,12 @@ public enum DataType implements Serializable {
         }
     };
 
-    protected boolean predicate(List<String> sampleData, Set<String> sourceOfTruth) {
+    protected boolean predicate(List<String> sampleData, Set<String> dictionary) {
         int tolerance = sampleData.size() / 4;
-        int threshold = sourceOfTruth.size() + tolerance;
+        int threshold = dictionary.size() + tolerance;
         Set<String> sample = new TreeSet<>();
         for (String element : sampleData) sample.add(element.toLowerCase());
-        for (String element : sourceOfTruth) sample.add(element.toLowerCase());
+        for (String element : dictionary) sample.add(element.toLowerCase());
         return (sample.size() <= threshold);
     }
 
