@@ -1,6 +1,6 @@
 from pyspark import RDD
 
-from buddySerializer import BuddySerializer
+from serializer import BuddySerializer
 
 
 class TransformableRDD(RDD):
