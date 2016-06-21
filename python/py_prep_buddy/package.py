@@ -1,6 +1,7 @@
 class Package(object):
     PREP_BUDDY = "org.apache.prepbuddy"
-    CLEANSER = PREP_BUDDY + ".cleanser"
+    IMPUTATION = PREP_BUDDY + ".cleansers.imputation"
+    DEDUPE = PREP_BUDDY + ".cleansers.dedupe"
     CLUSTER = PREP_BUDDY + ".cluster"
     NORMALIZERS = PREP_BUDDY + ".normalizers"
     CONNECTOR = PREP_BUDDY + ".python.connector"

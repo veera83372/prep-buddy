@@ -17,3 +17,4 @@ class NormalizationTest(PySparkTestCase):
         normalized_durations = final_rdd.select(3).collect()
         expected = ["1.0", "0.0", "0.2132701421800948", "0.2132701421800948", "0.05687203791469194"]
         self.assertEquals(expected, normalized_durations)
+

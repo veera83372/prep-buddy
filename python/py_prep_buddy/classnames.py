@@ -2,6 +2,11 @@ from py_prep_buddy.package import Package
 
 
 class ClassNames(object):
+        NAIVE_BAYES_SUBSTITUTION = Package.IMPUTATION + ".NaiveBayesSubstitution"
+        UNIVARIATE_SUBSTITUTION = Package.IMPUTATION + ".UnivariateLinearRegressionSubstitution"
+        APPROX_MEAN_SUBSTITUTION = Package.IMPUTATION + ".ApproxMeanSubstitution"
+        MEAN_SUBSTITUTION = Package.IMPUTATION + ".MeanSubstitution"
+        MODE_SUBSTITUTION = Package.IMPUTATION + ".ModeSubstitution"
         STRING_TO_BYTES = Package.CONNECTOR + ".StringToBytes"
         CLUSTER = Package.CLUSTER + ".Cluster"
         CLUSTERS = Package.CLUSTER + ".Clusters"

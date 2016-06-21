@@ -1,5 +1,4 @@
 from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
-from py_prep_buddy.package import Package
 from utils.python_test_case import PySparkTestCase
 from py_prep_buddy.transformable_rdd import TransformableRDD
 from py_prep_buddy.imputation import *

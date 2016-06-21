@@ -1,19 +1,23 @@
+from py_prep_buddy.classnames import ClassNames
 from . import py2java_int_array
-
+from py4j.java_gateway import java_import
 
 class ModeSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.ModeSubstitution()
+        java_import(sc._jvm, ClassNames.MODE_SUBSTITUTION)
+        return sc._jvm.ModeSubstitution()
 
 
 class MeanSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.MeanSubstitution()
+        java_import(sc._jvm, ClassNames.MEAN_SUBSTITUTION)
+        return sc._jvm.MeanSubstitution()
 
 
 class ApproxMeanSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.ApproxMeanSubstitution()
+        java_import(sc._jvm, ClassNames.APPROX_MEAN_SUBSTITUTION)
+        return sc._jvm.ApproxMeanSubstitution()
 
 
 class UnivariateLinearRegressionSubstitution(object):
@@ -21,8 +25,8 @@ class UnivariateLinearRegressionSubstitution(object):
         self._column_index = column_index
 
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.\
-            UnivariateLinearRegressionSubstitution(self._column_index)
+        java_import(sc._jvm, ClassNames.UNIVARIATE_SUBSTITUTION)
+        return sc._jvm.UnivariateLinearRegressionSubstitution(self._column_index)
 
 
 class NaiveBayesSubstitution(object):
@@ -30,6 +34,6 @@ class NaiveBayesSubstitution(object):
         self._column_index = column_index
 
     def get_strategy(self, sc):
+        java_import(sc._jvm, ClassNames.NAIVE_BAYES_SUBSTITUTION)
         independent_column_indexes = py2java_int_array(sc, self._column_index)
-        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.\
-            NaiveBayesSubstitution(independent_column_indexes)
+        return sc._jvm.NaiveBayesSubstitution(independent_column_indexes)

@@ -62,6 +62,6 @@ class TransformableRDD(RDD):
         return self._transformable_rdd.select(column_index)
 
     def normalize(self, column_index, normalizer_strategy):
-        normalizer = normalizer_strategy.get_normalizer()
+        normalizer = normalizer_strategy.get_normalizer(self.spark_context)
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.normalize(column_index, normalizer),
                                 sc=self.spark_context)
