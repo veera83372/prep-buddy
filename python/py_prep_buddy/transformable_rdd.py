@@ -17,7 +17,7 @@ class TransformableRDD(RDD):
             self.__set_file_type(jvm, file_type)
             self.spark_context = rdd.ctx
             java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
-                        jvm.BytesToString())
+                    jvm.BytesToString())
             self._transformable_rdd = jvm.TransformableRDD(java_rdd, self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
@@ -65,3 +65,7 @@ class TransformableRDD(RDD):
         normalizer = normalizer_strategy.get_normalizer(self.spark_context)
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.normalize(column_index, normalizer),
                                 sc=self.spark_context)
+
+    def smooth(self, column_index, smoothing_method):
+        method = smoothing_method.get_smoothing_method(self.spark_context)
+        return self._transformable_rdd.smooth(column_index, method)

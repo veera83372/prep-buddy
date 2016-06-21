@@ -2,6 +2,7 @@ from py_prep_buddy.package import Package
 
 
 class ClassNames(object):
+        SIMPLE_MOVING_AVERAGE = Package.SMOOTHERS + ".SimpleMovingAverageMethod"
         NAIVE_BAYES_SUBSTITUTION = Package.IMPUTATION + ".NaiveBayesSubstitution"
         UNIVARIATE_SUBSTITUTION = Package.IMPUTATION + ".UnivariateLinearRegressionSubstitution"
         APPROX_MEAN_SUBSTITUTION = Package.IMPUTATION + ".ApproxMeanSubstitution"

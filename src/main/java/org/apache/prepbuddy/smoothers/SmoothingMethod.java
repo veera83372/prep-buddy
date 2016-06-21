@@ -34,7 +34,6 @@ public abstract class SmoothingMethod implements Serializable {
                 return list.iterator();
             }
         }, true);
-
         return keyPartition(duplicateRdd).map(new Function<Tuple2<Integer, String>, Double>() {
             @Override
             public Double call(Tuple2<Integer, String> tuple) throws Exception {
