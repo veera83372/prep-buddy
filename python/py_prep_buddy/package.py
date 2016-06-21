@@ -1,0 +1,11 @@
+class Package(object):
+    PREP_BUDDY = "org.apache.prepbuddy"
+    CLEANSER = PREP_BUDDY + ".cleanser"
+    CLUSTER = PREP_BUDDY + ".cluster"
+    NORMALIZERS = PREP_BUDDY + ".normalizers"
+    CONNECTOR = PREP_BUDDY + ".python.connector"
+    QUALITY_ANALYSERS = PREP_BUDDY + ".qualityanalyzers"
+    RDDS = PREP_BUDDY + ".rdds"
+    SMOOTHERS = PREP_BUDDY + ".smoothers"
+    TRANSFORMERS = PREP_BUDDY + ".transformers"
+    UTILS = PREP_BUDDY + ".utils"
