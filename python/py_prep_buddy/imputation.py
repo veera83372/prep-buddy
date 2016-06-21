@@ -3,17 +3,17 @@ from . import py2java_int_array
 
 class ModeSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.datacleansers.imputation.ModeSubstitution()
+        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.ModeSubstitution()
 
 
 class MeanSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.datacleansers.imputation.MeanSubstitution()
+        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.MeanSubstitution()
 
 
 class ApproxMeanSubstitution(object):
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.datacleansers.imputation.ApproxMeanSubstitution()
+        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.ApproxMeanSubstitution()
 
 
 class UnivariateLinearRegressionSubstitution(object):
@@ -21,7 +21,7 @@ class UnivariateLinearRegressionSubstitution(object):
         self._column_index = column_index
 
     def get_strategy(self, sc):
-        return sc._jvm.org.apache.prepbuddy.datacleansers.imputation.\
+        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.\
             UnivariateLinearRegressionSubstitution(self._column_index)
 
 
@@ -31,5 +31,5 @@ class NaiveBayesSubstitution(object):
 
     def get_strategy(self, sc):
         independent_column_indexes = py2java_int_array(sc, self._column_index)
-        return sc._jvm.org.apache.prepbuddy.datacleansers.imputation.\
+        return sc._jvm.org.apache.prepbuddy.cleansers.imputation.\
             NaiveBayesSubstitution(independent_column_indexes)
