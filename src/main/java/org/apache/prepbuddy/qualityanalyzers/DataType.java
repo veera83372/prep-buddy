@@ -6,7 +6,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Data types that can be inferred -
+ * Data types that can be inferred by inspecting the data in a column
+ * <p>
  * todo :
  * Add the following new types
  * BOOLEAN

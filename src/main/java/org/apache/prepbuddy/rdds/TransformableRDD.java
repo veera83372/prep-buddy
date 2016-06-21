@@ -27,6 +27,7 @@ import org.apache.spark.rdd.RDD;
 import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -338,6 +339,18 @@ public class TransformableRDD extends AbstractRDD {
      * @return TransformableRDD
      */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        return impute(columnIndex, strategy, Collections.EMPTY_LIST);
+    }
+
+    /**
+     * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+     *
+     * @param columnIndex
+     * @param strategy
+     * @param missingHints
+     * @return TransformableRDD
+     */
+    public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy, final List<String> missingHints) {
         validateColumnIndex(columnIndex);
         strategy.prepareSubstitute(this, columnIndex);
         JavaRDD<String> transformed = this.map(new Function<String, String>() {
@@ -347,7 +360,7 @@ public class TransformableRDD extends AbstractRDD {
                 String[] recordAsArray = fileType.parseRecord(record);
                 String value = recordAsArray[columnIndex];
                 String replacementValue = value;
-                if (value == null || value.trim().isEmpty()) {
+                if (value == null || value.trim().isEmpty() || missingHints.contains(value)) {
                     replacementValue = strategy.handleMissingData(new RowRecord(recordAsArray));
                 }
                 recordAsArray[columnIndex] = replacementValue;
