@@ -14,7 +14,7 @@ public class Range {
         this.uppperBound = uppperBound;
     }
 
-    public boolean doesNotContain(double aValue) {
+    public boolean contains(double aValue) {
         return aValue >= lowerBound && aValue <= uppperBound;
     }
 }

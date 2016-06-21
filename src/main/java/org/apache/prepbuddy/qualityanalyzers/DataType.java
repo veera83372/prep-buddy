@@ -6,66 +6,81 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Data types that can be inferred by the TransformableRDD.
+ * Data types that can be inferred -
  * todo :
  * Add the following new types
  * LATITUDE_LONGITUDE_PAIR
+ * CATEGORICAL_INTEGER
+ * CATEGORICAL_STRING
+ * CREDIT_CARD
+ * GENDER
+ * HTTP_CODE
+ * US_STATE
+ * and user defined data types
  */
 public enum DataType implements Serializable {
     INTEGER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String INT_PATTERN = "^[+-]?\\d+$";
-            return matchesWith(INT_PATTERN, sampleData);
+            final String EXPRESSION = "^[+-]?\\d+$";
+            boolean matches = matchesWith(EXPRESSION, sampleData);
+            return matches && extraChecksAreSuccessful(sampleData);
+        }
+
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
+            for (String dataPoint : sampleData) {
+                if (dataPoint.contains(".")) return false;
+            }
+            return true;
         }
     },
     URL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String URL_PATTERN = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$";
-            return matchesWith(URL_PATTERN, sampleData);
+            final String EXPRESSION = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     EMAIL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            return matchesWith(EMAIL_PATTERN, sampleData);
+            final String EXPRESSION = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     CURRENCY {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String CURRENCY_PATTERN = "^(\\p{Sc})(\\d+|\\d+.\\d+)$";
-            return matchesWith(CURRENCY_PATTERN, sampleData);
+            final String EXPRESSION = "^(\\p{Sc})(\\d+|\\d+.\\d+)$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     DECIMAL {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String DECIMAL_PATTERN = "^[+-]?(\\.\\d+|\\d+\\.\\d+)$";
-            return matchesWith(DECIMAL_PATTERN, sampleData);
+            final String EXPRESSION = "^[+-]?(\\.\\d+|\\d+\\.\\d+)$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     SOCIAL_SECURITY_NUMBER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String SSN_PATTERN = "^(\\d{3}-\\d{2}-\\d{4})$";
-            return matchesWith(SSN_PATTERN, sampleData);
+            final String EXPRESSION = "^(\\d{3}-\\d{2}-\\d{4})$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     IP_ADDRESS {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String IP_PATTERN = "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-            return matchesWith(IP_PATTERN, sampleData);
+            final String EXPRESSION = "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     ZIP_CODE_US {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String ZIP_PATTERN = "^[0-9]{5}(?:-[0-9]{4})?$";
-            return matchesWith(ZIP_PATTERN, sampleData);
+            final String EXPRESSION = "^[0-9]{5}(?:-[0-9]{4})?$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     },
     ALPHANUMERIC_STRING {
@@ -117,54 +132,53 @@ public enum DataType implements Serializable {
     }, MOBILE_NUMBER {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String PHONE_PATTERN = "^(([+]\\d+\\s)|0)?\\d{10}$";
-            return matchesWith(PHONE_PATTERN, sampleData);
+            final String EXPRESSION = "^(([+]\\d+\\s)|0)?\\d{10}$";
+            return matchesWith(EXPRESSION, sampleData);
         }
     }, TIMESTAMP {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String PATTERN = "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}x?)";
-            return matchesWith(PATTERN, sampleData);
+            final String EXPRESSION = "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}x?)";
+            return matchesWith(EXPRESSION, sampleData);
         }
     }, LATITUDE {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$";
-            boolean matched = matchesWith(PATTERN, sampleData);
-            return matched ? validateCorrectness(sampleData) : matched;
+            final String EXPRESSION = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$";
+            boolean matched = matchesWith(EXPRESSION, sampleData);
+            return matched && extraChecksAreSuccessful(sampleData);
         }
 
-        private boolean validateCorrectness(List<String> sampleData) {
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
             Range range = new Range(-90, 90);
             for (String dataPoint : sampleData) {
-                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+                if (!range.contains(Double.parseDouble(dataPoint))) return false;
             }
             return true;
         }
     }, LONGITUDE {
         @Override
         public boolean isOfType(List<String> sampleData) {
-            final String PATTERN = "^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
-            boolean matched = matchesWith(PATTERN, sampleData);
-            return matched ? validateCorrectness(sampleData) : matched;
-
+            final String EXPRESSION = "^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$";
+            boolean matched = matchesWith(EXPRESSION, sampleData);
+            return matched && extraChecksAreSuccessful(sampleData);
         }
 
-        private boolean validateCorrectness(List<String> sampleData) {
+        private boolean extraChecksAreSuccessful(List<String> sampleData) {
             Range range = new Range(-180, 180);
             for (String dataPoint : sampleData) {
-                if (range.doesNotContain(Double.parseDouble(dataPoint))) return false;
+                if (!range.contains(Double.parseDouble(dataPoint))) return false;
             }
             return true;
         }
     };
 
-    protected boolean predicate(List<String> sampleData, Set<String> originalData) {
+    protected boolean predicate(List<String> sampleData, Set<String> sourceOfTruth) {
         int tolerance = sampleData.size() / 4;
-        int threshold = originalData.size() + tolerance;
+        int threshold = sourceOfTruth.size() + tolerance;
         Set<String> sample = new TreeSet<>();
         for (String element : sampleData) sample.add(element.toLowerCase());
-        for (String element : originalData) sample.add(element.toLowerCase());
+        for (String element : sourceOfTruth) sample.add(element.toLowerCase());
         return (sample.size() <= threshold);
     }
 

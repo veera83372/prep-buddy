@@ -13,6 +13,7 @@ import org.apache.spark.api.java.function.DoubleFunction;
 import java.util.*;
 
 public abstract class AbstractRDD extends JavaRDD<String> {
+    public static final int DEFAULT_SAMPLE_SIZE = 1000;
     protected FileType fileType;
 
     public AbstractRDD(JavaRDD<String> rdd, FileType fileType) {
@@ -22,14 +23,25 @@ public abstract class AbstractRDD extends JavaRDD<String> {
 
 
     /**
-     * Returns a inferred DataType of given column index
+     * Returns a inferred DataType of given column index with a sample size of 1000
      *
      * @param columnIndex The column where the inference will be done.
      * @return DataType
      */
     public DataType inferType(final int columnIndex) {
+        return inferType(columnIndex, DEFAULT_SAMPLE_SIZE);
+    }
+
+    /**
+     * Returns a inferred DataType of given column index
+     *
+     * @param columnIndex
+     * @param sampleSize
+     * @return
+     */
+    public DataType inferType(final int columnIndex, int sampleSize) {
         validateColumnIndex(columnIndex);
-        List<String> columnSamples = sample(columnIndex);
+        List<String> columnSamples = sample(columnIndex, sampleSize);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
@@ -43,7 +55,7 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     }
 
     protected boolean isNumericColumn(int columnIndex) {
-        List<String> columnSamples = sample(columnIndex);
+        List<String> columnSamples = sample(columnIndex, DEFAULT_SAMPLE_SIZE);
         BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
         return baseType.equals(BaseDataType.NUMERIC);
     }
@@ -58,9 +70,6 @@ public abstract class AbstractRDD extends JavaRDD<String> {
         return columnSamples;
     }
 
-    private List<String> sample(int columnIndex) {
-        return sample(columnIndex, 100);
-    }
 
     /**
      * Returns the number of columns in this RDD
