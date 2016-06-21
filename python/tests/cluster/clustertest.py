@@ -8,4 +8,5 @@ class ClusterTest(PySparkTestCase):
         transformable_rdd = TransformableRDD(initial_dataset)
         text_facets = transformable_rdd.listFacets(0)
         highest = text_facets.highest()
+        self.assertEqual("A", highest[0]._1())
 
