@@ -10,3 +10,16 @@ class SimpleMovingAverage(object):
     def get_smoothing_method(self, spark_context):
         java_import(spark_context._jvm, ClassNames.SIMPLE_MOVING_AVERAGE)
         return spark_context._jvm.SimpleMovingAverageMethod(self.__window_size)
+
+
+class WeightedMovingAverage(object):
+    def __init__(self, weights):
+        self.__weights = weights
+
+
+class Weights(object):
+    def __init__(self):
+        self.weights = []
+
+    def add(self, weight):
+        self.weights.append(weight)
