@@ -51,8 +51,8 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.impute(column_index, strategy_apply),
                                 sc=self.spark_context)
 
-    def clusters(self, column_index, clusteringAlgorithm):
-        algorithm = clusteringAlgorithm.get_algorithm(self.spark_context)
+    def clusters(self, column_index, clustering_algorithm):
+        algorithm = clustering_algorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
     def list_facets(self, column_index):

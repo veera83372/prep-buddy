@@ -9,7 +9,6 @@ class SmoothersTest(PySparkTestCase):
                 ["52,3,53", "23,4,64", "23,5,64", "23,6,64", "23,7,64", "23,8,64", "23,9,64"], 3)
         transformable_rdd = TransformableRDD(initial_dataset, "csv")
         transformed = transformable_rdd.smooth(1, SimpleMovingAverage(3))
-
         excepted = 4.0
         self.assertEquals(excepted, transformed.first())
 

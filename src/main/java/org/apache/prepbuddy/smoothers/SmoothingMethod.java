@@ -48,7 +48,7 @@ public abstract class SmoothingMethod implements Serializable {
             public Tuple2<Integer, String> call(Tuple2<Integer, String> tuple) throws Exception {
                 return tuple;
             }
-        }).partitionBy(new KeyPartitioner(tupleJavaRDD.getNumPartitions()));
+        }).partitionBy(new KeyPartitioner(tupleJavaRDD.partitions().size()));
     }
 
     public abstract JavaRDD<Double> smooth(JavaRDD<String> singleColumnDataset);
