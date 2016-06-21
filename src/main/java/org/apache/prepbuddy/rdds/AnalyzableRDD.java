@@ -1,6 +1,7 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.prepbuddy.qualityanalyzers.AnalysisPlan;
 import org.apache.prepbuddy.qualityanalyzers.AnalysisResult;
 import org.apache.prepbuddy.qualityanalyzers.DataType;
 import org.apache.prepbuddy.qualityanalyzers.FileType;
@@ -27,9 +28,10 @@ public class AnalyzableRDD extends AbstractRDD {
     }
 
 
-    public AnalysisResult analyzeColumns(final int columnIndex) {
+    public AnalysisResult analyzeColumns(final AnalysisPlan plan) {
+        int columnIndex = plan.columnIndex();
         DataType dataType = inferType(columnIndex);
-        Map<Integer, Integer> missingDataReport = countMissingValues(columnIndex);
+        Map<Integer, Integer> missingDataReport = countMissingValues(plan.columnIndex());
         AnalysisResult result = new AnalysisResult(columnIndex, dataType, numberOfRows, missingDataReport);
         return result;
     }

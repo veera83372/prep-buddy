@@ -22,7 +22,8 @@ public class AnalyzableRDDTest extends SparkTestCase {
         ));
 
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
-        AnalysisResult report = inputRDD.analyzeColumns(3);
+        AnalysisPlan analysisPlan = new AnalysisPlan(3);
+        AnalysisResult report = inputRDD.analyzeColumns(analysisPlan);
         assertEquals(DataType.INTEGER, report.dataType());
     }
 
@@ -51,7 +52,8 @@ public class AnalyzableRDDTest extends SparkTestCase {
                 "07641036117,07371326230,Incoming,45,Mon Feb 11 07:45:42 +0000 1980"
         ));
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
-        AnalysisResult report = inputRDD.analyzeColumns(1);
+        AnalysisPlan analysisPlan = new AnalysisPlan(1);
+        AnalysisResult report = inputRDD.analyzeColumns(analysisPlan);
         assertEquals(new Double(20), report.percentageOfMissingValues());
     }
 
