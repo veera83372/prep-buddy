@@ -13,4 +13,13 @@ class MinMaxNormalizer(object):
         return spark_context._jvm.MinMaxNormalizer()
 
 
+class ZScoreNormalizer(object):
+    def get_normalizer(self, spark_context):
+        java_import(spark_context._jvm, ClassNames.Z_SCORE_NORMALIZER)
+        return spark_context._jvm.ZScoreNormalization()
 
+
+class DecimalScalingNormalizer(object):
+    def get_normalizer(self, spark_context):
+        java_import(spark_context._jvm, ClassNames.DECIMAL_SCALING_NORMALIZER)
+        return spark_context._jvm.DecimalScalingNormalization()
