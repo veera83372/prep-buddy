@@ -93,7 +93,7 @@ public class TransformableRDD extends AbstractRDD {
      */
     public TransformableRDD getDuplicates() {
         JavaRDD<String> duplicates = DuplicationHandler.detectDuplicates(this);
-        return new TransformableRDD(duplicates);
+        return new TransformableRDD(duplicates, fileType);
     }
 
     /**
@@ -104,7 +104,7 @@ public class TransformableRDD extends AbstractRDD {
      */
     public TransformableRDD getDuplicates(List<Integer> primaryColumnIndexes) {
         JavaRDD<String> transformed = DuplicationHandler.detectDuplicatesByColumns(this, primaryColumnIndexes, fileType);
-        return new TransformableRDD(transformed);
+        return new TransformableRDD(transformed, fileType);
     }
 
     /**

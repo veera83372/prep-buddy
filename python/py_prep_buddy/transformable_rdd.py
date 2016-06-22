@@ -1,5 +1,7 @@
 from pyspark import RDD
+from py4j.java_gateway import java_import
 
+from py_prep_buddy.class_names import ClassNames
 from serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
@@ -9,23 +11,28 @@ class TransformableRDD(RDD):
     def __init__(self, rdd, file_type='CSV', t_rdd=None, sc=None):
         if rdd is not None:
             jvm = rdd.ctx._jvm
+            java_import(jvm, ClassNames.BYTES_TO_STRING)
+            java_import(jvm, ClassNames.TRANSFORMABLE_RDD)
+
             self.__set_file_type(jvm, file_type)
             self.spark_context = rdd.ctx
             java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
-                    jvm.org.apache.prepbuddy.python.connector.BytesToString())
-            self._transformable_rdd = jvm.org.apache.prepbuddy.rdds.TransformableRDD(java_rdd, self.__file_type)
+                    jvm.BytesToString())
+            self._transformable_rdd = jvm.TransformableRDD(java_rdd, self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm
+            java_import(jvm, ClassNames.STRING_TO_BYTES)
             self.__set_file_type(jvm, file_type)
             self._transformable_rdd = t_rdd
-            rdd = t_rdd.map(jvm.org.apache.prepbuddy.python.connector.StringToBytes())
+            rdd = t_rdd.map(jvm.StringToBytes())
             RDD.__init__(self, rdd, sc, BuddySerializer())
 
     def __set_file_type(self, jvm, file_type):
+        java_import(jvm, ClassNames.FileType)
         file_types = {
-            'CSV': jvm.org.apache.prepbuddy.qualityanalyzers.FileType.CSV,
-            'TSV': jvm.org.apache.prepbuddy.qualityanalyzers.FileType.TSV
+            'CSV': jvm.FileType.CSV,
+            'TSV': jvm.FileType.TSV
         }
         if file_type in file_types.values():
             self.__file_type = file_type
@@ -44,11 +51,33 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.impute(column_index, strategy_apply),
                                 sc=self.spark_context)
 
-    def clusters(self, column_index, clusteringAlgorithm):
-        algorithm = clusteringAlgorithm.get_algorithm(self.spark_context)
+    def clusters(self, column_index, clustering_algorithm):
+        algorithm = clustering_algorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
-    def listFacets(self, column_index):
+    def list_facets(self, column_index):
         return TextFacets(self._transformable_rdd.listFacets(column_index))
 
+    def select(self, column_index):
+        return self._transformable_rdd.select(column_index)
 
+    def normalize(self, column_index, normalizer_strategy):
+        normalizer = normalizer_strategy.get_normalizer(self.spark_context)
+        return TransformableRDD(None, self.__file_type, self._transformable_rdd.normalize(column_index, normalizer),
+                                sc=self.spark_context)
+
+    def smooth(self, column_index, smoothing_method):
+        method = smoothing_method.get_smoothing_method(self.spark_context)
+        return self._transformable_rdd.smooth(column_index, method)
+
+    def merge_columns(self, merge_plan):
+        plan = merge_plan.get_plan(self.spark_context)
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.merge_columns(plan),
+                                sc=self.spark_context)
+
+    def split_column(self, split_plan):
+        plan = split_plan.get_plan(self.spark_context)
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.splitColumn(plan),
+                                sc=self.spark_context)

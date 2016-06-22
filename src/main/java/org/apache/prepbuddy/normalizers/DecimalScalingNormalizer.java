@@ -6,7 +6,7 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 /**
  * A normalizer strategy which normalizes the data by multiplying it to 10 ^ -i.
  */
-public class DecimalScalingNormalization implements NormalizationStrategy {
+public class DecimalScalingNormalizer implements NormalizationStrategy {
 
     private int length;
 

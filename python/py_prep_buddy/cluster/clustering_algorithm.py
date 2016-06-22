@@ -1,6 +1,13 @@
-class SimpleFingerprintAlgorithm(object):
+from py4j.java_gateway import java_import
+
+from py_prep_buddy.class_names import ClassNames
+from py_prep_buddy.package import Package
+
+
+class SimpleFingerprint(object):
     def get_algorithm(self, spark_context):
-        return spark_context._jvm.org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm()
+        java_import(spark_context._jvm, ClassNames.SIMPLE_FINGERPRINT)
+        return spark_context._jvm.SimpleFingerprintAlgorithm()
 
 
 class NGramFingerprintAlgorithm(object):
@@ -8,4 +15,6 @@ class NGramFingerprintAlgorithm(object):
         self.__n_gram = n_gram
 
     def get_algorithm(self, spark_context):
-        return spark_context._jvm.org.apache.prepbuddy.cluster.NGramFingerprintAlgorithm(self.__n_gram)
+        java_import(spark_context._jvm, ClassNames.N_GRAM_FINGERPRINT)
+        return spark_context._jvm.NGramFingerprintAlgorithm(self.__n_gram)
+

@@ -21,7 +21,7 @@ public class MergePlan implements Serializable {
      * @param retainColumns    False when you want to remove the original columns specified in @combinationOrder
      * @param separator        A separator that will be added between each column values
      */
-    public MergePlan(List<Integer> combinationOrder, boolean retainColumns, String separator) {
+    public MergePlan(List<Integer> combinationOrder, String separator, boolean retainColumns) {
         this.combinationOrder = combinationOrder;
         this.separator = separator;
         this.retainColumns = retainColumns;
@@ -33,7 +33,7 @@ public class MergePlan implements Serializable {
      * @param retainColumns False when you want to remove the original columns specified in @combinationOrder
      */
     public MergePlan(List<Integer> combinationOrder, boolean retainColumns) {
-        this(combinationOrder, retainColumns, " ");
+        this(combinationOrder, " ", retainColumns);
     }
 
     public String[] apply(String[] record) {

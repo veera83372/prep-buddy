@@ -34,7 +34,6 @@ public abstract class SmoothingMethod implements Serializable {
                 return list.iterator();
             }
         }, true);
-
         return keyPartition(duplicateRdd).map(new Function<Tuple2<Integer, String>, Double>() {
             @Override
             public Double call(Tuple2<Integer, String> tuple) throws Exception {
@@ -49,7 +48,7 @@ public abstract class SmoothingMethod implements Serializable {
             public Tuple2<Integer, String> call(Tuple2<Integer, String> tuple) throws Exception {
                 return tuple;
             }
-        }).partitionBy(new KeyPartitioner(tupleJavaRDD.getNumPartitions()));
+        }).partitionBy(new KeyPartitioner(tupleJavaRDD.partitions().size()));
     }
 
     public abstract JavaRDD<Double> smooth(JavaRDD<String> singleColumnDataset);

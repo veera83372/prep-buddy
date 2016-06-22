@@ -5,9 +5,9 @@ import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.cluster.Clusters;
 import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.cluster.TextFacets;
-import org.apache.prepbuddy.normalizers.DecimalScalingNormalization;
+import org.apache.prepbuddy.normalizers.DecimalScalingNormalizer;
 import org.apache.prepbuddy.normalizers.MinMaxNormalizer;
-import org.apache.prepbuddy.normalizers.ZScoreNormalization;
+import org.apache.prepbuddy.normalizers.ZScoreNormalizer;
 import org.apache.prepbuddy.qualityanalyzers.DataType;
 import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.prepbuddy.transformers.*;
@@ -117,10 +117,10 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName,LastName,732,MiddleName"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false, "_"));
+        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), "_", false));
         assertEquals("732,MiddleName_LastName_FirstName", joinedColumnRDD.first());
 
-        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), true, "_"));
+        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), "_", true));
         assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", joinedColumnRDDByKeepingOriginals.first());
 
         TransformableRDD joinedColumnWithDefault = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false));
@@ -256,7 +256,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD finalRDD = initialRDD.normalize(3, new ZScoreNormalization());
+        TransformableRDD finalRDD = initialRDD.normalize(3, new ZScoreNormalizer());
         List<String> normalizedDurations = finalRDD.select(3).collect();
         List<String> expected = Arrays.asList("1.944528306701421", "-0.8202659838241843", "-0.2306179123850742", "-0.2306179123850742", "-0.6630264981070882");
         assertEquals(expected, normalizedDurations);
@@ -273,7 +273,7 @@ public class SystemTest extends SparkTestCase {
 
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataSet);
-        TransformableRDD finalRDD = initialRDD.normalize(3, new DecimalScalingNormalization());
+        TransformableRDD finalRDD = initialRDD.normalize(3, new DecimalScalingNormalizer());
         List<String> normalizedDurations = finalRDD.select(3).collect();
         List<String> expected = Arrays.asList("2.11", "0.0", "0.45", "0.45", "0.12");
         assertEquals(expected, normalizedDurations);
