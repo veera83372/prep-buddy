@@ -1,5 +1,6 @@
 from py_prep_buddy.smoothers.smoothing_algorithms import SimpleMovingAverage, Weights, WeightedMovingAverage
 from py_prep_buddy.transformable_rdd import TransformableRDD
+from py_prep_buddy.transformers.replacementfunction import ReplacementFunction
 from utils.python_test_case import PySparkTestCase
 import tests
 
@@ -12,6 +13,7 @@ class SmoothersTest(PySparkTestCase):
         transformed = transformable_rdd.smooth(1, SimpleMovingAverage(3))
         excepted = 4.0
         self.assertEquals(excepted, transformed.first())
+        initial_dataset.map()
 
     def test_should_smooth_data_by_Weighted_Moving_Average(self):
         initial_dataset = self.sc.parallelize(["10", "12", "16", "13", "17", "19", "15", "20", "22", "19", "21", "19"],

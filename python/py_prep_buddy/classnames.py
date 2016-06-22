@@ -2,6 +2,8 @@ from py_prep_buddy.package import Package
 
 
 class ClassNames(object):
+        MERGE_PLAN = Package.TRANSFORMERS + ".MergePlan"
+        REPLACEMENT_FUNCTION = Package.TRANSFORMERS + ".ReplacementFunction"
         WEIGHTS = Package.SMOOTHERS + ".Weights"
         WEIGHTED_MOVING_AVERAGE = Package.SMOOTHERS + ".WeightedMovingAverageMethod"
         SIMPLE_MOVING_AVERAGE = Package.SMOOTHERS + ".SimpleMovingAverageMethod"
