@@ -1,7 +1,7 @@
 from pyspark import RDD
 from py4j.java_gateway import java_import
 
-from py_prep_buddy.classnames import ClassNames
+from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.transformers.replacementfunction import ReplacementFunction
 from serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters

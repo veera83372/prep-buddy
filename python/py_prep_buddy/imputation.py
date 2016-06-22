@@ -1,4 +1,4 @@
-from py_prep_buddy.classnames import ClassNames
+from py_prep_buddy.class_names import ClassNames
 from . import py2java_int_array
 from py4j.java_gateway import java_import
 
