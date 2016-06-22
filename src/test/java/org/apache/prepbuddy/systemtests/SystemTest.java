@@ -117,10 +117,10 @@ public class SystemTest extends SparkTestCase {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Collections.singletonList("FirstName,LastName,732,MiddleName"));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
 
-        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false, "_"));
+        TransformableRDD joinedColumnRDD = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), "_", false));
         assertEquals("732,MiddleName_LastName_FirstName", joinedColumnRDD.first());
 
-        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), true, "_"));
+        TransformableRDD joinedColumnRDDByKeepingOriginals = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), "_", true));
         assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", joinedColumnRDDByKeepingOriginals.first());
 
         TransformableRDD joinedColumnWithDefault = initialRDD.mergeColumns(new MergePlan(Arrays.asList(3, 1, 0), false));
