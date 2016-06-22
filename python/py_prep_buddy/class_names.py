@@ -2,6 +2,7 @@ from py_prep_buddy.package import Package
 
 
 class ClassNames(object):
+        SPLIT_PLAN = Package.TRANSFORMERS + ".SplitPlan"
         MERGE_PLAN = Package.TRANSFORMERS + ".MergePlan"
         REPLACEMENT_FUNCTION = Package.TRANSFORMERS + ".ReplacementFunction"
         WEIGHTS = Package.SMOOTHERS + ".Weights"

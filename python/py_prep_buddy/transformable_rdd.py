@@ -70,8 +70,14 @@ class TransformableRDD(RDD):
         method = smoothing_method.get_smoothing_method(self.spark_context)
         return self._transformable_rdd.smooth(column_index, method)
 
-    def mergeColumns(self, merge_plan):
+    def merge_columns(self, merge_plan):
         plan = merge_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.mergeColumns(plan),
+                                self._transformable_rdd.merge_columns(plan),
+                                sc=self.spark_context)
+
+    def split_column(self, split_plan):
+        plan = split_plan.get_plan(self.spark_context)
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.splitColumn(plan),
                                 sc=self.spark_context)
