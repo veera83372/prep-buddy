@@ -319,7 +319,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldAddTheSpecifiedColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD() {
+    public void shouldMergeAllTheColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD() {
         JavaRDD<String> initialSpelledNumbers = javaSparkContext.parallelize(Arrays.asList(
                 "One,Two,Three",
                 "Four,Five,Six",
@@ -328,14 +328,14 @@ public class TransformableRDDTest extends SparkTestCase {
         ));
         TransformableRDD spelledNumbers = new TransformableRDD(initialSpelledNumbers);
         JavaRDD<String> initialNumericData = javaSparkContext.parallelize(Arrays.asList(
-                "1\t2\t3\tX",
-                "4\t5\t6\tY",
-                "7\t8\t9\tZ",
-                "10\t11\t12\tA"
+                "1\t2\t3",
+                "4\t5\t6",
+                "7\t8\t9",
+                "10\t11\t12"
         ));
         TransformableRDD numericData = new TransformableRDD(initialNumericData, FileType.TSV);
 
-        List<String> result = spelledNumbers.addColumns(Arrays.asList(0, 1, 2), numericData).collect();
+        List<String> result = spelledNumbers.addColumnsFrom(numericData).collect();
 
         assertTrue(result.contains("One,Two,Three,1,2,3"));
         assertTrue(result.contains("Four,Five,Six,4,5,6"));
