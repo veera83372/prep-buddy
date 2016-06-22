@@ -27,6 +27,7 @@ import org.apache.spark.rdd.RDD;
 import org.apache.spark.storage.StorageLevel;
 import scala.Tuple2;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -484,6 +485,24 @@ public class TransformableRDD extends AbstractRDD {
     public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
+    }
+
+    public TransformableRDD addColumns(final List<Integer> columnIndexes, final TransformableRDD other) {
+        JavaPairRDD<String, String> thisAndOther = this.zip(other);
+        final FileType otherFileType = other.fileType;
+        JavaRDD<String> combinedRecords = thisAndOther.map(new Function<Tuple2<String, String>, String>() {
+            @Override
+            public String call(Tuple2<String, String> thisAndOtherRecord) throws Exception {
+                String[] otherRecord = otherFileType.parseRecord(thisAndOtherRecord._2());
+                ArrayList<String> columnValues = new ArrayList<>();
+                columnValues.add(thisAndOtherRecord._1());
+                for (Integer columnIndex : columnIndexes) {
+                    columnValues.add(otherRecord[columnIndex]);
+                }
+                return fileType.join(columnValues.toArray(new String[columnValues.size()]));
+            }
+        });
+        return new TransformableRDD(combinedRecords, fileType);
     }
 
     @Override

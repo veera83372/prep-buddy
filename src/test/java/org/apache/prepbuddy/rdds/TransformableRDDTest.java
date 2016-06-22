@@ -317,4 +317,29 @@ public class TransformableRDDTest extends SparkTestCase {
         assertTrue(imputedRDD.contains("5,X,54,32,54"));
         assertTrue(imputedRDD.contains("6,32,22,33,23"));
     }
+
+    @Test
+    public void shouldAddTheSpecifiedColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD() {
+        JavaRDD<String> initialSpelledNumbers = javaSparkContext.parallelize(Arrays.asList(
+                "One,Two,Three",
+                "Four,Five,Six",
+                "Seven,Eight,Nine",
+                "Ten,Eleven,Twelve"
+        ));
+        TransformableRDD spelledNumbers = new TransformableRDD(initialSpelledNumbers);
+        JavaRDD<String> initialNumericData = javaSparkContext.parallelize(Arrays.asList(
+                "1\t2\t3\tX",
+                "4\t5\t6\tY",
+                "7\t8\t9\tZ",
+                "10\t11\t12\tA"
+        ));
+        TransformableRDD numericData = new TransformableRDD(initialNumericData, FileType.TSV);
+
+        List<String> result = spelledNumbers.addColumns(Arrays.asList(0, 1, 2), numericData).collect();
+
+        assertTrue(result.contains("One,Two,Three,1,2,3"));
+        assertTrue(result.contains("Four,Five,Six,4,5,6"));
+        assertTrue(result.contains("Seven,Eight,Nine,7,8,9"));
+        assertTrue(result.contains("Ten,Eleven,Twelve,10,11,12"));
+    }
 }
