@@ -9,11 +9,11 @@ class MergePlanTest(PySparkTestCase):
         initial_dataset = self.sc.parallelize(["FirstName,LastName,732,MiddleName"])
         initial_rdd = TransformableRDD(initial_dataset)
 
-        joined_column_rdd = initial_rdd.mergeColumns(MergePlan([3, 1, 0], False, "_"))
+        joined_column_rdd = initial_rdd.mergeColumns(MergePlan([3, 1, 0], "_", False))
         self.assertEquals("732,MiddleName_LastName_FirstName", joined_column_rdd.first())
 
-        with_originals = initial_rdd.mergeColumns(MergePlan([3, 1, 0], True, "_"))
+        with_originals = initial_rdd.mergeColumns(MergePlan([3, 1, 0], "_", True))
         self.assertEquals("FirstName,LastName,732,MiddleName,MiddleName_LastName_FirstName", with_originals.first())
 
-        joinedColumnWithDefault = initial_rdd.mergeColumns(MergePlan([3, 1, 0], False))
+        joinedColumnWithDefault = initial_rdd.mergeColumns(MergePlan([3, 1, 0], retain_columns=False))
         self.assertEquals("732,MiddleName LastName FirstName", joinedColumnWithDefault.first())
