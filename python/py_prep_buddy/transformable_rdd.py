@@ -71,12 +71,6 @@ class TransformableRDD(RDD):
         method = smoothing_method.get_smoothing_method(self.spark_context)
         return self._transformable_rdd.smooth(column_index, method)
 
-    def replace(self, column_index, function):
-        replacement_function = ReplacementFunction(self.spark_context, function)
-        return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.replace(column_index, replacement_function),
-                                sc=self.spark_context)
-
     def mergeColumns(self, merge_plan):
         plan = merge_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,

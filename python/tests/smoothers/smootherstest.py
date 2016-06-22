@@ -1,6 +1,5 @@
 from py_prep_buddy.smoothers.smoothing_algorithms import SimpleMovingAverage, Weights, WeightedMovingAverage
 from py_prep_buddy.transformable_rdd import TransformableRDD
-from py_prep_buddy.transformers.replacementfunction import ReplacementFunction
 from utils.python_test_case import PySparkTestCase
 import tests
 
