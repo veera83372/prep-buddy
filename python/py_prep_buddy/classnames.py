@@ -2,6 +2,8 @@ from py_prep_buddy.package import Package
 
 
 class ClassNames(object):
+        WEIGHTS = Package.SMOOTHERS + ".Weights"
+        WEIGHTED_MOVING_AVERAGE = Package.SMOOTHERS + ".WeightedMovingAverageMethod"
         SIMPLE_MOVING_AVERAGE = Package.SMOOTHERS + ".SimpleMovingAverageMethod"
         NAIVE_BAYES_SUBSTITUTION = Package.IMPUTATION + ".NaiveBayesSubstitution"
         UNIVARIATE_SUBSTITUTION = Package.IMPUTATION + ".UnivariateLinearRegressionSubstitution"

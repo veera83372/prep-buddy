@@ -1,7 +1,8 @@
-from py_prep_buddy.smoothers.smoothing_algorithms import SimpleMovingAverage
+from py_prep_buddy.smoothers.smoothing_algorithms import SimpleMovingAverage, Weights, WeightedMovingAverage
 from py_prep_buddy.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 import tests
+
 
 class SmoothersTest(PySparkTestCase):
     def test_should_smooth_data_by_Simple_Moving_Average(self):
@@ -12,5 +13,18 @@ class SmoothersTest(PySparkTestCase):
         excepted = 4.0
         self.assertEquals(excepted, transformed.first())
 
-        # List<Double> expectedList = Arrays.asList(4.0, 5.0, 6.0, 7.0, 8.0);
-        # assertEquals(expectedList, transformed.collect());
+    def test_should_smooth_data_by_Weighted_Moving_Average(self):
+        initial_dataset = self.sc.parallelize(["10", "12", "16", "13", "17", "19", "15", "20", "22", "19", "21", "19"], 3)
+        transformable_rdd = TransformableRDD(initial_dataset, "csv")
+
+        weights = Weights(3)
+        weights.add(0.166)
+        weights.add(0.333)
+        weights.add(0.5)
+
+        moving_average = WeightedMovingAverage(3, weights)
+        rdd = transformable_rdd.smooth(0, moving_average)
+
+        expected = 13.656
+        actual = rdd.first()
+        self.assertEquals(expected, actual)
