@@ -14,7 +14,8 @@ class SmoothersTest(PySparkTestCase):
         self.assertEquals(excepted, transformed.first())
 
     def test_should_smooth_data_by_Weighted_Moving_Average(self):
-        initial_dataset = self.sc.parallelize(["10", "12", "16", "13", "17", "19", "15", "20", "22", "19", "21", "19"], 3)
+        initial_dataset = self.sc.parallelize(["10", "12", "16", "13", "17", "19", "15", "20", "22", "19", "21", "19"],
+                                              3)
         transformable_rdd = TransformableRDD(initial_dataset, "csv")
 
         weights = Weights(3)
