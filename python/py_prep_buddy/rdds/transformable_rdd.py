@@ -106,3 +106,9 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.dropColumn(column_index),
                                 sc=self.spark_context)
 
+    def replace_values(self, one_cluster, new_value, column_index):
+        cluster = one_cluster.get_cluster()
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.replaceValues(cluster, new_value, column_index),
+                                sc=self.spark_context)
+

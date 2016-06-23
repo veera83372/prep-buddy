@@ -8,3 +8,6 @@ class Cluster(object):
     def size(self):
         return self.__cluster.size()
 
+    def get_cluster(self):
+        return self.__cluster
+

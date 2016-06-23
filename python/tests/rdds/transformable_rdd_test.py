@@ -4,6 +4,7 @@ from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 import tests
 
+
 class UnitTestsForTransformableRDD(PySparkTestCase):
     def test_transformableRDD_gives_a_count_of_element(self):
         rdd = self.sc.parallelize(["2", "3", "4", "5", "6", "7", "7", "7"])
@@ -113,3 +114,11 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         transformable_rdd = TransformableRDD(rdd, 'csv')
         dropped = transformable_rdd.drop_column(1)
         self.assertEqual("Ram,Male", dropped.first())
+
+    def test_replace_values_should_replace_cluster_values_with_given_text(self):
+        initial_dataset = self.sc.parallelize(["XA,Y", "A,B", "AX,Z", "A,Q", "A,E"])
+        transformable_rdd = TransformableRDD(initial_dataset)
+        clusters = transformable_rdd.clusters(0, NGramFingerprintAlgorithm(1))
+        one_cluster = clusters.get_all_clusters()[0]
+        values = transformable_rdd.replace_values(one_cluster, "Hello", 0).collect()
+        self.assertTrue(values.__contains__("Hello,B"))
