@@ -108,5 +108,8 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         highest = duplicates.highest()
         self.assertEqual("Ram\n23\nMale", highest[0]._1())
 
-
-
+    def test_drop_column_should_drop_the_given_column(self):
+        rdd = self.sc.parallelize(["Ram,23,Male", "Ram,23,Male", "Jill,45,Female", "Soa,,Female,"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        dropped = transformable_rdd.drop_column(1)
+        self.assertEqual("Ram,Male", dropped.first())

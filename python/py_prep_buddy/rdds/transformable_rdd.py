@@ -101,3 +101,8 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.getDuplicates(column_indexes),
                                 sc=self.spark_context)
 
+    def drop_column(self, column_index):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.dropColumn(column_index),
+                                sc=self.spark_context)
+
