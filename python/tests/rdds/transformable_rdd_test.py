@@ -140,3 +140,26 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(collected.__contains__(1.0))
         self.assertTrue(collected.__contains__(5.0))
         self.assertTrue(collected.__contains__(8.0))
+
+    def test_add_columns_from_should_merge_all_columns_of_other_transformable_rdd(self):
+        initialSpelledNumbers = self.sc.parallelize([
+                "One,Two,Three",
+                "Four,Five,Six",
+                "Seven,Eight,Nine",
+                "Ten,Eleven,Twelve"
+        ]);
+        spelled_numbers = TransformableRDD(initialSpelledNumbers, "csv")
+        initial_numeric_data = self.sc.parallelize([
+                "1\t2\t3",
+                "4\t5\t6",
+                "7\t8\t9",
+                "10\t11\t12"
+        ])
+        numeric_data = TransformableRDD(initial_numeric_data, "tsv")
+
+        result = spelled_numbers.add_columns_from(numeric_data).collect()
+
+        self.assertTrue(result.__contains__("One,Two,Three,1,2,3"))
+        self.assertTrue(result.__contains__("Four,Five,Six,4,5,6"))
+        self.assertTrue(result.__contains__("Seven,Eight,Nine,7,8,9"))
+        self.assertTrue(result.__contains__("Ten,Eleven,Twelve,10,11,12"))

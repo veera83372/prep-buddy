@@ -118,3 +118,8 @@ class TransformableRDD(RDD):
     def to_double_rdd(self, column_index):
         return self._transformable_rdd.toDoubleRDD(column_index)
 
+    def add_columns_from(self, other):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.addColumnsFrom(other._transformable_rdd),
+                                sc=self.spark_context)
+
