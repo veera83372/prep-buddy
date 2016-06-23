@@ -1,7 +1,5 @@
 package org.apache.prepbuddy.rdds;
 
-import com.n1analytics.paillier.PaillierContext;
-import com.n1analytics.paillier.PaillierPublicKey;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.prepbuddy.cleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
@@ -9,14 +7,12 @@ import org.apache.prepbuddy.cluster.Cluster;
 import org.apache.prepbuddy.cluster.ClusteringAlgorithm;
 import org.apache.prepbuddy.cluster.Clusters;
 import org.apache.prepbuddy.cluster.TextFacets;
-import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
 import org.apache.prepbuddy.qualityanalyzers.FileType;
 import org.apache.prepbuddy.smoothers.SmoothingMethod;
 import org.apache.prepbuddy.transformers.*;
-import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.Partitioner;
@@ -40,29 +36,6 @@ public class TransformableRDD extends AbstractRDD {
 
     public TransformableRDD(JavaRDD<String> rdd) {
         super(rdd, FileType.CSV);
-    }
-
-    /**
-     * Returns a HomomorphicallyEncryptedRDD containing encrypted values of @columnIndex using @keyPair
-     *
-     * @param keyPair     A pair of private and public key for encryption
-     * @param columnIndex The column index on which the encryption will be applied
-     * @return HomomorphicallyEncryptedRDD
-     */
-    public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
-        validateColumnIndex(columnIndex);
-        final PaillierPublicKey publicKey = keyPair.getPublicKey();
-        final PaillierContext signedContext = publicKey.createSignedContext();
-        JavaRDD encryptedRDD = this.map(new Function<String, String>() {
-            @Override
-            public String call(String row) throws Exception {
-                String[] values = fileType.parseRecord(row);
-                String numericValue = values[columnIndex];
-                values[columnIndex] = signedContext.encrypt(Double.parseDouble(numericValue)).toString();
-                return fileType.join(values);
-            }
-        });
-        return new HomomorphicallyEncryptedRDD(encryptedRDD, keyPair, fileType);
     }
 
     /**
