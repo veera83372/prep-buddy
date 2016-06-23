@@ -1,21 +1,18 @@
 package org.apache.prepbuddy.rdds;
 
-import com.n1analytics.paillier.PaillierContext;
-import com.n1analytics.paillier.PaillierPublicKey;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.prepbuddy.cleansers.dedupe.DuplicationHandler;
 import org.apache.prepbuddy.cleansers.imputation.ImputationStrategy;
 import org.apache.prepbuddy.cluster.Cluster;
 import org.apache.prepbuddy.cluster.ClusteringAlgorithm;
 import org.apache.prepbuddy.cluster.Clusters;
 import org.apache.prepbuddy.cluster.TextFacets;
-import org.apache.prepbuddy.encryptors.HomomorphicallyEncryptedRDD;
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.prepbuddy.exceptions.ErrorMessages;
 import org.apache.prepbuddy.normalizers.NormalizationStrategy;
 import org.apache.prepbuddy.qualityanalyzers.FileType;
 import org.apache.prepbuddy.smoothers.SmoothingMethod;
 import org.apache.prepbuddy.transformers.*;
-import org.apache.prepbuddy.utils.EncryptionKeyPair;
 import org.apache.prepbuddy.utils.PivotTable;
 import org.apache.prepbuddy.utils.RowRecord;
 import org.apache.spark.Partitioner;
@@ -39,29 +36,6 @@ public class TransformableRDD extends AbstractRDD {
 
     public TransformableRDD(JavaRDD<String> rdd) {
         super(rdd, FileType.CSV);
-    }
-
-    /**
-     * Returns a HomomorphicallyEncryptedRDD containing encrypted values of @columnIndex using @keyPair
-     *
-     * @param keyPair     A pair of private and public key for encryption
-     * @param columnIndex The column index on which the encryption will be applied
-     * @return HomomorphicallyEncryptedRDD
-     */
-    public HomomorphicallyEncryptedRDD encryptHomomorphically(final EncryptionKeyPair keyPair, final int columnIndex) {
-        validateColumnIndex(columnIndex);
-        final PaillierPublicKey publicKey = keyPair.getPublicKey();
-        final PaillierContext signedContext = publicKey.createSignedContext();
-        JavaRDD encryptedRDD = this.map(new Function<String, String>() {
-            @Override
-            public String call(String row) throws Exception {
-                String[] values = fileType.parseRecord(row);
-                String numericValue = values[columnIndex];
-                values[columnIndex] = signedContext.encrypt(Double.parseDouble(numericValue)).toString();
-                return fileType.join(values);
-            }
-        });
-        return new HomomorphicallyEncryptedRDD(encryptedRDD, keyPair, fileType);
     }
 
     /**
@@ -194,7 +168,7 @@ public class TransformableRDD extends AbstractRDD {
      * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
      *
      * @param columnIndex Column Index
-     * @param algorithm Algorithm to be used to form clusters
+     * @param algorithm   Algorithm to be used to form clusters
      * @return Clusters
      */
     public Clusters clusters(int columnIndex, ClusteringAlgorithm algorithm) {
@@ -266,9 +240,9 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by applying the function on all rows marked as @flag
      *
-     * @param flag Symbol that has been used for flagging.
+     * @param flag              Symbol that has been used for flagging.
      * @param symbolColumnIndex Symbol column index
-     * @param mapFunction map function
+     * @param mapFunction       map function
      * @return TransformableRDD
      */
     public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
@@ -311,8 +285,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by replacing the @cluster's text with specified @newValue
      *
-     * @param cluster Cluster of similar values to be replaced
-     * @param newValue Value that will be used to replace all the cluster value
+     * @param cluster     Cluster of similar values to be replaced
+     * @param newValue    Value that will be used to replace all the cluster value
      * @param columnIndex Column index
      * @return TransformableRDD
      */
@@ -335,7 +309,7 @@ public class TransformableRDD extends AbstractRDD {
      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
      *
      * @param columnIndex Column index
-     * @param strategy Imputation strategy
+     * @param strategy    Imputation strategy
      * @return TransformableRDD
      */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
@@ -345,9 +319,9 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
      *
-     * @param columnIndex   Column Index
-     * @param strategy      Imputation Strategy
-     * @param missingHints  List of Strings that may mean empty
+     * @param columnIndex  Column Index
+     * @param strategy     Imputation Strategy
+     * @param missingHints List of Strings that may mean empty
      * @return TransformableRDD
      */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy, final List<String> missingHints) {
@@ -398,8 +372,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
      *
-     * @param columnIndex   Column Index
-     * @param normalizer    Normalization Strategy
+     * @param columnIndex Column Index
+     * @param normalizer  Normalization Strategy
      * @return TransformableRDD
      */
     public TransformableRDD normalize(final int columnIndex, final NormalizationStrategy normalizer) {
@@ -457,8 +431,8 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Generates a PivotTable by pivoting data in the pivotalColumn
      *
-     * @param pivotalColumn     Pivotal Column
-     * @param independentColumnIndexes  Independent Column Indexes
+     * @param pivotalColumn            Pivotal Column
+     * @param independentColumnIndexes Independent Column Indexes
      * @return PivotTable
      */
     public PivotTable pivotByCount(int pivotalColumn, int[] independentColumnIndexes) {
@@ -477,13 +451,27 @@ public class TransformableRDD extends AbstractRDD {
     /**
      * Returns a new JavaRDD containing smoothed values of @columnIndex using @smoothingMethod
      *
-     * @param columnIndex   Column Index
+     * @param columnIndex     Column Index
      * @param smoothingMethod Method that will be used for smoothing of the data
      * @return JavaRDD<Double>
      */
     public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
+    }
+
+    public TransformableRDD addColumnsFrom(final TransformableRDD other) {
+        JavaPairRDD<String, String> thisAndOther = this.zip(other);
+        final FileType otherFileType = other.fileType;
+        JavaRDD<String> combinedRecords = thisAndOther.map(new Function<Tuple2<String, String>, String>() {
+            @Override
+            public String call(Tuple2<String, String> thisAndOtherRecord) throws Exception {
+                String[] currentRecord = fileType.parseRecord(thisAndOtherRecord._1());
+                String[] otherRecord = otherFileType.parseRecord(thisAndOtherRecord._2());
+                return fileType.join((String[]) ArrayUtils.addAll(currentRecord, otherRecord));
+            }
+        });
+        return new TransformableRDD(combinedRecords, fileType);
     }
 
     @Override

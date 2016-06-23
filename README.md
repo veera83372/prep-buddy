@@ -37,7 +37,6 @@ This library is currently built for Spark 1.6.0, but is also compatible with 1.4
 #### Dependencies
 The library depends on a few other Java libraries.
 
-- [Javallier] (http://githubcom/NICTA/javallier) - A Java library for Paillier partially homomorphic encryption based on python-paillier.
 - Apache Commons Math for general math and statistics functionality.
 - Apache Spark for all the distributed computation capabilities.
 
