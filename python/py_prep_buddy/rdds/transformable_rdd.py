@@ -112,3 +112,6 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.replaceValues(cluster, new_value, column_index),
                                 sc=self.spark_context)
 
+    def multiply_columns(self, first_column, second_column):
+        return self._transformable_rdd.multiplyColumns(first_column, second_column)
+

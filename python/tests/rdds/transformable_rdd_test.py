@@ -122,3 +122,12 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         one_cluster = clusters.get_all_clusters()[0]
         values = transformable_rdd.replace_values(one_cluster, "Hello", 0).collect()
         self.assertTrue(values.__contains__("Hello,B"))
+
+    def test_multiply_column_should_multiply_two_given_column(self):
+        initial_dataset = self.sc.parallelize(["1,1", "1,2", "1,3"])
+        transformable_rdd = TransformableRDD(initial_dataset)
+        multiplied_rdd = transformable_rdd.multiply_columns(0, 1)
+        collected = multiplied_rdd.collect()
+        self.assertTrue(collected.__contains__(1.0))
+        self.assertTrue(collected.__contains__(2.0))
+        self.assertTrue(collected.__contains__(3.0))
