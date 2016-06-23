@@ -6,6 +6,7 @@ from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
+from py_prep_buddy.utils.pivot_table import PivotTable
 
 
 class TransformableRDD(RDD):
@@ -122,4 +123,8 @@ class TransformableRDD(RDD):
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.addColumnsFrom(other._transformable_rdd),
                                 sc=self.spark_context)
+
+    def pivot_by_count(self, column_index, independent_column_indexes):
+        column_indexes = py2java_int_array(self.spark_context, independent_column_indexes)
+        return PivotTable(self._transformable_rdd.pivotByCount(column_index, column_indexes))
 

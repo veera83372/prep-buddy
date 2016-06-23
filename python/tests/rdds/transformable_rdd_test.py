@@ -142,13 +142,13 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(collected.__contains__(8.0))
 
     def test_add_columns_from_should_merge_all_columns_of_other_transformable_rdd(self):
-        initialSpelledNumbers = self.sc.parallelize([
+        initial_spelled_numbers = self.sc.parallelize([
                 "One,Two,Three",
                 "Four,Five,Six",
                 "Seven,Eight,Nine",
                 "Ten,Eleven,Twelve"
         ]);
-        spelled_numbers = TransformableRDD(initialSpelledNumbers, "csv")
+        spelled_numbers = TransformableRDD(initial_spelled_numbers, "csv")
         initial_numeric_data = self.sc.parallelize([
                 "1\t2\t3",
                 "4\t5\t6",
@@ -163,3 +163,30 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(result.__contains__("Four,Five,Six,4,5,6"))
         self.assertTrue(result.__contains__("Seven,Eight,Nine,7,8,9"))
         self.assertTrue(result.__contains__("Ten,Eleven,Twelve,10,11,12"))
+
+    def test_pivot_table_by_count_should_give_pivoted_table(self):
+        initial_dataSet = self.sc.parallelize([
+                "known,new,long,home,skips",
+                "unknown,new,short,work,reads",
+                "unknown,follow Up,long,work,skips",
+                "known,follow Up,long,home,skips",
+                "known,new,short,home,reads",
+                "known,follow Up,long,work,skips",
+                "unknown,follow Up,short,work,skips",
+                "unknown,new,short,work,reads",
+                "known,follow Up,long,home,skips",
+                "known,new,long,work,skips",
+                "unknown,follow Up,short,home,skips",
+                "known,new,long,work,skips",
+                "known,follow Up,short,home,reads",
+                "known,new,short,work,reads",
+                "known,new,short,home,reads",
+                "known,follow Up,short,work,reads",
+                "known,new,short,home,reads",
+                "unknown,new,short,work,reads"
+        ])
+        initial_rdd = TransformableRDD(initial_dataSet, "csv")
+        table = initial_rdd.pivot_by_count(4, [0, 1, 2, 3])
+        entry = table.value_at("skips", "known")
+        self.assertEqual(6,entry)
+        self.assertEqual(3, table.value_at("skips", "unknown"))
