@@ -1,3 +1,3 @@
 language: java
 notifications:
-  slack: data-dudes:VQSMk3AeAik9Fg8lk64ElEJS
+  slack: data-commons:VQSMk3AeAik9Fg8lk64ElEJS
