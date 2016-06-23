@@ -1,7 +1,6 @@
-from py_prep_buddy.transformable_rdd import TransformableRDD
+from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from py_prep_buddy.transformers.split_plan import SplitPlan
 from utils.python_test_case import PySparkTestCase
-import tests
 
 
 class SplitPlanTest(PySparkTestCase):

@@ -1,10 +1,12 @@
 from pyspark import RDD
 from py4j.java_gateway import java_import
 
+from py_prep_buddy import py2java_int_array
 from py_prep_buddy.class_names import ClassNames
-from serializer import BuddySerializer
+from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
+from py_prep_buddy.utils.pivot_table import PivotTable
 
 
 class TransformableRDD(RDD):
@@ -44,6 +46,9 @@ class TransformableRDD(RDD):
     def deduplicate(self):
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(), sc=self.spark_context)
 
+    def deduplicate(self, column_indexes):
+        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(column_indexes), sc=self.spark_context)
+
     def impute(self, column_index, imputation_strategy):
         strategy_apply = imputation_strategy.get_strategy(self.spark_context)
         return TransformableRDD(None,
@@ -55,8 +60,13 @@ class TransformableRDD(RDD):
         algorithm = clustering_algorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
-    def list_facets(self, column_index):
+    def list_facets_of(self, column_index):
         return TextFacets(self._transformable_rdd.listFacets(column_index))
+
+    def list_facets(self, column_index):
+        array = py2java_int_array(self.spark_context, column_index)
+        return TextFacets(self._transformable_rdd.listFacets(array))
+
 
     def select(self, column_index):
         return self._transformable_rdd.select(column_index)
@@ -81,3 +91,40 @@ class TransformableRDD(RDD):
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.splitColumn(plan),
                                 sc=self.spark_context)
+
+    def get_duplicates(self):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.getDuplicates(),
+                                sc=self.spark_context)
+
+    def get_duplicates(self, column_indexes):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.getDuplicates(column_indexes),
+                                sc=self.spark_context)
+
+    def drop_column(self, column_index):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.dropColumn(column_index),
+                                sc=self.spark_context)
+
+    def replace_values(self, one_cluster, new_value, column_index):
+        cluster = one_cluster.get_cluster()
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.replaceValues(cluster, new_value, column_index),
+                                sc=self.spark_context)
+
+    def multiply_columns(self, first_column, second_column):
+        return self._transformable_rdd.multiplyColumns(first_column, second_column)
+
+    def to_double_rdd(self, column_index):
+        return self._transformable_rdd.toDoubleRDD(column_index)
+
+    def add_columns_from(self, other):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.addColumnsFrom(other._transformable_rdd),
+                                sc=self.spark_context)
+
+    def pivot_by_count(self, column_index, independent_column_indexes):
+        column_indexes = py2java_int_array(self.spark_context, independent_column_indexes)
+        return PivotTable(self._transformable_rdd.pivotByCount(column_index, column_indexes))
+
