@@ -2,7 +2,7 @@ from pyspark import RDD
 from py4j.java_gateway import java_import
 
 from py_prep_buddy.class_names import ClassNames
-from serializer import BuddySerializer
+from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
 
@@ -44,6 +44,9 @@ class TransformableRDD(RDD):
     def deduplicate(self):
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(), sc=self.spark_context)
 
+    def deduplicate(self, column_indexes):
+        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(column_indexes), sc=self.spark_context)
+
     def impute(self, column_index, imputation_strategy):
         strategy_apply = imputation_strategy.get_strategy(self.spark_context)
         return TransformableRDD(None,
@@ -80,4 +83,14 @@ class TransformableRDD(RDD):
         plan = split_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.splitColumn(plan),
+                                sc=self.spark_context)
+
+    def get_duplicates(self):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.getDuplicates(),
+                                sc=self.spark_context)
+
+    def get_duplicates(self, column_indexes):
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.getDuplicates(column_indexes),
                                 sc=self.spark_context)

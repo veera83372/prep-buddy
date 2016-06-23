@@ -1,9 +1,8 @@
+from py_prep_buddy.cleansers.imputation import *
 from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
+from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
-from py_prep_buddy.transformable_rdd import TransformableRDD
-from py_prep_buddy.imputation import *
 import tests
-
 
 class UnitTestsForTransformableRDD(PySparkTestCase):
     def test_transformableRDD_gives_a_count_of_element(self):
@@ -20,6 +19,12 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         rdd = self.sc.parallelize(["2", "3", "4", "5", "6", "7", "7", "7"])
         transformable_rdd = TransformableRDD(rdd, 'csv')
         deduplicate_rdd = transformable_rdd.deduplicate()
+        self.assertEquals(6, deduplicate_rdd.count())
+
+    def test_transformableRDD_can_deduplicate_by_given_column_index(self):
+        rdd = self.sc.parallelize(["2", "3", "4", "5", "6", "7", "7", "7"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        deduplicate_rdd = transformable_rdd.deduplicate([0])
         self.assertEquals(6, deduplicate_rdd.count())
 
     def test_transformableRDD_can_impute_the_missing_values_by_ModeSubstitution(self):
@@ -84,4 +89,14 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         text_facets = transformable_rdd.list_facets(0)
         self.assertEquals(2, text_facets.count())
 
+    def test_get_duplicates_should_give_duplicates_of_rdd(self):
+        rdd = self.sc.parallelize(["Ram,23", "Ram,23", "Jill,45", "Soa,"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        duplicates = transformable_rdd.get_duplicates()
+        self.assertEqual("Ram,23", duplicates.first())
 
+    def test_get_duplicates_should_give_duplicates_of_given_column_indexes(self):
+        rdd = self.sc.parallelize(["Ram,23", "Ram,23", "Jill,45", "Soa,"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        duplicates = transformable_rdd.get_duplicates([0])
+        self.assertEqual("Ram,23", duplicates.first())
