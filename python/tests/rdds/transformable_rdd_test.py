@@ -100,3 +100,13 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         transformable_rdd = TransformableRDD(rdd, 'csv')
         duplicates = transformable_rdd.get_duplicates([0])
         self.assertEqual("Ram,23", duplicates.first())
+
+    def test_list_facets_should_give_facets_of_given_column_indexes(self):
+        rdd = self.sc.parallelize(["Ram,23,Male", "Ram,23,Male", "Jill,45,Female", "Soa,,Female,"])
+        transformable_rdd = TransformableRDD(rdd, 'csv')
+        duplicates = transformable_rdd.list_facets([0, 1, 2])
+        highest = duplicates.highest()
+        self.assertEqual("Ram\n23\nMale", highest[0]._1())
+
+
+

@@ -1,6 +1,7 @@
 from pyspark import RDD
 from py4j.java_gateway import java_import
 
+from py_prep_buddy import py2java_int_array
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
@@ -58,8 +59,13 @@ class TransformableRDD(RDD):
         algorithm = clustering_algorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
-    def list_facets(self, column_index):
+    def list_facets_of(self, column_index):
         return TextFacets(self._transformable_rdd.listFacets(column_index))
+
+    def list_facets(self, column_index):
+        array = py2java_int_array(self.spark_context, column_index)
+        return TextFacets(self._transformable_rdd.listFacets(array))
+
 
     def select(self, column_index):
         return self._transformable_rdd.select(column_index)
@@ -94,3 +100,4 @@ class TransformableRDD(RDD):
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.getDuplicates(column_indexes),
                                 sc=self.spark_context)
+
