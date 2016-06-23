@@ -131,3 +131,12 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(collected.__contains__(1.0))
         self.assertTrue(collected.__contains__(2.0))
         self.assertTrue(collected.__contains__(3.0))
+
+    def test_to_double_rdd_should_change_string_to_double_rdd(self):
+        initial_dataset = self.sc.parallelize(["1,1", "5,2", "8,3"])
+        transformable_rdd = TransformableRDD(initial_dataset)
+        rdd = transformable_rdd.to_double_rdd(0)
+        collected = rdd.collect()
+        self.assertTrue(collected.__contains__(1.0))
+        self.assertTrue(collected.__contains__(5.0))
+        self.assertTrue(collected.__contains__(8.0))

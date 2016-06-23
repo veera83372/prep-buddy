@@ -115,3 +115,6 @@ class TransformableRDD(RDD):
     def multiply_columns(self, first_column, second_column):
         return self._transformable_rdd.multiplyColumns(first_column, second_column)
 
+    def to_double_rdd(self, column_index):
+        return self._transformable_rdd.toDoubleRDD(column_index)
+
