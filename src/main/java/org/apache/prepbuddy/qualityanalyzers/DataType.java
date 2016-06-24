@@ -184,7 +184,26 @@ public enum DataType implements Serializable {
             }
             return true;
         }
+    }, CATEGORICAL_INTEGER {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            int categoricalSize = 2;
+            return isCategorical(sampleData,categoricalSize);
+        }
+    }, CATEGORICAL_STRING {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            int categoricalSize = 3;
+            return isCategorical(sampleData,categoricalSize);
+        }
     };
+
+    protected boolean isCategorical(List<String> sampleData,int categoricalSize) {
+        TreeSet<String> tree = new TreeSet<>();
+        for (String element : sampleData)
+            tree.add(element);
+        return tree.size()<=categoricalSize;
+    }
 
     protected boolean matchInDictionary(List<String> sampleData, Set<String> dictionary) {
         double qualifyingLimit = sampleData.size() * 0.75;

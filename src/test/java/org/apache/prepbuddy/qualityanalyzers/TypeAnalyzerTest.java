@@ -137,7 +137,19 @@ public class TypeAnalyzerTest {
 
     @Test
     public void shouldBeAbleToInferTheDataTypeAsInteger() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("0", "1", "1", "1","0"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("0", "1", "2", "3", "4", "5"));
         assertEquals(DataType.INTEGER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToInferTheDataTypeAsCATEGORICAL_INTEGER() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("0", "1", "0", "1", "0", "1", "0", "1"));
+        assertEquals(DataType.CATEGORICAL_INTEGER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldBeAbleToInferTheDataTypeAsCATEGORICAL_STRING() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("A", "A", "B", "B", "C", "C", "C", "C"));
+        assertEquals(DataType.CATEGORICAL_STRING, typeAnalyzer.getType());
     }
 }

@@ -7,6 +7,7 @@ public enum BaseDataType implements Serializable {
 
     NUMERIC(DataType.ZIP_CODE_US,
             DataType.MOBILE_NUMBER,
+            DataType.CATEGORICAL_INTEGER,
             DataType.INTEGER,
             DataType.IP_ADDRESS,
             DataType.LATITUDE,
@@ -22,7 +23,8 @@ public enum BaseDataType implements Serializable {
             DataType.COUNTRY_CODE_2_CHARACTER,
             DataType.COUNTRY_CODE_3_CHARACTER,
             DataType.COUNTRY_NAME,
-            DataType.TIMESTAMP
+            DataType.TIMESTAMP,
+            DataType.CATEGORICAL_STRING
     );
 
     private final static String PATTERN = "^([+-]?\\d+?\\s?)(\\d*(\\.\\d+)?)+$";
