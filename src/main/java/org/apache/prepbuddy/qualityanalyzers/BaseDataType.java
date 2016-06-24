@@ -13,7 +13,8 @@ public enum BaseDataType implements Serializable {
             DataType.INTEGER,
             DataType.DECIMAL
     ),
-    STRING(DataType.CURRENCY,
+    STRING(DataType.EMPTY,
+            DataType.CURRENCY,
             DataType.EMAIL,
             DataType.URL,
             DataType.SOCIAL_SECURITY_NUMBER,

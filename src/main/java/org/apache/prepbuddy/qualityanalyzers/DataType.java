@@ -21,6 +21,17 @@ import java.util.*;
  * and user defined data types
  */
 public enum DataType implements Serializable {
+    EMPTY {
+        @Override
+        public boolean isOfType(List<String> sampleData) {
+            List<String> emptyRepresentation = Arrays.asList("N\\A", "\\N", "NULL", "blank", "(blank)", "NaN");
+            for (String dataValue : sampleData) {
+                if (!emptyRepresentation.contains(dataValue))
+                    return false;
+            }
+            return true;
+        }
+    },
     INTEGER {
         @Override
         public boolean isOfType(List<String> sampleData) {

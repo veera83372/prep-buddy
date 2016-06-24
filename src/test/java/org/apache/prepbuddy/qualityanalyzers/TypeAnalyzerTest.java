@@ -128,4 +128,10 @@ public class TypeAnalyzerTest {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("40.2201", "40.7415", "19.05939", "100", "182"));
         assertEquals(DataType.DECIMAL, typeAnalyzer.getType());
     }
+
+    @Test
+    public void shouldClassifyAColumnAsEmptyWhenItHasStringWhichRepresentsEmptyOrTheColumnIsActuallyEmpty() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("N\\A", "\\N", "N\\A", "N\\A"));
+        assertEquals(DataType.EMPTY, typeAnalyzer.getType());
+    }
 }
