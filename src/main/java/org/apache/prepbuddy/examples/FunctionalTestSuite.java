@@ -10,11 +10,11 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.Arrays;
 
-public class AnalyzeData {
+public class FunctionalTestSuite {
     public static void main(String[] args) {
         String filePath = args[0];
         int numberOfColumn = Integer.parseInt(args[1]);
-        SparkConf conf = new SparkConf().setAppName("Quality Analysis");
+        SparkConf conf = new SparkConf().setAppName("Functional Test Suite");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> initialRDD = sc.textFile(filePath);
 
