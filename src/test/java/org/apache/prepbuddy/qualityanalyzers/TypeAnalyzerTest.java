@@ -134,4 +134,10 @@ public class TypeAnalyzerTest {
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("N\\A", "\\N", "N\\A", "N\\A"));
         assertEquals(DataType.EMPTY, typeAnalyzer.getType());
     }
+
+    @Test
+    public void shouldBeAbleToInferTheDataTypeAsInteger() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("0", "1", "1", "1","0"));
+        assertEquals(DataType.INTEGER, typeAnalyzer.getType());
+    }
 }

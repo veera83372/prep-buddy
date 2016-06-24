@@ -7,10 +7,10 @@ public enum BaseDataType implements Serializable {
 
     NUMERIC(DataType.ZIP_CODE_US,
             DataType.MOBILE_NUMBER,
+            DataType.INTEGER,
             DataType.IP_ADDRESS,
             DataType.LATITUDE,
             DataType.LONGITUDE,
-            DataType.INTEGER,
             DataType.DECIMAL
     ),
     STRING(DataType.EMPTY,
