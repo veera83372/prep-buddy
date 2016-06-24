@@ -87,7 +87,7 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
     def test_list_facets_should_give_facets(self):
         initial_dataset = self.sc.parallelize(["X,Y", "A,B", "X,Z", "A,Q", "A,E"])
         transformable_rdd = TransformableRDD(initial_dataset)
-        text_facets = transformable_rdd.list_facets(0)
+        text_facets = transformable_rdd.list_facets_of(0)
         self.assertEquals(2, text_facets.count())
 
     def test_get_duplicates_should_give_duplicates_of_rdd(self):
@@ -193,8 +193,17 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
 
     def test_map_should_give_Transformable_rdd(self):
         initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
-        transformable_rdd = TransformableRDD(initial_dataset)
+        transformable_rdd = TransformableRDD(initial_dataset, "csv")
         rdd_map = transformable_rdd.map(lambda line: line + "yes")
         deduplicate = rdd_map.deduplicate()
-        self.assertEqual(2, deduplicate.count())
+        collected = deduplicate.collect()
+        self.assertEqual(2, collected.__len__())
+        expected = "1,2yes"
+        self.assertTrue(collected.__contains__(expected))
 
+    def test_filter_should_give_Transformable_rdd(self):
+        initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
+        transformable_rdd = TransformableRDD(initial_dataset, "csv")
+        rdd_filter = transformable_rdd.filter(lambda line: line.split(",")[1] != "2")
+        collected = rdd_filter.collect()
+        self.assertEqual(1, collected.__len__())

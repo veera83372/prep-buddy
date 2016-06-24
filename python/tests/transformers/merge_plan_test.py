@@ -1,6 +1,7 @@
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from py_prep_buddy.transformers.merge_plan import MergePlan
 from utils.python_test_case import PySparkTestCase
+import tests
 
 
 class MergePlanTest(PySparkTestCase):
