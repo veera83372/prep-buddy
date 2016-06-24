@@ -1,4 +1,4 @@
-from pyspark import RDD
+from pyspark import RDD, StorageLevel
 from py4j.java_gateway import java_import
 
 from py_prep_buddy import py2java_int_array
@@ -132,3 +132,54 @@ class TransformableRDD(RDD):
 
     def filter(self, f):
         return TransformableRDD(super(TransformableRDD, self).filter(f), self.__file_type)
+
+    def cache(self):
+        return TransformableRDD(super(TransformableRDD, self).cache(), self.__file_type)
+
+    def coalesce(self, numPartitions, shuffle=False):
+        return TransformableRDD(super(TransformableRDD, self).coalesce(numPartitions, shuffle), self.__file_type)
+
+    def distinct(self, numPartitions=None):
+        return TransformableRDD(super(TransformableRDD, self).distinct(numPartitions), self.__file_type)
+
+    def flatMap(self, func, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).flatMap(func, preservesPartitioning), self.__file_type)
+
+    def intersection(self, other):
+        return TransformableRDD(super(TransformableRDD, self).intersection(other), self.__file_type)
+
+    def persist(self, storageLevel=StorageLevel.MEMORY_ONLY_SER):
+        return TransformableRDD(super(TransformableRDD, self).persist(storageLevel), self.__file_type)
+
+    def unpersist(self):
+        return TransformableRDD(super(TransformableRDD, self).unpersist(), self.__file_type)
+
+    def union(self, other):
+        return TransformableRDD(super(TransformableRDD, self).union(other), self.__file_type)
+
+    def mapPartitions(self, func, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).mapPartitions(), self.__file_type)
+
+    def mapPartitionsWithIndex(self, func, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).mapPartitionsWithIndex(func, preservesPartitioning), self.__file_type)
+
+    def sortBy(self, keyfunc, ascending=True, numPartitions=None):
+        return TransformableRDD(super(TransformableRDD, self).sortBy(keyfunc, ascending, numPartitions), self.__file_type)
+
+    def setName(self, name):
+        return TransformableRDD(super(TransformableRDD, self).setName(name), self.__file_type)
+
+    def subtract(self, other, numPartitions=None):
+        return TransformableRDD(super(TransformableRDD, self).subtract(other, numPartitions), self.__file_type)
+
+    def subtractByKey(self, other, numPartitions=None):
+        return TransformableRDD(super(TransformableRDD, self).subtractByKey(other, numPartitions), self.__file_type)
+
+    def sample(self, withReplacement, fraction, seed=None):
+        return TransformableRDD(super(TransformableRDD, self).sample(withReplacement, fraction, seed), self.__file_type)
+
+    def repartition(self, numPartitions):
+        return TransformableRDD(super(TransformableRDD, self).repartition(numPartitions), self.__file_type)
+
+    def pipe(self, command, env=None, checkCode=False):
+        return TransformableRDD(super(TransformableRDD, self).pipe(command, env, checkCode), self.__file_type)
