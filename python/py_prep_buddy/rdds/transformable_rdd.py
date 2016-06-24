@@ -83,7 +83,7 @@ class TransformableRDD(RDD):
     def merge_columns(self, merge_plan):
         plan = merge_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.merge_columns(plan),
+                                self._transformable_rdd.mergeColumns(plan),
                                 sc=self.spark_context)
 
     def split_column(self, split_plan):

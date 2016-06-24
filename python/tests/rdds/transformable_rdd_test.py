@@ -87,7 +87,7 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
     def test_list_facets_should_give_facets(self):
         initial_dataset = self.sc.parallelize(["X,Y", "A,B", "X,Z", "A,Q", "A,E"])
         transformable_rdd = TransformableRDD(initial_dataset)
-        text_facets = transformable_rdd.list_facets(0)
+        text_facets = transformable_rdd.list_facets_of(0)
         self.assertEquals(2, text_facets.count())
 
     def test_get_duplicates_should_give_duplicates_of_rdd(self):
