@@ -43,11 +43,12 @@ class TransformableRDD(RDD):
         else:
             raise ValueError('"%s" is not a valid file type\nValid file types are CSV and TSV' % file_type)
 
-    def deduplicate(self):
-        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(), sc=self.spark_context)
-
-    def deduplicate(self, column_indexes):
-        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(column_indexes), sc=self.spark_context)
+    def deduplicate(self, column_indexes=None):
+        if column_indexes is None:
+            return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(),
+                                    sc=self.spark_context)
+        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(column_indexes),
+                                sc=self.spark_context)
 
     def impute(self, column_index, imputation_strategy):
         strategy_apply = imputation_strategy.get_strategy(self.spark_context)
@@ -63,10 +64,9 @@ class TransformableRDD(RDD):
     def list_facets_of(self, column_index):
         return TextFacets(self._transformable_rdd.listFacets(column_index))
 
-    def list_facets(self, column_index):
-        array = py2java_int_array(self.spark_context, column_index)
+    def list_facets(self, column_indexes):
+        array = py2java_int_array(self.spark_context, column_indexes)
         return TextFacets(self._transformable_rdd.listFacets(array))
-
 
     def select(self, column_index):
         return self._transformable_rdd.select(column_index)
@@ -92,12 +92,11 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.splitColumn(plan),
                                 sc=self.spark_context)
 
-    def get_duplicates(self):
-        return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.getDuplicates(),
-                                sc=self.spark_context)
-
-    def get_duplicates(self, column_indexes):
+    def get_duplicates(self, column_indexes=None):
+        if column_indexes is None:
+            return TransformableRDD(None, self.__file_type,
+                                    self._transformable_rdd.getDuplicates(),
+                                    sc=self.spark_context)
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.getDuplicates(column_indexes),
                                 sc=self.spark_context)
@@ -128,3 +127,5 @@ class TransformableRDD(RDD):
         column_indexes = py2java_int_array(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(column_index, column_indexes))
 
+    def map(self, function, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)

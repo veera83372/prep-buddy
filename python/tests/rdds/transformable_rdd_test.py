@@ -190,3 +190,11 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         entry = table.value_at("skips", "known")
         self.assertEqual(6,entry)
         self.assertEqual(3, table.value_at("skips", "unknown"))
+
+    def test_map_should_give_Transformable_rdd(self):
+        initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
+        transformable_rdd = TransformableRDD(initial_dataset)
+        rdd_map = transformable_rdd.map(lambda line: line + "yes")
+        deduplicate = rdd_map.deduplicate()
+        self.assertEqual(2, deduplicate.count())
+
