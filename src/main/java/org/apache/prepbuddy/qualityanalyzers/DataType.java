@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  * Data types that can be inferred by inspecting the data in a column
- * <p>
+ * <p/>
  * todo :
  * Add the following new types
  * BOOLEAN
@@ -95,15 +95,14 @@ public enum DataType implements Serializable {
         @Override
         public boolean isOfType(List<String> sampleData) {
             TreeSet<String> char2countryCodes = new TreeSet<>(Arrays.asList(Locale.getISOCountries()));
-
-            return predicate(sampleData, char2countryCodes);
+            return matchInDictionary(sampleData, char2countryCodes);
         }
     },
     COUNTRY_CODE_3_CHARACTER {
         @Override
         public boolean isOfType(List<String> sampleData) {
             Set<String> countryCodes = getISO3Codes();
-            return predicate(sampleData, countryCodes);
+            return matchInDictionary(sampleData, countryCodes);
         }
 
         private Set<String> getISO3Codes() {
@@ -120,7 +119,7 @@ public enum DataType implements Serializable {
         @Override
         public boolean isOfType(List<String> sampleData) {
             Set<String> countryNames = getCountryNames();
-            return predicate(sampleData, countryNames);
+            return matchInDictionary(sampleData, countryNames);
         }
 
         private Set<String> getCountryNames() {
@@ -176,13 +175,17 @@ public enum DataType implements Serializable {
         }
     };
 
-    protected boolean predicate(List<String> sampleData, Set<String> dictionary) {
-        int tolerance = sampleData.size() / 4;
-        int threshold = dictionary.size() + tolerance;
-        Set<String> sample = new TreeSet<>();
-        for (String element : sampleData) sample.add(element.toLowerCase());
-        for (String element : dictionary) sample.add(element.toLowerCase());
-        return (sample.size() <= threshold);
+    protected boolean matchInDictionary(List<String> sampleData, Set<String> dictionary) {
+        double qualifyingLimit = sampleData.size() * 0.75;
+        Set<String> lowerCaseDictionary = new TreeSet<>();
+        for (String element : dictionary)
+            lowerCaseDictionary.add(element.toLowerCase());
+
+        int matchCount = 0;
+        for (String element : sampleData)
+            if (lowerCaseDictionary.contains(element.toLowerCase()))
+                matchCount++;
+        return matchCount >= qualifyingLimit;
     }
 
     public boolean matchesWith(String regex, List<String> samples) {

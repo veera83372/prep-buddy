@@ -13,18 +13,17 @@ import java.util.Arrays;
 public class AnalyzeData {
     public static void main(String[] args) {
         String filePath = args[0];
-        int columnToAnalyze = Integer.parseInt(args[1]);
 
         SparkConf conf = new SparkConf().setAppName("Quality Analysis");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> initialRDD = sc.textFile(filePath);
 
         AnalyzableRDD analyzableRDD = new AnalyzableRDD(initialRDD, FileType.TSV);
-        AnalysisPlan analysisPlan = new AnalysisPlan(columnToAnalyze, Arrays.asList("\\N", "N/A"));
 
-        AnalysisResult analysisResult = analyzableRDD.analyzeColumns(analysisPlan);
-
-        System.out.println(analysisResult.dataType());
-        System.out.println(analysisResult.percentageOfMissingValues());
+        for (int index = 0; index < 31; index++) {
+            AnalysisPlan analysisPlan = new AnalysisPlan(index, Arrays.asList("\\N", "N/A"));
+            AnalysisResult analysisResult = analyzableRDD.analyzeColumns(analysisPlan);
+            System.out.printf("%s : %s\n", index, analysisResult.dataType());
+        }
     }
 }

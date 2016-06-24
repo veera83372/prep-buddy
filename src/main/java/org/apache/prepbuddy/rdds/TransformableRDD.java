@@ -81,9 +81,9 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new TransformableRDD containing only the elements that satisfy the predicate.
+     * Returns a new TransformableRDD containing only the elements that satisfy the matchInDictionary.
      *
-     * @param predicate A predicate function, Removes the row when returns true.
+     * @param predicate A matchInDictionary function, Removes the row when returns true.
      * @return TransformableRDD
      */
     public TransformableRDD removeRows(RowPurger.Predicate predicate) {
@@ -221,7 +221,7 @@ public class TransformableRDD extends AbstractRDD {
      * based on the evaluation of @markerPredicate
      *
      * @param symbol          Symbol that will be used to flag
-     * @param markerPredicate A predicate which will determine whether to flag a row or not
+     * @param markerPredicate A matchInDictionary which will determine whether to flag a row or not
      * @return TransformableRDD
      */
     public TransformableRDD flag(final String symbol, final MarkerPredicate markerPredicate) {

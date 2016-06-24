@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TypeAnalyzerTest {
     @Test
@@ -69,8 +70,14 @@ public class TypeAnalyzerTest {
 
     @Test
     public void shouldBeAbleToGiveTheTypeAsCountryCode2CHARACTER() {
-        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IN","IR"));
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("IN", "IR", "US", "BAD DATA"));
         assertEquals(DataType.COUNTRY_CODE_2_CHARACTER, typeAnalyzer.getType());
+    }
+
+    @Test
+    public void shouldNotGiveTheTypeAsCountryCode2CHARACTERWhenTheDataConsistOfNAorNULL() {
+        TypeAnalyzer typeAnalyzer = new TypeAnalyzer(Arrays.asList("\\N", "N\\A"));
+        assertNotEquals(DataType.COUNTRY_CODE_2_CHARACTER, typeAnalyzer.getType());
     }
 
     @Test

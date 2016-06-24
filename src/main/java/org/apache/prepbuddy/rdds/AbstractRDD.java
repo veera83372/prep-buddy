@@ -35,9 +35,9 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     /**
      * Returns a inferred DataType of given column index
      *
-     * @param columnIndex
-     * @param sampleSize
-     * @return
+     * @param columnIndex   Column index
+     * @param sampleSize    Sample size
+     * @return DataType
      */
     public DataType inferType(final int columnIndex, int sampleSize) {
         validateColumnIndex(columnIndex);
@@ -108,7 +108,7 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     /**
      * Returns a JavaDoubleRdd of given column index
      *
-     * @param columnIndex
+     * @param columnIndex   Column index
      * @return JavaDoubleRDD
      */
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
