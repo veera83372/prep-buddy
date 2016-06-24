@@ -129,3 +129,6 @@ class TransformableRDD(RDD):
 
     def map(self, function, preservesPartitioning=False):
         return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)
+
+    def filter(self, f):
+        return TransformableRDD(super(TransformableRDD, self).filter(f), self.__file_type)
