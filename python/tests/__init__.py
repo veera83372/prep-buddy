@@ -1,7 +1,6 @@
 import subprocess as sub
 import os
 import logging
-import tests
 
 
 def run_cmd(cmd):

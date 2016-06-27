@@ -3,6 +3,7 @@ from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 import tests
 
+
 class NormalizationTest(PySparkTestCase):
     def test_should_normalize_by_Min_Max_normalization(self):
         initial_dataset = self.sc.parallelize([

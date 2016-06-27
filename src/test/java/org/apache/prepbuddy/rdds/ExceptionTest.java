@@ -1,9 +1,11 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.prepbuddy.SparkTestCase;
+import org.apache.prepbuddy.cleansers.imputation.MeanSubstitution;
 import org.apache.prepbuddy.cluster.SimpleFingerprintAlgorithm;
 import org.apache.prepbuddy.exceptions.ApplicationException;
 import org.apache.spark.api.java.JavaRDD;
+import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,6 +27,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.listFacets(4);
     }
 
@@ -39,6 +42,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.listFacets(new int[]{3, 6});
     }
 
@@ -52,6 +56,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.clusters(-1, new SimpleFingerprintAlgorithm());
     }
 
@@ -65,6 +70,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.toDoubleRDD(2);
     }
 
@@ -78,6 +84,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.multiplyColumns(2, 3);
     }
 
@@ -91,6 +98,21 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.multiplyColumns(3, 2);
+    }
+
+    @Test
+    public void tRDDShouldThrowException() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
+        initialRDD.impute(6, new MeanSubstitution());
     }
 }
