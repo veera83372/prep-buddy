@@ -13,14 +13,14 @@ import java.util.Arrays;
 public class FunctionalTestSuite {
     public static void main(String[] args) {
         String filePath = args[0];
-        int numberOfColumn = Integer.parseInt(args[1]);
+        int numberOfColumns = Integer.parseInt(args[1]);
         SparkConf conf = new SparkConf().setAppName("Functional Test Suite");
         JavaSparkContext sc = new JavaSparkContext(conf);
         JavaRDD<String> initialRDD = sc.textFile(filePath);
 
         AnalyzableRDD analyzableRDD = new AnalyzableRDD(initialRDD, FileType.TSV);
 
-        for (int index = 0; index < numberOfColumn; index++) {
+        for (int index = 0; index < numberOfColumns; index++) {
             analyzableRDD.cache();
             AnalysisPlan analysisPlan = new AnalysisPlan(index, Arrays.asList("\\N", "N/A"));
             AnalysisResult analysisResult = analyzableRDD.analyzeColumns(analysisPlan);
