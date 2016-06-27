@@ -103,7 +103,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new TransformableRDD by replacing the @columnIndex values with value returned by @replacement
+     * Returns a new TransformableRDD by replacing the @columnIndexes values with value returned by @replacement
      *
      * @param columnIndex The column index where the replacement will occur
      * @param replacement A function which will return the replacement value
@@ -124,7 +124,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new TextFacet containing the cardinal values of @columnIndex
+     * Returns a new TextFacet containing the cardinal values of @columnIndexes
      *
      * @param columnIndex index of the column
      * @return TextFacets
@@ -176,7 +176,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
+     * Returns Clusters that has all cluster of text of @columnIndexes according to @algorithm
      *
      * @param columnIndex Column Index
      * @param algorithm   Algorithm to be used to form clusters
@@ -318,7 +318,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+     * Returns a new TransformableRDD by imputing missing values of the @columnIndexes using the @strategy
      *
      * @param columnIndex Column index
      * @param strategy    Imputation strategy
@@ -330,7 +330,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+     * Returns a new TransformableRDD by imputing missing values of the @columnIndexes using the @strategy
      *
      * @param columnIndex  Column Index
      * @param strategy     Imputation Strategy
@@ -465,7 +465,7 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a new JavaRDD containing smoothed values of @columnIndex using @smoothingMethod
+     * Returns a new JavaRDD containing smoothed values of @columnIndexes using @smoothingMethod
      *
      * @param columnIndex     Column Index
      * @param smoothingMethod Method that will be used for smoothing of the data

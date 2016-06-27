@@ -1,18 +1,13 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.prepbuddy.qualityanalyzers.AnalysisPlan;
-import org.apache.prepbuddy.qualityanalyzers.AnalysisResult;
-import org.apache.prepbuddy.qualityanalyzers.DataType;
-import org.apache.prepbuddy.qualityanalyzers.FileType;
-import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.prepbuddy.qualityanalyzers.*;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
-import scala.Tuple2;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AnalyzableRDD extends AbstractRDD {
 
@@ -29,24 +24,29 @@ public class AnalyzableRDD extends AbstractRDD {
     }
 
 
-    public AnalysisResult analyzeColumns(final AnalysisPlan plan) {
-        int columnIndex = plan.columnIndex();
-        DataType dataType = inferType(columnIndex);
-        Map<Integer, Integer> missingDataReport = countMissingValues(plan.columnIndex(), plan.missingHints());
-        AnalysisResult result = new AnalysisResult(columnIndex, dataType, numberOfRows, missingDataReport);
+    public DatasetInsights analyzeColumns(final AnalysisPlan plan) {
+        List<Integer> columnIndexes = plan.columnIndexes();
+
+        HashMap<Integer, ColumnInsight> columnInsights = new HashMap<>();
+        for (Integer columnIndex : columnIndexes) {
+            DataType dataType = inferType(columnIndex);
+            int missingValueCount = countMissingValues(columnIndex, plan.missingHints());
+            columnInsights.put(columnIndex, new ColumnInsight(columnIndex, dataType, missingValueCount));
+        }
+        DatasetInsights result = new DatasetInsights(numberOfRows, columnInsights);
         return result;
     }
 
-    private Map<Integer, Integer> countMissingValues(final int columnIndex, final List<String> missingHints) {
-        JavaPairRDD<Integer, Integer> intermediate = this.mapToPair(new PairFunction<String, Integer, Integer>() {
+    private int countMissingValues(final int columnIndex, final List<String> missingHints) {
+        JavaRDD<Integer> intermediate = this.map(new Function<String, Integer>() {
             @Override
-            public Tuple2<Integer, Integer> call(String record) throws Exception {
+            public Integer call(String record) throws Exception {
                 String[] columnValues = fileType.parseRecord(record);
                 Integer missingCount = 0;
                 if (hasMissingData(columnValues, columnIndex, missingHints)) {
                     missingCount = 1;
                 }
-                return new Tuple2<>(columnIndex, missingCount);
+                return missingCount;
             }
 
             private boolean hasMissingData(String[] columnValues, int columnIndex, List<String> missingHints) {
@@ -58,13 +58,12 @@ public class AnalyzableRDD extends AbstractRDD {
             }
 
         });
-        JavaPairRDD<Integer, Integer> missingDataSummary = intermediate.reduceByKey(new Function2<Integer, Integer, Integer>() {
-
+        Integer totalMissingValue = intermediate.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer call(Integer accumulator, Integer missingCount) throws Exception {
-                return accumulator + missingCount;
+            public Integer call(Integer accumulator, Integer currentValue) throws Exception {
+                return accumulator + currentValue;
             }
         });
-        return missingDataSummary.collectAsMap();
+        return totalMissingValue;
     }
 }

@@ -1,24 +1,31 @@
 package org.apache.prepbuddy.qualityanalyzers;
 
+import org.apache.prepbuddy.utils.Range;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class AnalysisPlan {
 
-    private int columnIndex;
+    private final List<Integer> columnIndexes;
     private List<String> missingValueHints;
 
-    public AnalysisPlan(int columnIndex, List<String> missingValueHints) {
-        this.columnIndex = columnIndex;
+    public AnalysisPlan(List<Integer> columnIndexes, List<String> missingValueHints) {
+        this.columnIndexes = columnIndexes;
         this.missingValueHints = missingValueHints;
     }
 
-    public AnalysisPlan(int columnIndex) {
-        this(columnIndex, Collections.EMPTY_LIST);
+    public AnalysisPlan(Range indexRange, List<String> missingValueHints) {
+        this(indexRange.lowerToUpperValues(), missingValueHints);
     }
 
-    public int columnIndex() {
-        return columnIndex;
+    public AnalysisPlan(int columnIndex) {
+        this(Arrays.asList(columnIndex), Collections.EMPTY_LIST);
+    }
+
+    public List<Integer> columnIndexes() {
+        return columnIndexes;
     }
 
     public List<String> missingHints() {
