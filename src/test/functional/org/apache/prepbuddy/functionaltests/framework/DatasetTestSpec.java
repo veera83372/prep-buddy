@@ -5,7 +5,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 public abstract class DatasetTestSpec {
     protected TestableDataset dataset;
-    private DatasetTestResults testResults;
+    protected DatasetTestResults testResults;
 
     public DatasetTestSpec(TestableDataset dataset) {
         this.dataset = dataset;
@@ -13,11 +13,20 @@ public abstract class DatasetTestSpec {
 
     public void execute(JavaSparkContext javaSparkContext) {
         JavaRDD<String> testableRDD = javaSparkContext.textFile(dataset.fileName());
-        testResults = executeTest(testableRDD);
+        testResults = new DatasetTestResults(getClass().getCanonicalName());
+        try {
+            executeTest(testableRDD);
+            testResults.markAsSuccess();
+        } catch (AssertionError error) {
+            testResults.markAsFailure(error);
+        }
     }
 
-    public abstract DatasetTestResults executeTest(JavaRDD<String> testableRDD);
+    public DatasetTestResults getTestResults() {
+        return testResults;
+    }
+
+    public abstract void executeTest(JavaRDD<String> testableRDD);
 
 
-    public abstract void validateTestResults();
 }

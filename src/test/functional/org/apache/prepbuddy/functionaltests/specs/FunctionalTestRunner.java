@@ -3,7 +3,9 @@ package org.apache.prepbuddy.functionaltests.specs;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.prepbuddy.functionaltests.framework.DatasetTestResults;
 import org.apache.prepbuddy.functionaltests.framework.DatasetTestSpec;
+import org.apache.prepbuddy.functionaltests.framework.TestReport;
 import org.apache.prepbuddy.functionaltests.framework.TestableDataset;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -21,20 +23,37 @@ public class FunctionalTestRunner {
 
     private void setupSparkContext(String master) {
         SparkConf sparkConf = new SparkConf().setAppName(getClass().getName()).setMaster(master);
-        javaSparkContext = new JavaSparkContext(sparkConf);
         Logger.getLogger("org").setLevel(Level.OFF);
         Logger.getLogger("akka").setLevel(Level.OFF);
+        javaSparkContext = new JavaSparkContext(sparkConf);
     }
 
     public static void main(String[] args) {
-        FunctionalTestRunner testRunner = new FunctionalTestRunner(args[0]);
-        TypeInferenceTestSpec typeInferenceTestSpec = new TypeInferenceTestSpec(new TestableDataset(""));
+        FunctionalTestRunner testRunner = new FunctionalTestRunner("local");
+        TestableDataset dataset = new TestableDataset("data/calls.csv");
+        TypeInferenceTestSpec typeInferenceTestSpec = new TypeInferenceTestSpec(dataset);
         testRunner.addSpec(typeInferenceTestSpec);
+
+
         testRunner.run();
-        typeInferenceTestSpec.validateTestResults();
+        testRunner.printResults();
+        testRunner.shutDown();
     }
 
-    private void run() {
+    public void printResults() {
+        TestReport testReport = new TestReport();
+        for (DatasetTestSpec spec : specs) {
+            DatasetTestResults testResults = spec.getTestResults();
+            testReport.add(testResults);
+        }
+        testReport.show();
+    }
+
+    public void shutDown() {
+        javaSparkContext.close();
+    }
+
+    public void run() {
         for (DatasetTestSpec spec : specs) {
             spec.execute(javaSparkContext);
         }
