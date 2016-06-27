@@ -1,17 +1,13 @@
 package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.prepbuddy.qualityanalyzers.AnalysisPlan;
-import org.apache.prepbuddy.qualityanalyzers.AnalysisResult;
-import org.apache.prepbuddy.qualityanalyzers.DataType;
-import org.apache.prepbuddy.qualityanalyzers.FileType;
+import org.apache.prepbuddy.qualityanalyzers.*;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AnalyzableRDD extends AbstractRDD {
 
@@ -28,16 +24,16 @@ public class AnalyzableRDD extends AbstractRDD {
     }
 
 
-    public AnalysisResult analyzeColumns(final AnalysisPlan plan) {
+    public DatasetInsights analyzeColumns(final AnalysisPlan plan) {
         List<Integer> columnIndexes = plan.columnIndexes();
-        Map<Integer, DataType> dataTypeReport = new HashMap<>();
-        Map<Integer, Integer> missingDataReport = new HashMap<>();
 
+        HashMap<Integer, ColumnInsight> columnInsights = new HashMap<>();
         for (Integer columnIndex : columnIndexes) {
-            dataTypeReport.put(columnIndex, inferType(columnIndex));
-            missingDataReport.put(columnIndex, countMissingValues(columnIndex, plan.missingHints()));
+            DataType dataType = inferType(columnIndex);
+            int missingValueCount = countMissingValues(columnIndex, plan.missingHints());
+            columnInsights.put(columnIndex, new ColumnInsight(columnIndex, dataType, missingValueCount));
         }
-        AnalysisResult result = new AnalysisResult(numberOfRows, dataTypeReport, missingDataReport);
+        DatasetInsights result = new DatasetInsights(numberOfRows, columnInsights);
         return result;
     }
 

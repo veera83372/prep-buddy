@@ -17,7 +17,7 @@ public class AnalysisPlan {
     }
 
     public AnalysisPlan(Range indexRange, List<String> missingValueHints) {
-        this(indexRange.getContiniousValues(), missingValueHints);
+        this(indexRange.lowerToUpperValues(), missingValueHints);
     }
 
     public AnalysisPlan(int columnIndex) {

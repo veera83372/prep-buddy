@@ -23,8 +23,8 @@ public class AnalyzableRDDTest extends SparkTestCase {
 
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
         AnalysisPlan analysisPlan = new AnalysisPlan(3);
-        AnalysisResult report = inputRDD.analyzeColumns(analysisPlan);
-        assertEquals(DataType.INTEGER, report.dataTypeAt(3));
+        DatasetInsights report = inputRDD.analyzeColumns(analysisPlan);
+        assertEquals(DataType.INTEGER, report.dataType(3));
     }
 
     @Test
@@ -53,8 +53,8 @@ public class AnalyzableRDDTest extends SparkTestCase {
         ));
         AnalyzableRDD inputRDD = new AnalyzableRDD(initialDataset);
         AnalysisPlan analysisPlan = new AnalysisPlan(Arrays.asList(1), Arrays.asList("N/A", "NULL"));
-        AnalysisResult report = inputRDD.analyzeColumns(analysisPlan);
-        assertEquals(new Double(20), report.percentageOfMissingValueAt(1));
+        DatasetInsights report = inputRDD.analyzeColumns(analysisPlan);
+        assertEquals(new Double(20), report.percentageOfMissingValue(1));
     }
 
     @Test

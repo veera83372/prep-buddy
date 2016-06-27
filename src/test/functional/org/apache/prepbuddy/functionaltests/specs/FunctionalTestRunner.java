@@ -32,6 +32,7 @@ public class FunctionalTestRunner {
         FunctionalTestRunner testRunner = new FunctionalTestRunner("local");
         TestableDataset dataset = new TestableDataset("data/calls.csv");
         TypeInferenceTestSpec typeInferenceTestSpec = new TypeInferenceTestSpec(dataset);
+
         testRunner.addSpec(typeInferenceTestSpec);
 
 

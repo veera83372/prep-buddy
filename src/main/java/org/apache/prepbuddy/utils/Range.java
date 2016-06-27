@@ -21,7 +21,7 @@ public class Range {
         return aValue >= lowerBound && aValue <= uppperBound;
     }
 
-    public List<Integer> getContiniousValues() {
+    public List<Integer> lowerToUpperValues() {
         List<Integer> continuousValues = new ArrayList<>();
         for (int value = (int) lowerBound; value <= uppperBound; value++)
             continuousValues.add(value);
