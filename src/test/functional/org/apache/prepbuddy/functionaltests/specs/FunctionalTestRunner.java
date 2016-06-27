@@ -31,10 +31,12 @@ public class FunctionalTestRunner {
     public static void main(String[] args) {
         FunctionalTestRunner testRunner = new FunctionalTestRunner("local");
         TestableDataset dataset = new TestableDataset("data/calls.csv");
+        TestableDataset personData = new TestableDataset("data/person_data/person_data.tsv");
         TypeInferenceTestSpec typeInferenceTestSpec = new TypeInferenceTestSpec(dataset);
+        PercentageOfMissingDataTestSpec percentageOfMissingDataTestSpec = new PercentageOfMissingDataTestSpec(personData);
 
         testRunner.addSpec(typeInferenceTestSpec);
-
+        testRunner.addSpec(percentageOfMissingDataTestSpec);
 
         testRunner.run();
         testRunner.printResults();

@@ -14,15 +14,15 @@ public class DatasetInsights {
         this.columnInsights = columnInsights;
     }
 
-    public DataType dataType(int columnIndex) throws IllegalAccessException {
+    public DataType dataType(int columnIndex) {
         if (!columnInsights.containsKey(columnIndex))
-            throw new IllegalAccessException("No report found for index " + columnIndex);
+            throw new RuntimeException("No report found for index " + columnIndex);
         return columnInsights.get(columnIndex).dataType();
     }
 
-    public Double percentageOfMissingValue(int columnIndex) throws IllegalAccessException {
+    public Double percentageOfMissingValue(int columnIndex) {
         if (!columnInsights.containsKey(columnIndex))
-            throw new IllegalAccessException("No report found for index " + columnIndex);
+            throw new RuntimeException("No report found for index " + columnIndex);
         double amountOfMissingValue = columnInsights.get(columnIndex).amountOfMissingValue();
         return getPercentage(amountOfMissingValue, totalNumberOfRows);
     }
