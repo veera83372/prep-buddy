@@ -2,30 +2,40 @@ package org.apache.prepbuddy.qualityanalyzers;
 
 import org.apache.prepbuddy.utils.Range;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AnalysisResult {
 
-    private int columnIndex;
-    private DataType dataType;
+
+    private final Map<Integer, DataType> dataTypeReport; //ColumnIndex, Count
+    private Map<Integer, Integer> missingValueReport; //ColumnIndex, Count
     private double totalNumberOfRows;
-    private Map<Integer, Integer> missingDataReport; //ColumnIndex, Count
 
-    public AnalysisResult(int columnIndex, DataType dataType, long totalNumberOfRows, Map<Integer, Integer> missingDataReport) {
-        this.columnIndex = columnIndex;
-        this.dataType = dataType;
+    public AnalysisResult(long totalNumberOfRows, Map<Integer, DataType> dataTypeReport, Map<Integer, Integer> missingValueReport) {
         this.totalNumberOfRows = totalNumberOfRows;
-        this.missingDataReport = missingDataReport;
+        this.dataTypeReport = dataTypeReport;
+        this.missingValueReport = missingValueReport;
     }
 
-    public DataType dataType() {
-        return dataType;
+    public Map<Integer, DataType> dataType() {
+        return dataTypeReport;
     }
 
-    public Double percentageOfMissingValues() {
-        Integer missingDataCount = missingDataReport.get(columnIndex);
-        double percentage = (missingDataCount / totalNumberOfRows) * 100;
-        return percentage;
+    public Map<Integer, Double> percentageOfMissingValues() {
+        Set<Integer> columnIndexes = missingValueReport.keySet();
+        HashMap<Integer, Double> missingPercentage = new HashMap<>();
+        for (Integer columnIndex : columnIndexes) {
+            Integer numberOfMissingValueAtColumn = missingValueReport.get(columnIndex);
+            double percentage = getPercentage(numberOfMissingValueAtColumn, totalNumberOfRows);
+            missingPercentage.put(columnIndex, percentage);
+        }
+        return missingPercentage;
+    }
+
+    private double getPercentage(double relativeNumber, double wholeNumber) {
+        return (relativeNumber / wholeNumber) * 100;
     }
 
     public Double percentageOfInconsistentValues() {
@@ -55,5 +65,17 @@ public class AnalysisResult {
 
     public Double kurtosis() {
         return null;
+    }
+
+    public DataType dataTypeAt(int columnIndex) throws IllegalAccessException {
+        if (!dataTypeReport.containsKey(columnIndex))
+            throw new IllegalAccessException("No report found for index " + columnIndex);
+        return dataTypeReport.get(columnIndex);
+    }
+
+    public Double percentageOfMissingValueAt(int columnIndex) throws IllegalAccessException {
+        if (!missingValueReport.containsKey(columnIndex))
+            throw new IllegalAccessException("No report found for index " + columnIndex);
+        return getPercentage(missingValueReport.get(columnIndex), totalNumberOfRows);
     }
 }

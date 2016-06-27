@@ -20,7 +20,7 @@ public class SplitPlan implements Serializable {
      * @param columnIndex      The column which will be split
      * @param separator        The separator which will be used to split the column value
      * @param maxNumberOfSplit Maximum number of split value
-     * @param retainColumn     False when you want to remove the original columns specified in @columnIndex
+     * @param retainColumn     False when you want to remove the original columns specified in @columnIndexes
      */
     public SplitPlan(int columnIndex, String separator, Integer maxNumberOfSplit, boolean retainColumn) {
         this.columnIndex = columnIndex;
@@ -33,7 +33,7 @@ public class SplitPlan implements Serializable {
      * Split plan specifying how the split will happen
      * @param columnIndex The column which will be split
      * @param separator The separator which will be used to split the column value
-     * @param retainColumn False when you want to remove the original columns specified in @columnIndex
+     * @param retainColumn False when you want to remove the original columns specified in @columnIndexes
      */
     public SplitPlan(int columnIndex, String separator, boolean retainColumn) {
         this(columnIndex, separator, null, retainColumn);
@@ -43,7 +43,7 @@ public class SplitPlan implements Serializable {
      * Split plan specifying how the split will happen
      * @param columnIndex The column which will be split
      * @param fieldLengths A list of integers which will be used to split the field into the specified length of values
-     * @param retainColumn False when you want to remove the original columns specified in @columnIndex
+     * @param retainColumn False when you want to remove the original columns specified in @columnIndexes
      */
     public SplitPlan(int columnIndex, List<Integer> fieldLengths, boolean retainColumn) {
         this.columnIndex = columnIndex;
