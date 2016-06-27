@@ -399,6 +399,7 @@ public class TransformableRDD extends AbstractRDD {
      * @return JavaRDD<String>
      */
     public JavaRDD<String> select(final int columnIndex) {
+        validateColumnIndex(columnIndex);
         return map(new Function<String, String>() {
             @Override
             public String call(String record) throws Exception {
