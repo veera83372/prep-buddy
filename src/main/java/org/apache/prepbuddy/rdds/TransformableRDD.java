@@ -80,6 +80,12 @@ public class TransformableRDD extends AbstractRDD {
         return new TransformableRDD(transformed, fileType);
     }
 
+    /**
+     * Returns a new TransformableRDD containing only the duplicate elements from a particular column of the dataset
+     *
+     * @param columnIndex Column index
+     * @return TransformableRDD
+     */
     public TransformableRDD detectDuplicatesAt(int columnIndex) {
         JavaRDD<String> transformed = DuplicationHandler.duplicatesAt(this, columnIndex, fileType);
         return new TransformableRDD(transformed, fileType);
