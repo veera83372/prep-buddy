@@ -6,6 +6,11 @@ import org.apache.prepbuddy.functionaltests.framework.TestableDataset;
 
 public class TypeInferenceTestSpec extends DatasetTestSpec {
 
+
+    public TypeInferenceTestSpec(TestableDataset dataset) {
+        super(dataset);
+    }
+
     @Override
     public DatasetTestResults execute(TestableDataset testableDataset) {
         return null;

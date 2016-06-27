@@ -1,10 +1,14 @@
 package org.apache.prepbuddy.functionaltests.framework;
 
 public class TestableDataset {
-    private String filename;
+    private String fileName;
 
-    public TestableDataset(String filename) {
+    public TestableDataset(String fileName) {
 
-        this.filename = filename;
+        this.fileName = fileName;
+    }
+
+    public String fileName() {
+        return fileName;
     }
 }
