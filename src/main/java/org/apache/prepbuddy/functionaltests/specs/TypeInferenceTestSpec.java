@@ -21,10 +21,4 @@ public class TypeInferenceTestSpec extends DatasetTestSpec {
     public void validateTestResults() {
 
     }
-
-    @Override
-    public DatasetTestResults execute(TestableDataset testableDataset) {
-        return null;
-
-    }
 }
