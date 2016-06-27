@@ -1,6 +1,7 @@
 package org.apache.prepbuddy.cleansers.dedupe;
 
 import org.apache.prepbuddy.qualityanalyzers.FileType;
+import org.apache.prepbuddy.rdds.TransformableRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.List;
 
 public class DuplicationHandler implements Serializable {
@@ -50,6 +52,27 @@ public class DuplicationHandler implements Serializable {
             }
         });
 
+        return getDuplicatesOnly(fingerprintedRDD);
+    }
+
+    public static JavaRDD<String> detectDuplicates(JavaRDD<String> inputRecords) {
+        return detectDuplicatesByColumns(inputRecords, null, null);
+    }
+
+    public static JavaRDD<String> duplicatesAt(TransformableRDD inputRecords, final int columnIndex, final FileType fileType) {
+        final JavaPairRDD<Long, Tuple2<String, Integer>> fingerprintedRDD = inputRecords.mapToPair(new PairFunction<String, Long, Tuple2<String, Integer>>() {
+            @Override
+            public Tuple2<Long, Tuple2<String, Integer>> call(String record) throws Exception {
+                long fingerprint = generateFingerprint(record, Arrays.asList(columnIndex), fileType);
+                Tuple2<String, Integer> recordOnePair = new Tuple2<>(fileType.parseRecord(record)[columnIndex], 1);
+                return new Tuple2<>(fingerprint, recordOnePair);
+            }
+        });
+
+        return getDuplicatesOnly(fingerprintedRDD);
+    }
+
+    private static JavaRDD<String> getDuplicatesOnly(JavaPairRDD<Long, Tuple2<String, Integer>> fingerprintedRDD) {
         final JavaPairRDD<Long, Tuple2<String, Integer>> fingerprintedRecordCount = fingerprintedRDD.reduceByKey(new Function2<Tuple2<String, Integer>, Tuple2<String, Integer>, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<String, Integer> call(Tuple2<String, Integer> accumulator, Tuple2<String, Integer> currentRecordOnePair) throws Exception {
@@ -72,10 +95,6 @@ public class DuplicationHandler implements Serializable {
                 return recordCountPair._1();
             }
         });
-    }
-
-    public static JavaRDD<String> detectDuplicates(JavaRDD<String> inputRecords) {
-        return detectDuplicatesByColumns(inputRecords, null, null);
     }
 
     private static long generateFingerprint(String record, List<Integer> columnIndexes, FileType fileType) {

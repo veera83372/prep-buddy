@@ -80,6 +80,11 @@ public class TransformableRDD extends AbstractRDD {
         return new TransformableRDD(transformed, fileType);
     }
 
+    public TransformableRDD detectDuplicatesAt(int columnIndex) {
+        JavaRDD<String> transformed = DuplicationHandler.duplicatesAt(this, columnIndex, fileType);
+        return new TransformableRDD(transformed, fileType);
+    }
+
     /**
      * Returns a new TransformableRDD containing only the elements that satisfy the matchInDictionary.
      *
@@ -625,5 +630,4 @@ public class TransformableRDD extends AbstractRDD {
     public TransformableRDD wrapRDD(RDD rdd) {
         return new TransformableRDD(super.wrapRDD(rdd), fileType);
     }
-
 }
