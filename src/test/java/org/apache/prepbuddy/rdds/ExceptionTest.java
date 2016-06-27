@@ -27,6 +27,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.listFacets(4);
     }
 
@@ -41,6 +42,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.listFacets(new int[]{3, 6});
     }
 
@@ -54,6 +56,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Column index out of bound"));
         initialRDD.clusters(-1, new SimpleFingerprintAlgorithm());
     }
 
@@ -67,6 +70,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.toDoubleRDD(2);
     }
 
@@ -80,6 +84,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.multiplyColumns(2, 3);
     }
 
@@ -93,6 +98,7 @@ public class ExceptionTest extends SparkTestCase {
         ));
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         exception.expect(ApplicationException.class);
+        exception.expectMessage(CoreMatchers.is("Values of column are not numeric"));
         initialRDD.multiplyColumns(3, 2);
     }
 
