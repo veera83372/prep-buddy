@@ -127,8 +127,8 @@ class TransformableRDD(RDD):
         column_indexes = py2java_int_array(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(column_index, column_indexes))
 
-    def map(self, function, preservesPartitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)
+    def map(self, function, preserves_partitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).map(function, preserves_partitioning), self.__file_type)
 
     def filter(self, f):
         return TransformableRDD(super(TransformableRDD, self).filter(f), self.__file_type)
@@ -136,20 +136,20 @@ class TransformableRDD(RDD):
     def cache(self):
         return TransformableRDD(super(TransformableRDD, self).cache(), self.__file_type)
 
-    def coalesce(self, numPartitions, shuffle=False):
-        return TransformableRDD(super(TransformableRDD, self).coalesce(numPartitions, shuffle), self.__file_type)
+    def coalesce(self, num_partitions, shuffle=False):
+        return TransformableRDD(super(TransformableRDD, self).coalesce(num_partitions, shuffle), self.__file_type)
 
-    def distinct(self, numPartitions=None):
-        return TransformableRDD(super(TransformableRDD, self).distinct(numPartitions), self.__file_type)
+    def distinct(self, num_partitions=None):
+        return TransformableRDD(super(TransformableRDD, self).distinct(num_partitions), self.__file_type)
 
-    def flatMap(self, func, preservesPartitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).flatMap(func, preservesPartitioning), self.__file_type)
+    def flatMap(self, func, preserves_partitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).flatMap(func, preserves_partitioning), self.__file_type)
 
     def intersection(self, other):
         return TransformableRDD(super(TransformableRDD, self).intersection(other), self.__file_type)
 
-    def persist(self, storageLevel=StorageLevel.MEMORY_ONLY_SER):
-        return TransformableRDD(super(TransformableRDD, self).persist(storageLevel), self.__file_type)
+    def persist(self, storage_level=StorageLevel.MEMORY_ONLY_SER):
+        return TransformableRDD(super(TransformableRDD, self).persist(storage_level), self.__file_type)
 
     def unpersist(self):
         return TransformableRDD(super(TransformableRDD, self).unpersist(), self.__file_type)
@@ -157,29 +157,28 @@ class TransformableRDD(RDD):
     def union(self, other):
         return TransformableRDD(super(TransformableRDD, self).union(other), self.__file_type)
 
-    def mapPartitions(self, func, preservesPartitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).mapPartitions(), self.__file_type)
+    def mapPartitions(self, func, preserves_partitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).mapPartitions(func, preserves_partitioning),
+                                self.__file_type)
 
-    def mapPartitionsWithIndex(self, func, preservesPartitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).mapPartitionsWithIndex(func, preservesPartitioning), self.__file_type)
-
-    def sortBy(self, keyfunc, ascending=True, numPartitions=None):
-        return TransformableRDD(super(TransformableRDD, self).sortBy(keyfunc, ascending, numPartitions), self.__file_type)
+    def sortBy(self, keyfunc, ascending=True, num_partitions=None):
+        return TransformableRDD(super(TransformableRDD, self).sortBy(keyfunc, ascending, num_partitions),
+                                self.__file_type)
 
     def setName(self, name):
         return TransformableRDD(super(TransformableRDD, self).setName(name), self.__file_type)
 
-    def subtract(self, other, numPartitions=None):
-        return TransformableRDD(super(TransformableRDD, self).subtract(other, numPartitions), self.__file_type)
+    def subtract(self, other, num_partitions=None):
+        return TransformableRDD(super(TransformableRDD, self).subtract(other, num_partitions), self.__file_type)
 
-    def subtractByKey(self, other, numPartitions=None):
-        return TransformableRDD(super(TransformableRDD, self).subtractByKey(other, numPartitions), self.__file_type)
+    def subtractByKey(self, other, num_partitions=None):
+        return TransformableRDD(super(TransformableRDD, self).subtractByKey(other, num_partitions), self.__file_type)
 
-    def sample(self, withReplacement, fraction, seed=None):
-        return TransformableRDD(super(TransformableRDD, self).sample(withReplacement, fraction, seed), self.__file_type)
+    def sample(self, with_replacement, fraction, seed=None):
+        return TransformableRDD(super(TransformableRDD, self).sample(with_replacement, fraction, seed), self.__file_type)
 
-    def repartition(self, numPartitions):
-        return TransformableRDD(super(TransformableRDD, self).repartition(numPartitions), self.__file_type)
+    def repartition(self, num_partitions):
+        return TransformableRDD(super(TransformableRDD, self).repartition(num_partitions), self.__file_type)
 
-    def pipe(self, command, env=None, checkCode=False):
-        return TransformableRDD(super(TransformableRDD, self).pipe(command, env, checkCode), self.__file_type)
+    def pipe(self, command, env=None, check_code=False):
+        return TransformableRDD(super(TransformableRDD, self).pipe(command, env, check_code), self.__file_type)

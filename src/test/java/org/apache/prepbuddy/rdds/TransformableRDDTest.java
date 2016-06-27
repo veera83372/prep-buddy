@@ -19,8 +19,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TransformableRDDTest extends SparkTestCase {
 
@@ -76,6 +75,29 @@ public class TransformableRDDTest extends SparkTestCase {
         TransformableRDD initialRDD = new TransformableRDD(initialDataset);
         TransformableRDD duplicates = initialRDD.getDuplicates(Arrays.asList(0, 3));
         assertEquals(1, duplicates.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDuplicatesInAPerticularColumn() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "Cory,Male,India,12343",
+                "John,Male,Japan,122343",
+                "Adam,Male,India,1233243",
+                "Smith,Male,Singapore,12342"
+        ));
+
+        TransformableRDD initialRDD = new TransformableRDD(initialDataset);
+        List<String> duplicatesAtCol2 = initialRDD.detectDuplicatesAt(2).collect();
+
+        assertEquals(2, duplicatesAtCol2.size());
+
+        assertTrue(duplicatesAtCol2.contains("India"));
+        assertTrue(duplicatesAtCol2.contains("USA"));
+
+        assertFalse(duplicatesAtCol2.contains("Singapore"));
+        assertFalse(duplicatesAtCol2.contains("Japan"));
     }
 
     @Test

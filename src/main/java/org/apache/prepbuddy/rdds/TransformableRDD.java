@@ -81,6 +81,17 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
+     * Returns a new TransformableRDD containing only the duplicate elements from a particular column of the dataset
+     *
+     * @param columnIndex Column index
+     * @return TransformableRDD
+     */
+    public TransformableRDD detectDuplicatesAt(int columnIndex) {
+        JavaRDD<String> transformed = DuplicationHandler.duplicatesAt(this, columnIndex, fileType);
+        return new TransformableRDD(transformed, fileType);
+    }
+
+    /**
      * Returns a new TransformableRDD containing only the elements that satisfy the matchInDictionary.
      *
      * @param predicate A matchInDictionary function, Removes the row when returns true.
@@ -625,5 +636,4 @@ public class TransformableRDD extends AbstractRDD {
     public TransformableRDD wrapRDD(RDD rdd) {
         return new TransformableRDD(super.wrapRDD(rdd), fileType);
     }
-
 }
