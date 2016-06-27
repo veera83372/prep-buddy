@@ -1,8 +1,10 @@
+from py4j.protocol import Py4JJavaError
 from pyspark import RDD, StorageLevel
 from py4j.java_gateway import java_import
 
 from py_prep_buddy import py2java_int_array
 from py_prep_buddy.class_names import ClassNames
+from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
@@ -62,7 +64,11 @@ class TransformableRDD(RDD):
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
     def list_facets_of(self, column_index):
-        return TextFacets(self._transformable_rdd.listFacets(column_index))
+        try:
+            return TextFacets(self._transformable_rdd.listFacets(column_index))
+        except Py4JJavaError as e:
+            java_exception = e.java_exception
+            raise ApplicationException(java_exception)
 
     def list_facets(self, column_indexes):
         array = py2java_int_array(self.spark_context, column_indexes)
@@ -175,7 +181,8 @@ class TransformableRDD(RDD):
         return TransformableRDD(super(TransformableRDD, self).subtractByKey(other, num_partitions), self.__file_type)
 
     def sample(self, with_replacement, fraction, seed=None):
-        return TransformableRDD(super(TransformableRDD, self).sample(with_replacement, fraction, seed), self.__file_type)
+        return TransformableRDD(super(TransformableRDD, self).sample(with_replacement, fraction, seed),
+                                self.__file_type)
 
     def repartition(self, num_partitions):
         return TransformableRDD(super(TransformableRDD, self).repartition(num_partitions), self.__file_type)

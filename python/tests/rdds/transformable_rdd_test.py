@@ -1,5 +1,6 @@
 from py_prep_buddy.cleansers.imputation import *
 from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
+from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 import tests
@@ -143,17 +144,17 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
 
     def test_add_columns_from_should_merge_all_columns_of_other_transformable_rdd(self):
         initial_spelled_numbers = self.sc.parallelize([
-                "One,Two,Three",
-                "Four,Five,Six",
-                "Seven,Eight,Nine",
-                "Ten,Eleven,Twelve"
+            "One,Two,Three",
+            "Four,Five,Six",
+            "Seven,Eight,Nine",
+            "Ten,Eleven,Twelve"
         ]);
         spelled_numbers = TransformableRDD(initial_spelled_numbers, "csv")
         initial_numeric_data = self.sc.parallelize([
-                "1\t2\t3",
-                "4\t5\t6",
-                "7\t8\t9",
-                "10\t11\t12"
+            "1\t2\t3",
+            "4\t5\t6",
+            "7\t8\t9",
+            "10\t11\t12"
         ])
         numeric_data = TransformableRDD(initial_numeric_data, "tsv")
 
@@ -166,29 +167,29 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
 
     def test_pivot_table_by_count_should_give_pivoted_table(self):
         initial_dataSet = self.sc.parallelize([
-                "known,new,long,home,skips",
-                "unknown,new,short,work,reads",
-                "unknown,follow Up,long,work,skips",
-                "known,follow Up,long,home,skips",
-                "known,new,short,home,reads",
-                "known,follow Up,long,work,skips",
-                "unknown,follow Up,short,work,skips",
-                "unknown,new,short,work,reads",
-                "known,follow Up,long,home,skips",
-                "known,new,long,work,skips",
-                "unknown,follow Up,short,home,skips",
-                "known,new,long,work,skips",
-                "known,follow Up,short,home,reads",
-                "known,new,short,work,reads",
-                "known,new,short,home,reads",
-                "known,follow Up,short,work,reads",
-                "known,new,short,home,reads",
-                "unknown,new,short,work,reads"
+            "known,new,long,home,skips",
+            "unknown,new,short,work,reads",
+            "unknown,follow Up,long,work,skips",
+            "known,follow Up,long,home,skips",
+            "known,new,short,home,reads",
+            "known,follow Up,long,work,skips",
+            "unknown,follow Up,short,work,skips",
+            "unknown,new,short,work,reads",
+            "known,follow Up,long,home,skips",
+            "known,new,long,work,skips",
+            "unknown,follow Up,short,home,skips",
+            "known,new,long,work,skips",
+            "known,follow Up,short,home,reads",
+            "known,new,short,work,reads",
+            "known,new,short,home,reads",
+            "known,follow Up,short,work,reads",
+            "known,new,short,home,reads",
+            "unknown,new,short,work,reads"
         ])
         initial_rdd = TransformableRDD(initial_dataSet, "csv")
         table = initial_rdd.pivot_by_count(4, [0, 1, 2, 3])
         entry = table.value_at("skips", "known")
-        self.assertEqual(6,entry)
+        self.assertEqual(6, entry)
         self.assertEqual(3, table.value_at("skips", "unknown"))
 
     def test_map_should_give_Transformable_rdd(self):
@@ -207,3 +208,8 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         rdd_filter = transformable_rdd.filter(lambda line: line.split(",")[1] != "2")
         collected = rdd_filter.collect()
         self.assertEqual(1, collected.__len__())
+
+    def test_exception(self):
+        initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
+        transformable_rdd = TransformableRDD(initial_dataset, "csv")
+        self.assertRaises(ApplicationException, transformable_rdd.list_facets_of, 4)
