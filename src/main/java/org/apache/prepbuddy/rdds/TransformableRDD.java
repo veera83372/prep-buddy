@@ -246,6 +246,7 @@ public class TransformableRDD extends AbstractRDD {
      * @return TransformableRDD
      */
     public TransformableRDD mapByFlag(final String flag, final int symbolColumnIndex, final Function<String, String> mapFunction) {
+        validateColumnIndex(symbolColumnIndex);
         JavaRDD<String> mappedRDD = this.map(new Function<String, String>() {
             @Override
             public String call(String row) throws Exception {
@@ -313,6 +314,7 @@ public class TransformableRDD extends AbstractRDD {
      * @return TransformableRDD
      */
     public TransformableRDD impute(final int columnIndex, final ImputationStrategy strategy) {
+        validateColumnIndex(columnIndex);
         return impute(columnIndex, strategy, Collections.EMPTY_LIST);
     }
 
@@ -345,25 +347,26 @@ public class TransformableRDD extends AbstractRDD {
     }
 
     /**
-     * Returns a JavaDoubleRDD which is a product of the values in @fistColumn and @secondColumn
+     * Returns a JavaDoubleRDD which is a product of the values in @firstColumn and @secondColumn
      *
-     * @param fistColumn   First Column Index
+     * @param firstColumn   First Column Index
      * @param secondColumn Second Column Index
      * @return JavaDoubleRDD
      */
-    public JavaDoubleRDD multiplyColumns(final int fistColumn, final int secondColumn) {
-        if (!isNumericColumn(fistColumn) || !isNumericColumn(secondColumn))
+    public JavaDoubleRDD multiplyColumns(final int firstColumn, final int secondColumn) {
+        validateColumnIndex(firstColumn, secondColumn);
+        if (!isNumericColumn(firstColumn) || !isNumericColumn(secondColumn))
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC);
 
         return this.mapToDouble(new DoubleFunction<String>() {
             @Override
             public double call(String row) throws Exception {
                 String[] recordAsArray = fileType.parseRecord(row);
-                String columnValue = recordAsArray[fistColumn];
+                String columnValue = recordAsArray[firstColumn];
                 String otherColumnValue = recordAsArray[secondColumn];
                 if (columnValue.trim().isEmpty() || otherColumnValue.trim().isEmpty())
                     return 0;
-                return Double.parseDouble(recordAsArray[fistColumn]) * Double.parseDouble(recordAsArray[secondColumn]);
+                return Double.parseDouble(recordAsArray[firstColumn]) * Double.parseDouble(recordAsArray[secondColumn]);
 
             }
         });
@@ -437,6 +440,7 @@ public class TransformableRDD extends AbstractRDD {
      * @return PivotTable
      */
     public PivotTable pivotByCount(int pivotalColumn, int[] independentColumnIndexes) {
+        validateColumnIndex(pivotalColumn);
         PivotTable<Integer> pivotTable = new PivotTable<>(0);
         for (int index : independentColumnIndexes) {
             TextFacets facets = listFacets(new int[]{pivotalColumn, index});
@@ -457,6 +461,7 @@ public class TransformableRDD extends AbstractRDD {
      * @return JavaRDD<Double>
      */
     public JavaRDD<Double> smooth(int columnIndex, SmoothingMethod smoothingMethod) {
+        validateColumnIndex(columnIndex);
         JavaRDD<String> rdd = this.select(columnIndex);
         return smoothingMethod.smooth(rdd);
     }
