@@ -213,3 +213,5 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
         transformable_rdd = TransformableRDD(initial_dataset, "csv")
         self.assertRaises(ApplicationException, transformable_rdd.list_facets_of, 4)
+        select = transformable_rdd.select(1)
+        print select.count()
