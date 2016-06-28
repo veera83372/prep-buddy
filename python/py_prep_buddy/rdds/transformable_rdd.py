@@ -47,11 +47,11 @@ class TransformableRDD(RDD):
             raise ValueError('"%s" is not a valid file type\nValid file types are CSV and TSV' % file_type)
 
     def deduplicate(self, column_indexes=None):
-        '''
+        """
         Returns a new TransformableRDD containing only unique records by considering all the columns as the primary key.
         :param column_indexes: Sequence of the column index
         :return: TransformableRDD
-        '''
+        """
         if column_indexes is None:
             return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(),
                                     sc=self.spark_context)
@@ -59,12 +59,12 @@ class TransformableRDD(RDD):
                                 sc=self.spark_context)
 
     def impute(self, column_index, imputation_strategy):
-        '''
+        """
         Returns a new TransformableRDD by imputing missing values of the @column_index using the @imputation_strategy
         :param column_index: index of the column on which we want to impute
         :param imputation_strategy: strategy for impute the missing value
         :return: TransformableRDD
-        '''
+        """
         strategy_apply = imputation_strategy.get_strategy(self.spark_context)
         return TransformableRDD(None,
                                 self.__file_type,
@@ -72,21 +72,21 @@ class TransformableRDD(RDD):
                                 sc=self.spark_context)
 
     def clusters(self, column_index, clustering_algorithm):
-        '''
+        """
         Returns Clusters that has all cluster of text of @columnIndex according to @clustering_algorithm
         :param column_index: index of the column
         :param clustering_algorithm: Algorithm to be used to form clusters
         :return: Clusters
-        '''
+        """
         algorithm = clustering_algorithm.get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
     def list_facets_of(self, column_index):
-        '''
+        """
         Returns a new TextFacet containing the facets of @columnIndex
         :param column_index: Index of the column
         :return: TextFacets
-        '''
+        """
         try:
             return TextFacets(self._transformable_rdd.listFacets(column_index))
         except Py4JJavaError as e:
@@ -94,20 +94,20 @@ class TransformableRDD(RDD):
             raise ApplicationException(java_exception)
 
     def list_facets(self, column_indexes):
-        '''
+        """
         Returns a new TextFacet containing the facets of @columnIndexes
         :param column_indexes: Sequence of column indexes
         :return: TextFacets
-        '''
+        """
         array = py2java_int_array(self.spark_context, column_indexes)
         return TextFacets(self._transformable_rdd.listFacets(array))
 
     def select(self, column_index):
-        '''
+        """
         Returns RDD of given column
         :param column_index: index of the column
         :return: RDD
-        '''
+        """
         java_rdd = self._transformable_rdd.select(column_index)
         return _java2py(self.spark_context, java_rdd)
 
