@@ -57,12 +57,8 @@ public class AnalyzableRDDTest extends SparkTestCase {
         assertEquals(new Double(20), report.percentageOfMissingValue(1));
     }
 
-    @Test
-    public void shouldRevealTheShapeOfDataInAColumn() throws Exception {
 
-    }
-
-    //        assertEquals(new Double(10), report.percentageOfInconsistentValues());
+//        assertEquals(new Double(10), report.percentageOfInconsistentValues());
 //        assertEquals(new Double(10), report.percentageOfDuplicateValues());
 //        Range range = report.rangeOfValues();
 //        assertNotNull(range);

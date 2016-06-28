@@ -2,9 +2,11 @@ package org.apache.prepbuddy.rdds;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.prepbuddy.qualityanalyzers.*;
+import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
+import scala.Tuple2;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,5 +67,13 @@ public class AnalyzableRDD extends AbstractRDD {
             }
         });
         return totalMissingValue;
+    }
+
+    public Tuple2<double[], long[]> histogram(final int columnIndex) {
+        JavaDoubleRDD doubleRDD = this.toDoubleRDD(columnIndex);
+        Double max = doubleRDD.max();
+        Double min = doubleRDD.min();
+        double noOfBins = (max - min) / Math.sqrt(numberOfRows);
+        return doubleRDD.histogram((int)noOfBins);
     }
 }
