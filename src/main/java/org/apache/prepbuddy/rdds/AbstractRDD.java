@@ -10,7 +10,10 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.DoubleFunction;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractRDD extends JavaRDD<String> {
     public static final int DEFAULT_SAMPLE_SIZE = 1000;
@@ -26,7 +29,7 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     /**
      * Returns a inferred DataType of given column index
      *
-     * @param columnIndex   Column index
+     * @param columnIndex Column index
      * @return DataType
      */
     public DataType inferType(final int columnIndex) {
@@ -65,18 +68,17 @@ public abstract class AbstractRDD extends JavaRDD<String> {
      * @return int
      */
     public int getNumberOfColumns() {
-        Map<Integer, Integer> noOfColsAndCount = new HashMap<>();
+        Map<Integer, Integer> columnLengthAndCount = new HashMap<>();
         for (String row : sampleRecords) {
-            Set<Integer> lengths = noOfColsAndCount.keySet();
-            int rowLength = fileType.parseRecord(row).length;
-            if (!lengths.contains(rowLength))
-                noOfColsAndCount.put(rowLength, 1);
-            else {
-                Integer count = noOfColsAndCount.get(rowLength);
-                noOfColsAndCount.put(rowLength, count + 1);
+            int columnLength = fileType.parseRecord(row).length;
+            if (columnLengthAndCount.containsKey(columnLength)) {
+                Integer count = columnLengthAndCount.get(columnLength);
+                columnLengthAndCount.put(columnLength, count + 1);
+            } else {
+                columnLengthAndCount.put(columnLength, 1);
             }
         }
-        return getHighestCountKey(noOfColsAndCount);
+        return getHighestCountKey(columnLengthAndCount);
     }
 
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
@@ -95,7 +97,7 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     /**
      * Returns a JavaDoubleRdd of given column index
      *
-     * @param columnIndex   Column index
+     * @param columnIndex Column index
      * @return JavaDoubleRDD
      */
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
