@@ -15,33 +15,23 @@ import java.util.*;
 public abstract class AbstractRDD extends JavaRDD<String> {
     public static final int DEFAULT_SAMPLE_SIZE = 1000;
     protected FileType fileType;
+    private List<String> sampleRecords;
 
     public AbstractRDD(JavaRDD<String> rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
         this.fileType = fileType;
-    }
-
-
-    /**
-     * Returns a inferred DataType of given column index with a sample size of 1000
-     *
-     * @param columnIndex The column where the inference will be done.
-     * @return DataType
-     */
-    public DataType inferType(final int columnIndex) {
-        return inferType(columnIndex, DEFAULT_SAMPLE_SIZE);
+        sampleRecords = this.takeSample(false, DEFAULT_SAMPLE_SIZE);
     }
 
     /**
      * Returns a inferred DataType of given column index
      *
      * @param columnIndex   Column index
-     * @param sampleSize    Sample size
      * @return DataType
      */
-    public DataType inferType(final int columnIndex, int sampleSize) {
+    public DataType inferType(final int columnIndex) {
         validateColumnIndex(columnIndex);
-        List<String> columnSamples = sample(columnIndex, sampleSize);
+        List<String> columnSamples = sampleColumnValues(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
@@ -55,21 +45,19 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     }
 
     protected boolean isNumericColumn(int columnIndex) {
-        List<String> columnSamples = sample(columnIndex, DEFAULT_SAMPLE_SIZE);
+        List<String> columnSamples = sampleColumnValues(columnIndex);
         BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
         return baseType.equals(BaseDataType.NUMERIC);
     }
 
-    public List<String> sample(int columnIndex, int sampleSize) {
-        List<String> rowSamples = this.takeSample(false, sampleSize);
+    public List<String> sampleColumnValues(int columnIndex) {
         List<String> columnSamples = new LinkedList<>();
-        for (String row : rowSamples) {
-            String[] strings = fileType.parseRecord(row);
+        for (String record : sampleRecords) {
+            String[] strings = fileType.parseRecord(record);
             columnSamples.add(strings[columnIndex]);
         }
         return columnSamples;
     }
-
 
     /**
      * Returns the number of columns in this RDD
@@ -77,9 +65,8 @@ public abstract class AbstractRDD extends JavaRDD<String> {
      * @return int
      */
     public int getNumberOfColumns() {
-        List<String> sample = this.takeSample(false, 5);
         Map<Integer, Integer> noOfColsAndCount = new HashMap<>();
-        for (String row : sample) {
+        for (String row : sampleRecords) {
             Set<Integer> lengths = noOfColsAndCount.keySet();
             int rowLength = fileType.parseRecord(row).length;
             if (!lengths.contains(rowLength))

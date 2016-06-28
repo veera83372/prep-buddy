@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * A smoothing method which smooths data based on Weighted Moving Average method that is any
  * average that has multiplying factors to give different weights to data at
- * different positions in the sample window.
+ * different positions in the sampleColumnValues window.
  */
 public class WeightedMovingAverageMethod extends SmoothingMethod {
     private int windowSize;

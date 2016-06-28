@@ -23,10 +23,8 @@ public class AnalyzableRDD extends AbstractRDD {
         this(rdd, FileType.CSV);
     }
 
-
     public DatasetInsights analyzeColumns(final AnalysisPlan plan) {
         List<Integer> columnIndexes = plan.columnIndexes();
-
         HashMap<Integer, ColumnInsight> columnInsights = new HashMap<>();
         for (Integer columnIndex : columnIndexes) {
             DataType dataType = inferType(columnIndex);
@@ -38,7 +36,7 @@ public class AnalyzableRDD extends AbstractRDD {
     }
 
     private int countMissingValues(final int columnIndex, final List<String> missingHints) {
-        JavaRDD<Integer> intermediate = this.map(new Function<String, Integer>() {
+        JavaRDD<Integer> missingDataCount = this.map(new Function<String, Integer>() {
             @Override
             public Integer call(String record) throws Exception {
                 String[] columnValues = fileType.parseRecord(record);
@@ -58,7 +56,7 @@ public class AnalyzableRDD extends AbstractRDD {
             }
 
         });
-        Integer totalMissingValue = intermediate.reduce(new Function2<Integer, Integer, Integer>() {
+        Integer totalMissingValue = missingDataCount.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer accumulator, Integer currentValue) throws Exception {
                 return accumulator + currentValue;
