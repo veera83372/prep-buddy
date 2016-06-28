@@ -2,7 +2,6 @@ package org.apache.prepbuddy.qualityanalyzers;
 
 import org.apache.prepbuddy.utils.Range;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class AnalysisPlan {
     }
 
     public AnalysisPlan(int columnIndex) {
-        this(Arrays.asList(columnIndex), Collections.EMPTY_LIST);
+        this(Collections.singletonList(columnIndex), Collections.EMPTY_LIST);
     }
 
     public List<Integer> columnIndexes() {

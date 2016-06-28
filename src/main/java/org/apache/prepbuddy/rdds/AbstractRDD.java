@@ -19,11 +19,27 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     public static final int DEFAULT_SAMPLE_SIZE = 1000;
     protected FileType fileType;
     private List<String> sampleRecords;
+    private int numberOfColumns;
 
     public AbstractRDD(JavaRDD<String> rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
         this.fileType = fileType;
         sampleRecords = this.takeSample(false, DEFAULT_SAMPLE_SIZE);
+        setNumberOfColumns();
+    }
+
+    private void setNumberOfColumns() {
+        Map<Integer, Integer> columnLengthAndCount = new HashMap<>();
+        for (String row : sampleRecords) {
+            int columnLength = fileType.parseRecord(row).length;
+            if (columnLengthAndCount.containsKey(columnLength)) {
+                Integer count = columnLengthAndCount.get(columnLength);
+                columnLengthAndCount.put(columnLength, count + 1);
+            } else {
+                columnLengthAndCount.put(columnLength, 1);
+            }
+        }
+        this.numberOfColumns = getHighestCountKey(columnLengthAndCount);
     }
 
     /**
@@ -40,9 +56,8 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     }
 
     protected void validateColumnIndex(int... columnIndexes) {
-        int size = getNumberOfColumns();
         for (int index : columnIndexes) {
-            if (index < 0 || size <= index)
+            if (index < 0 || numberOfColumns <= index)
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
         }
     }
@@ -62,25 +77,6 @@ public abstract class AbstractRDD extends JavaRDD<String> {
         return columnSamples;
     }
 
-    /**
-     * Returns the number of columns in this RDD
-     *
-     * @return int
-     */
-    public int getNumberOfColumns() {
-        Map<Integer, Integer> columnLengthAndCount = new HashMap<>();
-        for (String row : sampleRecords) {
-            int columnLength = fileType.parseRecord(row).length;
-            if (columnLengthAndCount.containsKey(columnLength)) {
-                Integer count = columnLengthAndCount.get(columnLength);
-                columnLengthAndCount.put(columnLength, count + 1);
-            } else {
-                columnLengthAndCount.put(columnLength, 1);
-            }
-        }
-        return getHighestCountKey(columnLengthAndCount);
-    }
-
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
         Integer highest = 0;
         Integer highestKey = 0;
@@ -92,6 +88,15 @@ public abstract class AbstractRDD extends JavaRDD<String> {
             }
         }
         return highestKey;
+    }
+
+    /**
+     * Returns number of columns in the current rdd
+     *
+     * @return int
+     */
+    public int getNumberOfColumns() {
+        return numberOfColumns;
     }
 
     /**
