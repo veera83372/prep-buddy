@@ -7,6 +7,25 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+            srcDir 'src/test/functional'
+        }
+    }
+}
+
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+    from sourceSets.main.output
+}
 
 dependencies {
     compile 'org.apache.spark:spark-core_2.11:1.6.0'

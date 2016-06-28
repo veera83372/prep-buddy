@@ -16,6 +16,7 @@ public class TypeInferenceTestSpec extends DatasetTestSpec {
     @Override
     public void executeTest(JavaRDD<String> testableRDD) {
         AnalyzableRDD analyzableRDD = new AnalyzableRDD(testableRDD);
+        analyzableRDD.cache();
         DataType actualDataType = analyzableRDD.inferType(0);
         DatasetAssertions.assertType(DataType.MOBILE_NUMBER, actualDataType);
     }

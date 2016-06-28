@@ -20,6 +20,7 @@ public class PercentageOfMissingDataTestSpec extends DatasetTestSpec {
     @Override
     public void executeTest(JavaRDD<String> testableRDD) {
         AnalyzableRDD analyzableRDD = new AnalyzableRDD(testableRDD, FileType.TSV);
+        analyzableRDD.cache();
         Range range = new Range(0, analyzableRDD.getNumberOfColumns() - 1);
         AnalysisPlan analysisPlan = new AnalysisPlan(range, Arrays.asList("\\N", "N/A"));
         DatasetInsights datasetInsights = analyzableRDD.analyzeColumns(analysisPlan);

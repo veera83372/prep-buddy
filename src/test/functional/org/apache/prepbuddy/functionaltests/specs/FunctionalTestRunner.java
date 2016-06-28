@@ -17,21 +17,21 @@ public class FunctionalTestRunner {
     protected transient JavaSparkContext javaSparkContext;
     private transient List<DatasetTestSpec> specs = new ArrayList<>();
 
-    public FunctionalTestRunner(String masterURL) {
-        setupSparkContext(masterURL);
+    public FunctionalTestRunner() {
+        setupSparkContext();
     }
 
-    private void setupSparkContext(String master) {
-        SparkConf sparkConf = new SparkConf().setAppName(getClass().getName()).setMaster(master);
+    private void setupSparkContext() {
+        SparkConf sparkConf = new SparkConf().setAppName(getClass().getName());
         Logger.getLogger("org").setLevel(Level.OFF);
         Logger.getLogger("akka").setLevel(Level.OFF);
         javaSparkContext = new JavaSparkContext(sparkConf);
     }
 
     public static void main(String[] args) {
-        FunctionalTestRunner testRunner = new FunctionalTestRunner("local");
-        TestableDataset dataset = new TestableDataset("data/calls.csv");
-        TestableDataset personData = new TestableDataset("data/person_data/person_data.tsv");
+        FunctionalTestRunner testRunner = new FunctionalTestRunner();
+        TestableDataset dataset = new TestableDataset(args[0]);
+        TestableDataset personData = new TestableDataset(args[1]);
         TypeInferenceTestSpec typeInferenceTestSpec = new TypeInferenceTestSpec(dataset);
         PercentageOfMissingDataTestSpec percentageOfMissingDataTestSpec = new PercentageOfMissingDataTestSpec(personData);
 
@@ -65,6 +65,4 @@ public class FunctionalTestRunner {
     public void addSpec(DatasetTestSpec testSpec) {
         specs.add(testSpec);
     }
-
-
 }

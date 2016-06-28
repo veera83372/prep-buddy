@@ -10,86 +10,71 @@ import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.DoubleFunction;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractRDD extends JavaRDD<String> {
     public static final int DEFAULT_SAMPLE_SIZE = 1000;
     protected FileType fileType;
+    private List<String> sampleRecords;
+    private int numberOfColumns;
 
     public AbstractRDD(JavaRDD<String> rdd, FileType fileType) {
         super(rdd.rdd(), rdd.rdd().elementClassTag());
         this.fileType = fileType;
+        sampleRecords = this.takeSample(false, DEFAULT_SAMPLE_SIZE);
+        setNumberOfColumns();
     }
 
-
-    /**
-     * Returns a inferred DataType of given column index with a sample size of 1000
-     *
-     * @param columnIndex The column where the inference will be done.
-     * @return DataType
-     */
-    public DataType inferType(final int columnIndex) {
-        return inferType(columnIndex, DEFAULT_SAMPLE_SIZE);
+    private void setNumberOfColumns() {
+        Map<Integer, Integer> columnLengthAndCount = new HashMap<>();
+        for (String row : sampleRecords) {
+            int columnLength = fileType.parseRecord(row).length;
+            if (columnLengthAndCount.containsKey(columnLength)) {
+                Integer count = columnLengthAndCount.get(columnLength);
+                columnLengthAndCount.put(columnLength, count + 1);
+            } else {
+                columnLengthAndCount.put(columnLength, 1);
+            }
+        }
+        this.numberOfColumns = getHighestCountKey(columnLengthAndCount);
     }
 
     /**
      * Returns a inferred DataType of given column index
      *
-     * @param columnIndex   Column index
-     * @param sampleSize    Sample size
+     * @param columnIndex Column index
      * @return DataType
      */
-    public DataType inferType(final int columnIndex, int sampleSize) {
+    public DataType inferType(final int columnIndex) {
         validateColumnIndex(columnIndex);
-        List<String> columnSamples = sample(columnIndex, sampleSize);
+        List<String> columnSamples = sampleColumnValues(columnIndex);
         TypeAnalyzer typeAnalyzer = new TypeAnalyzer(columnSamples);
         return typeAnalyzer.getType();
     }
 
     protected void validateColumnIndex(int... columnIndexes) {
-        int size = getNumberOfColumns();
         for (int index : columnIndexes) {
-            if (index < 0 || size <= index)
+            if (index < 0 || numberOfColumns <= index)
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND);
         }
     }
 
     protected boolean isNumericColumn(int columnIndex) {
-        List<String> columnSamples = sample(columnIndex, DEFAULT_SAMPLE_SIZE);
+        List<String> columnSamples = sampleColumnValues(columnIndex);
         BaseDataType baseType = BaseDataType.getBaseType(columnSamples);
         return baseType.equals(BaseDataType.NUMERIC);
     }
 
-    public List<String> sample(int columnIndex, int sampleSize) {
-        List<String> rowSamples = this.takeSample(false, sampleSize);
+    public List<String> sampleColumnValues(int columnIndex) {
         List<String> columnSamples = new LinkedList<>();
-        for (String row : rowSamples) {
-            String[] strings = fileType.parseRecord(row);
+        for (String record : sampleRecords) {
+            String[] strings = fileType.parseRecord(record);
             columnSamples.add(strings[columnIndex]);
         }
         return columnSamples;
-    }
-
-
-    /**
-     * Returns the number of columns in this RDD
-     *
-     * @return int
-     */
-    public int getNumberOfColumns() {
-        List<String> sample = this.takeSample(false, 5);
-        Map<Integer, Integer> noOfColsAndCount = new HashMap<>();
-        for (String row : sample) {
-            Set<Integer> lengths = noOfColsAndCount.keySet();
-            int rowLength = fileType.parseRecord(row).length;
-            if (!lengths.contains(rowLength))
-                noOfColsAndCount.put(rowLength, 1);
-            else {
-                Integer count = noOfColsAndCount.get(rowLength);
-                noOfColsAndCount.put(rowLength, count + 1);
-            }
-        }
-        return getHighestCountKey(noOfColsAndCount);
     }
 
     private int getHighestCountKey(Map<Integer, Integer> lengthWithCount) {
@@ -106,9 +91,18 @@ public abstract class AbstractRDD extends JavaRDD<String> {
     }
 
     /**
+     * Returns number of columns in the current rdd
+     *
+     * @return int
+     */
+    public int getNumberOfColumns() {
+        return numberOfColumns;
+    }
+
+    /**
      * Returns a JavaDoubleRdd of given column index
      *
-     * @param columnIndex   Column index
+     * @param columnIndex Column index
      * @return JavaDoubleRDD
      */
     public JavaDoubleRDD toDoubleRDD(final int columnIndex) {
