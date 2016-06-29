@@ -1,6 +1,5 @@
 package org.apache.datacommons.prepbuddy.rdds
 
-import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
