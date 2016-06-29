@@ -23,7 +23,6 @@ import static org.junit.Assert.*;
 
 public class TransformableRDDTest extends SparkTestCase {
 
-
     @Test
     public void shouldChangeValueOfFieldOfMatchesClusters() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
@@ -39,10 +38,12 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldBeAbleToDeduplicateRecordsBasedWholeRecord() {
+    public void shouldBeAbleToDeduplicateRecordsByConsideringAllTheColumns() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
+                "John,Male,USA,12343",
+                "Smith,Male,USA,12342",
                 "John,Male,India,12343",
                 "Smith,Male,USA,12342"
         ));
@@ -52,7 +53,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldBeAbleToDeduplicateRecordsBasedOnColumns() {
+    public void shouldBeAbleToDeduplicateRecordsByConsideringTheGivenColumnsAsPrimaryKey() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
@@ -65,7 +66,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldBeAbleToDetectDeduplicateRecordsBasedOnColumns() {
+    public void shouldBeAbleToDetectDeduplicateRecordsByConsideringTheGivenColumnsAsPrimaryKey() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
@@ -78,7 +79,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldBeAbleToDetectDuplicatesInAPerticularColumn() {
+    public void shouldBeAbleToDetectDuplicatesInTheGivenColumn() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
@@ -101,7 +102,7 @@ public class TransformableRDDTest extends SparkTestCase {
     }
 
     @Test
-    public void shouldBeAbleToDetectDeduplicateRecordsBasedOnWholeRecord() {
+    public void shouldBeAbleToDetectDeduplicateRecordsByConsideringAllTheColumns() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
                 "Smith,Male,USA,12345",
                 "John,Male,USA,12343",
