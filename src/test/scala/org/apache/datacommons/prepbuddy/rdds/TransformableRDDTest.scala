@@ -21,7 +21,7 @@ class TransformableRDDTest extends FunSuite with BeforeAndAfterEach{
     sc.stop()
   }
 
-  test ("should be able to count on encryptedRdd"){
+  test("should be able to count on transformableRdd") {
     val data = Array("1,23", "2,45", "3,65", "4,67", "5,23")
     val dataSet: RDD[String] = sc.parallelize(data)
     val transformableRDD: TransformableRDD = new TransformableRDD(dataSet,CSV)
