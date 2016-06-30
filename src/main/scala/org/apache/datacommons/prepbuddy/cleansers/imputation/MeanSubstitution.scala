@@ -3,11 +3,12 @@ package org.apache.datacommons.prepbuddy.cleansers.imputation
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
-class MeanSubstitution extends ImputationStrategy{
-  private var mean: Double = 0
+class MeanSubstitution extends ImputationStrategy {
+    private var mean: Double = 0
 
-  def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = mean = rdd.toDoubleRDD(missingDataColumn).mean()
+    def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
+        mean = rdd.toDoubleRDD(missingDataColumn).mean()
+    }
 
-
-  def handleMissingData(record: RowRecord): String = mean.toString
+    def handleMissingData(record: RowRecord): String = mean.toString
 }
