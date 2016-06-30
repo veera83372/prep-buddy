@@ -42,16 +42,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
 
-    def deduplicate(): TransformableRDD = {
-        val fingerprintedRecords: RDD[(Long, String)] = map((record) => {
-            val columns: Array[String] = fileType.parseRecord(record)
-            val fingerprint = generateFingerPrint(columns)
-            (fingerprint, record)
-        })
-
-        new TransformableRDD(getUniqueValues(fingerprintedRecords), fileType)
-    }
-
     def deduplicate(columnIndexes: List[Int]): TransformableRDD = {
         val fingerprintedRDD: RDD[(Long, String)] = map((record) => {
             val columnsAsArray: Array[String] = fileType.parseRecord(record)
@@ -59,22 +49,21 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             val fingerprint = generateFingerPrint(primaryKeys)
             (fingerprint, record)
         })
-
-        new TransformableRDD(getUniqueValues(fingerprintedRDD), fileType)
+        val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => record)
+        new TransformableRDD(reducedRDD.values, fileType)
     }
 
-    private def getUniqueValues(fingerprintedRDD: RDD[(Long, String)]): RDD[String] = {
-        val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => {
-            record
-        })
-        reducedRDD.values
+    def deduplicate(): TransformableRDD = {
+        deduplicate(List.empty)
     }
 
     private def getPrimaryKeyValues(columnIndexes: List[Int], columnValues: Array[String]): Array[String] = {
+        if (columnIndexes.isEmpty)
+            return columnValues
+
         var primaryKeys: List[String] = List()
-        for (columnIndex <- columnIndexes) {
+        for (columnIndex <- columnIndexes)
             primaryKeys = primaryKeys.:+(columnValues(columnIndex))
-        }
         primaryKeys.toArray
     }
 

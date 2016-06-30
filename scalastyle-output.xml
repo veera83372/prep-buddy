@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.0">
-      
-    </checkstyle>
+ <file name="/Users/rahulna/data-commons/prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDD.scala">
+  <error column="12" line="103" source="org.scalastyle.scalariform.IfBraceChecker" severity="warning"
+         message="If block needs braces"/>
+ </file>
+</checkstyle>

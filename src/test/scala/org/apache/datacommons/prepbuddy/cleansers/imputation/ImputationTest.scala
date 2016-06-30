@@ -28,8 +28,9 @@ class ImputationTest extends SparkTestCase {
     val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
     val imputedByMean: TransformableRDD = transformableRDD.impute(1, new MeanSubstitution())
     val collected: Array[String] = imputedByMean.collect()
-    val expected: String = "1,40.0"
-    assert(collected.contains(expected))
+
+      assert(collected.contains("1,40.0"))
+      assert(collected.contains("2,45"))
   }
 
   test("should impute the missing values by approx mean") {
@@ -38,7 +39,8 @@ class ImputationTest extends SparkTestCase {
     val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
     val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution())
     val collected: Array[String] = imputedByMean.collect()
-    val expected: String = "1,40.0"
-    assert(collected.contains(expected))
+
+      assert(collected.contains("1,40.0"))
+      assert(collected.contains("5,23"))
   }
 }
