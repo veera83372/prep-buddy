@@ -100,8 +100,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
       this.map((record) => {
         val recordAsArray:Array[String] = fileType.parseRecord(record)
         val value: String = recordAsArray(columnIndex)
-        if (!value.trim.isEmpty) parseDouble(value)
-        else 0
+        if (!value.trim.isEmpty) {parseDouble(value)}
+        else {0}
       })
     }
     @DeveloperApi
