@@ -17,7 +17,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
-        val transformed: RDD[String] = this.map((record) => {
+        val transformed: RDD[String] = map((record) => {
             val columns: Array[String] = fileType.parseRecord(record)
             val value: String = columns(columnIndex)
             var replacementValue: String = value
