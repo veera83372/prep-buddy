@@ -19,10 +19,10 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
       (fingerprint, record)
     })
 
-    val uniqueValuesRDD: RDD[(Long, String)] = mappedRDD.reduceByKey((accumulator, record) => {
+    val reducedRDD: RDD[(Long, String)] = mappedRDD.reduceByKey((accumulator, record) => {
       record
     })
-    new TransformableRDD(uniqueValuesRDD.values, fileType)
+    new TransformableRDD(reducedRDD.values, fileType)
   }
 
   private def generateFingerPrint(columns: Array[String]): Long = {
@@ -39,5 +39,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
   }
 
   override protected def getPartitions: Array[Partition] = parent.partitions
+
 }
 
