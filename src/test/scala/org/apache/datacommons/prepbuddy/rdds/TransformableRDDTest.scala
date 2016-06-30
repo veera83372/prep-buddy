@@ -42,7 +42,7 @@ class TransformableRDDTest extends SparkTestCase {
         )
         val initialDataset: RDD[String] = sparkContext.parallelize(records)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate(List(0,1))
+        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate(List(0, 1))
 
         assertEquals(2, deduplicatedRDD.count)
     }
@@ -63,6 +63,7 @@ class TransformableRDDTest extends SparkTestCase {
         assert(transformedRows.contains("Larry, Male, USA"))
         assert(transformedRows.contains("Fiona, Female,USA"))
     }
+
     test("toDoubleRdd should give double RDD of given column index") {
         val data = Array("1,23", "2,45", "3,65", "4,67", "5,23")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
@@ -76,8 +77,8 @@ class TransformableRDDTest extends SparkTestCase {
         assert(collected.contains(2))
         assert(collected.contains(4))
         assert(collected.contains(5))
-
     }
+
     test("text facet should give count of Pair") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
