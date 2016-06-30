@@ -103,6 +103,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             if (!value.trim.isEmpty) parseDouble(value)
             else 0
         })
+    def toDoubleRDD(columnIndex: Int): RDD[Double] = {
+      this.map((record) => {
+        val recordAsArray:Array[String] = fileType.parseRecord(record)
+        val value: String = recordAsArray(columnIndex)
+        if (!value.trim.isEmpty) parseDouble(value)
+        else 0
+      })
     }
 
     @DeveloperApi
