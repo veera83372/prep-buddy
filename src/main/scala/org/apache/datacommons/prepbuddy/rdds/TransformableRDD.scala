@@ -1,5 +1,6 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import java.lang.Double._
 import java.security.MessageDigest
 
 import org.apache.datacommons.prepbuddy.cleansers.imputation.ImputationStrategy
@@ -41,7 +42,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
 
     def deduplicate(): TransformableRDD = {
-
         val mappedRDD: RDD[(Long, String)] = this.map((record) => {
             val columns: Array[String] = this.fileType.parseRecord(record)
             val fingerprint = generateFingerPrint(columns)
@@ -61,7 +61,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         BigInt(algorithm.digest()).longValue()
     }
 
-
+    def toDoubleRdd(columnIndex: Int): RDD[Double] = {
+      this.map((record) => {
+        val recordAsArray:Array[String] = fileType.parseRecord(record)
+        val value: String = recordAsArray(columnIndex)
+        if (!value.trim.isEmpty) parseDouble(value)
+        else 0
+      })
+    }
     @DeveloperApi
     override def compute(split: Partition, context: TaskContext): Iterator[String] = {
         parent.compute(split, context)
