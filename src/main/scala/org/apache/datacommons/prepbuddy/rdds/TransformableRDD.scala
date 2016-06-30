@@ -1,9 +1,12 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import java.lang.Double._
 import java.security.MessageDigest
 
 import org.apache.datacommons.prepbuddy.cluster.TextFacets
+import org.apache.datacommons.prepbuddy.cleansers.imputation.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
+import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
@@ -11,6 +14,23 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+  def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+    strategy.prepareSubstitute(this, columnIndex)
+    val transformed: RDD[String] = this.map((record) => {
+      val columns: Array[String] = fileType.parseRecord(record)
+      val value: String = columns(columnIndex)
+      var replacementValue: String = null
+      if (value == null || value.trim.isEmpty) {
+        replacementValue = strategy.handleMissingData(new RowRecord(columns))
+      }
+
+      columns(columnIndex) = replacementValue
+      fileType.join(columns)
+    })
+
+    new TransformableRDD(transformed, fileType)
+  }
 
     def dropColumn(columnIndex: Int): TransformableRDD = {
         val transformed: RDD[String] = this.map((record: String) => {
@@ -54,7 +74,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         BigInt(algorithm.digest()).longValue()
     }
 
-
+    def toDoubleRdd(columnIndex: Int): RDD[Double] = {
+      this.map((record) => {
+        val recordAsArray:Array[String] = fileType.parseRecord(record)
+        val value: String = recordAsArray(columnIndex)
+        if (!value.trim.isEmpty) parseDouble(value)
+        else 0
+      })
+    }
     @DeveloperApi
     override def compute(split: Partition, context: TaskContext): Iterator[String] = {
         parent.compute(split, context)
