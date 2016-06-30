@@ -59,9 +59,9 @@ class TransformableRDDTest extends SparkTestCase {
         val transformedRows: Array[String] = transformableRDD.dropColumn(2).collect()
 
         assert(transformedRows.contains("John,Male,Canada"))
-        assert(transformedRows.contains("Smith, Male, UK"))
-        assert(transformedRows.contains("Larry, Male, USA"))
-        assert(transformedRows.contains("Fiona, Female,USA"))
+        assert(transformedRows.contains("Smith,Male,UK"))
+        assert(transformedRows.contains("Larry,Male,USA"))
+        assert(transformedRows.contains("Fiona,Female,USA"))
     }
 
     test("toDoubleRdd should give double RDD of given column index") {
