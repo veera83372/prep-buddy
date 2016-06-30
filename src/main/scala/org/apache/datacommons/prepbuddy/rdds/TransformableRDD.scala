@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import java.security.MessageDigest
 
+import org.apache.datacommons.prepbuddy.cluster.TextFacets
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
@@ -33,6 +34,17 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             record
         })
         new TransformableRDD(reducedRDD.values, fileType)
+    }
+
+    def listFacets(columnIndex:Int):TextFacets ={
+        val columnValuePair: RDD[(String, Int)] = map((record) => {
+            val columns: Array[String] = fileType.parseRecord(record)
+            (columns(columnIndex), 1)
+        })
+      val facets: RDD[(String, Int)] = columnValuePair.reduceByKey((accumulator, record) => {
+        accumulator + record
+      })
+      new TextFacets(facets)
     }
 
     private def generateFingerPrint(columns: Array[String]): Long = {

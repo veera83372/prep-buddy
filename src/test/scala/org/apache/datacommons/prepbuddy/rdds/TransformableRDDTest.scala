@@ -1,5 +1,6 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import org.apache.datacommons.prepbuddy.cluster.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
@@ -53,5 +54,11 @@ class TransformableRDDTest extends FunSuite with BeforeAndAfterEach {
         assert(transformedRows.contains("Larry, Male, USA"))
         assert(transformedRows.contains("Fiona, Female,USA"))
 
+    }
+    test("text facet should give count of Pair"){
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val textFacets: TextFacets = initialRDD.listFacets(0)
+        assertEquals(2, textFacets.count)
     }
 }
