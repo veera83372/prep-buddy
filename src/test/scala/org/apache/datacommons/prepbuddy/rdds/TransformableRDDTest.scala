@@ -1,28 +1,13 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.cluster.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
-import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.Assert._
-import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 
-class TransformableRDDTest extends FunSuite with BeforeAndAfterEach {
-
-    var sparkContext: SparkContext = null
-
-    override def beforeEach() {
-        val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName).setMaster("local")
-        sparkContext = new SparkContext(sparkConf)
-        Logger.getLogger("org").setLevel(Level.OFF)
-        Logger.getLogger("akka").setLevel(Level.OFF)
-    }
-
-    override def afterEach() {
-        sparkContext.stop()
-    }
+class TransformableRDDTest extends SparkTestCase {
 
     test("should deduplicate a dataset") {
         val records: Array[String] = Array("Smith,Male,USA,12345", "John,Male,USA,12343", "John,Male,USA,12343", "Smith,Male,USA,12342", "John,Male,India,12343", "Smith,Male,USA,12342")
@@ -70,7 +55,7 @@ class TransformableRDDTest extends FunSuite with BeforeAndAfterEach {
         assert(collected.contains(5))
 
     }
-    test("text facet should give count of Pair"){
+    test("text facet should give count of Pair") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val textFacets: TextFacets = initialRDD.listFacets(0)
