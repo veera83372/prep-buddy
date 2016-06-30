@@ -19,7 +19,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     val transformed: RDD[String] = this.map((record) => {
       val columns: Array[String] = fileType.parseRecord(record)
       val value: String = columns(columnIndex)
-      var replacementValue: String = null
+      var replacementValue: String = value
       if (value == null || value.trim.isEmpty) {
         replacementValue = strategy.handleMissingData(new RowRecord(columns))
       }
@@ -61,7 +61,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         BigInt(algorithm.digest()).longValue()
     }
 
-    def toDoubleRdd(columnIndex: Int): RDD[Double] = {
+    def toDoubleRDD(columnIndex: Int): RDD[Double] = {
       this.map((record) => {
         val recordAsArray:Array[String] = fileType.parseRecord(record)
         val value: String = recordAsArray(columnIndex)
