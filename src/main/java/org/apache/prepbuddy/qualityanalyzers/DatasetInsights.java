@@ -23,7 +23,7 @@ public class DatasetInsights {
     public Double percentageOfMissingValue(int columnIndex) {
         if (!columnInsights.containsKey(columnIndex))
             throw new RuntimeException("No report found for index " + columnIndex);
-        double amountOfMissingValue = columnInsights.get(columnIndex).amountOfMissingValue();
+        double amountOfMissingValue = columnInsights.get(columnIndex).countOfMissingValues();
         return getPercentage(amountOfMissingValue, totalNumberOfRows);
     }
 
