@@ -2,13 +2,32 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import java.security.MessageDigest
 
+import org.apache.datacommons.prepbuddy.cleansers.imputation.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
+import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+  def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+    strategy.prepareSubstitute(this, columnIndex)
+    val transformed: RDD[String] = this.map((record) => {
+      val columns: Array[String] = fileType.parseRecord(record)
+      val value: String = columns(columnIndex)
+      var replacementValue: String = null
+      if (value == null || value.trim.isEmpty) {
+        replacementValue = strategy.handleMissingData(new RowRecord(columns))
+      }
+
+      columns(columnIndex) = replacementValue
+      fileType.join(columns)
+    })
+
+    new TransformableRDD(transformed, fileType)
+  }
 
 
   def deduplicate(): TransformableRDD = {
