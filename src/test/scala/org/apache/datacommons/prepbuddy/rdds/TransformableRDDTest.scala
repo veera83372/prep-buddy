@@ -57,7 +57,7 @@ class TransformableRDDTest extends FunSuite with BeforeAndAfterEach {
         )
         val initialDataset: RDD[String] = sparkContext.parallelize(records)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate(List(0,1))
+        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate(List(0, 1))
 
         assertEquals(2, deduplicatedRDD.count)
     }
@@ -93,7 +93,7 @@ class TransformableRDDTest extends FunSuite with BeforeAndAfterEach {
         assert(collected.contains(5))
 
     }
-    test("text facet should give count of Pair"){
+    test("text facet should give count of Pair") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val textFacets: TextFacets = initialRDD.listFacets(0)
