@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.cluster
 
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
+import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.api.java.JavaRDD
 
