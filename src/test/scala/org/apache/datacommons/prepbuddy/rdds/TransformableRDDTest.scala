@@ -9,7 +9,7 @@ import org.junit.Assert._
 
 class TransformableRDDTest extends SparkTestCase {
 
-    test("should be able to count on transformableRdd") {
+    test("textfacets highest should give one highest pair if only one pair found") {
         val data = Array("1,23", "2,45", "3,65", "4,67", "5,23")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
