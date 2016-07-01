@@ -29,7 +29,7 @@ class ImputationTest extends SparkTestCase {
         val imputedByMean: TransformableRDD = transformableRDD.impute(1, new MeanSubstitution())
         val collected: Array[String] = imputedByMean.collect()
 
-        assert(collected.contains("1,40.0"))
+        assert(collected.contains("1,50.0"))
         assert(collected.contains("2,45"))
     }
 
@@ -40,7 +40,19 @@ class ImputationTest extends SparkTestCase {
         val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution())
         val collected: Array[String] = imputedByMean.collect()
 
-        assert(collected.contains("1,40.0"))
+        assert(collected.contains("1,50.0"))
         assert(collected.contains("5,23"))
     }
+
+    test("should impute the missing values by mode") {
+        val data = Array("1,", "2,45", "3,45", "4,", "5,23")
+        val dataSet: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
+        val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ModeSubstitution())
+        val collected: Array[String] = imputedByMean.collect()
+
+        assert(collected.contains("1,45"))
+        assert(collected.contains("4,45"))
+    }
+
 }
