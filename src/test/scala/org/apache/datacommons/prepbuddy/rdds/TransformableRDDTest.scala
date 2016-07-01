@@ -29,7 +29,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialDataset: RDD[String] = sparkContext.parallelize(records)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate()
-        assertEquals(4, deduplicatedRDD.count)
+        assert(4 == deduplicatedRDD.count)
     }
 
     test("should deduplicate a dataset by considering the given columns as primary key") {
