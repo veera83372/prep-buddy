@@ -1,4 +1,4 @@
-package org.apache.datacommons.prepbuddy.cleansers.imputation
+package org.apache.datacommons.prepbuddy.imputation
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
