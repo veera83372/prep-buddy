@@ -1,20 +1,20 @@
 package org.apache.datacommons.prepbuddy.types
 
 abstract class FileType extends Serializable {
-  def join(values: Array[String]): String
+    def join(values: Array[String]): String
 
-  def parseRecord(record: String): Array[String]
+    def parseRecord(record: String): Array[String]
 }
 
 object CSV extends FileType {
-  override def join(values: Array[String]): String = values.mkString(",")
+    override def join(values: Array[String]): String = values.mkString(",")
 
-  override def parseRecord(record: String): Array[String] = record.split(",", -1)
+    override def parseRecord(record: String): Array[String] = record.split(",", -1).map(columnValue => columnValue.trim)
 }
 
 object TSV extends FileType {
-  override def join(values: Array[String]): String = values.mkString("\t")
+    override def join(values: Array[String]): String = values.mkString("\t")
 
-  override def parseRecord(record: String): Array[String] = record.split("\t", -1)
+    override def parseRecord(record: String): Array[String] = record.split("\t", -1).map(columnValue => columnValue.trim)
 }
 
