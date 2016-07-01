@@ -1,4 +1,4 @@
-package org.apache.datacommons.prepbuddy.cleansers.imputation
+package org.apache.datacommons.prepbuddy.imputations
 
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord

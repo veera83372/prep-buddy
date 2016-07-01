@@ -3,8 +3,8 @@ package org.apache.datacommons.prepbuddy.rdds
 import java.lang.Double._
 import java.security.MessageDigest
 
-import org.apache.datacommons.prepbuddy.cleansers.imputation.ImputationStrategy
-import org.apache.datacommons.prepbuddy.cluster.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
@@ -14,6 +14,15 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable.Buffer
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+    def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
+        val filterFunction = (record: String) => {
+            val rowRecord = new RowRecord(fileType.parseRecord(record))
+            !predicate(rowRecord)
+        }
+        val filteredRDD = this.filter(filterFunction)
+        new TransformableRDD(filteredRDD, this.fileType)
+    }
 
     def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
@@ -34,9 +43,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def dropColumn(columnIndex: Int): TransformableRDD = {
         val transformed: RDD[String] = map((record: String) => {
-            val recordAsBuffer: Buffer[String] = fileType.parse(record).toBuffer
-            recordAsBuffer.remove(columnIndex)
-            fileType.join(recordAsBuffer.toArray)
+            val recordInBuffer: Buffer[String] = fileType.parseRecord(record).toBuffer
+            recordInBuffer.remove(columnIndex)
+            fileType.join(recordInBuffer.toArray)
         })
         new TransformableRDD(transformed, fileType)
     }
@@ -96,15 +105,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
-        this.map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
+        val filtered: RDD[String] = this.filter((record: String) => {
+            val rowRecord: Array[String] = fileType.parseRecord(record)
+            val value: String = rowRecord.apply(columnIndex)
+            !value.trim.isEmpty
+        })
+
+        filtered.map((record) => {
+            val recordAsArray: Array[String] = fileType.parseRecord(record)
             val value: String = recordAsArray(columnIndex)
-            if (!value.trim.isEmpty) {
-                parseDouble(value)
-            }
-            else {
-                0
-            }
+            parseDouble(value)
         })
     }
 
