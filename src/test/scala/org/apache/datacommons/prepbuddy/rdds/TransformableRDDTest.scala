@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
-import org.apache.datacommons.prepbuddy.cluster.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.spark.rdd.RDD
 import org.junit.Assert._

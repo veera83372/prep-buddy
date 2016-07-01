@@ -1,4 +1,4 @@
-package org.apache.datacommons.prepbuddy.cluster
+package org.apache.datacommons.prepbuddy.clusterers
 
 import org.apache.spark.rdd.RDD
 
