@@ -15,6 +15,15 @@ import scala.collection.mutable.Buffer
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
 
+    def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
+        val filterFunction = (record: String) => {
+            val rowRecord = new RowRecord(fileType.parseRecord(record))
+            !predicate(rowRecord)
+        }
+        val filteredRDD = this.filter(filterFunction)
+        new TransformableRDD(filteredRDD, this.fileType)
+    }
+
     def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {
