@@ -15,7 +15,7 @@ class TextFacets(facets: RDD[(String, Int)]) {
                 list = list.:+(peakTuple)
             }
             if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple)) {
-                list.:+(tuple)
+                list = list.:+(tuple)
             }
         }
         list
