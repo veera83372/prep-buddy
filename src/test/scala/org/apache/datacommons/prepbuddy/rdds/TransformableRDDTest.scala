@@ -3,6 +3,7 @@ package org.apache.datacommons.prepbuddy.rdds
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
+import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 import org.junit.Assert._
 
@@ -84,5 +85,16 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val textFacets: TextFacets = initialRDD.listFacets(0)
         assertEquals(2, textFacets.count)
+    }
+
+    test("should remove rows are based on a predicate") {
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1", "B,2", "C,3", "D,4", "E,5"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val predicate = (record: RowRecord) => {
+            val valueAt: String = record.valueAt(0)
+            valueAt.equals("A") || valueAt.equals("B")
+        }
+        val finalRDD: TransformableRDD = initialRDD.removeRows(predicate)
+        assertEquals(3, finalRDD.count)
     }
 }
