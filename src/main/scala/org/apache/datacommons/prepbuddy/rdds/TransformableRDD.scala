@@ -17,7 +17,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
         val filterFunction = (record: String) => {
-            val rowRecord = new RowRecord(fileType.parseRecord(record))
+            val rowRecord = new RowRecord(fileType.parse(record))
             !predicate(rowRecord)
         }
         val filteredRDD = this.filter(filterFunction)
@@ -43,7 +43,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def dropColumn(columnIndex: Int): TransformableRDD = {
         val transformed: RDD[String] = map((record: String) => {
-            val recordInBuffer: Buffer[String] = fileType.parseRecord(record).toBuffer
+            val recordInBuffer: Buffer[String] = fileType.parse(record).toBuffer
             recordInBuffer.remove(columnIndex)
             fileType.join(recordInBuffer.toArray)
         })
@@ -106,13 +106,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
         val filtered: RDD[String] = this.filter((record: String) => {
-            val rowRecord: Array[String] = fileType.parseRecord(record)
+            val rowRecord: Array[String] = fileType.parse(record)
             val value: String = rowRecord.apply(columnIndex)
             !value.trim.isEmpty
         })
 
         filtered.map((record) => {
-            val recordAsArray: Array[String] = fileType.parseRecord(record)
+            val recordAsArray: Array[String] = fileType.parse(record)
             val value: String = recordAsArray(columnIndex)
             parseDouble(value)
         })
