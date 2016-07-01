@@ -22,25 +22,25 @@ class ImputationTest extends SparkTestCase {
         assert(collected.contains("2,45"))
     }
 
-  test("should impute missing values by mean of the given column index "){
-    val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
-    val dataSet: RDD[String] = sparkContext.parallelize(data)
-    val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
-    val imputedByMean: TransformableRDD = transformableRDD.impute(1, new MeanSubstitution())
-    val collected: Array[String] = imputedByMean.collect()
+    test("should impute missing values by mean of the given column index ") {
+        val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
+        val dataSet: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
+        val imputedByMean: TransformableRDD = transformableRDD.impute(1, new MeanSubstitution())
+        val collected: Array[String] = imputedByMean.collect()
 
-      assert(collected.contains("1,40.0"))
-      assert(collected.contains("2,45"))
-  }
+        assert(collected.contains("1,40.0"))
+        assert(collected.contains("2,45"))
+    }
 
-  test("should impute the missing values by approx mean") {
-    val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
-    val dataSet: RDD[String] = sparkContext.parallelize(data)
-    val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
-    val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution())
-    val collected: Array[String] = imputedByMean.collect()
+    test("should impute the missing values by approx mean") {
+        val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
+        val dataSet: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
+        val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution())
+        val collected: Array[String] = imputedByMean.collect()
 
-      assert(collected.contains("1,40.0"))
-      assert(collected.contains("5,23"))
-  }
+        assert(collected.contains("1,40.0"))
+        assert(collected.contains("5,23"))
+    }
 }
