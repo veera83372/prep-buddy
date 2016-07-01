@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
-import org.apache.datacommons.prepbuddy.cluster.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.spark.rdd.RDD
 import org.junit.Assert._
@@ -28,7 +28,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialDataset: RDD[String] = sparkContext.parallelize(records)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate()
-        assertEquals(4, deduplicatedRDD.count)
+        assert(4 == deduplicatedRDD.count)
     }
 
     test("should deduplicate a dataset by considering the given columns as primary key") {

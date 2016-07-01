@@ -3,8 +3,8 @@ package org.apache.datacommons.prepbuddy.rdds
 import java.lang.Double._
 import java.security.MessageDigest
 
-import org.apache.datacommons.prepbuddy.cleansers.imputation.ImputationStrategy
-import org.apache.datacommons.prepbuddy.cluster.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
