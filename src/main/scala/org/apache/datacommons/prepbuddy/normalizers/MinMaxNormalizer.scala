@@ -4,8 +4,8 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 
 class MinMaxNormalizer(minRange:Int = 0,maxRange:Int=1) extends NormalizationStrategy{
 
-    var maxValue :Double = 0
-    var minValue :Double = 0
+    private var maxValue: Double = 0
+    private var minValue: Double = 0
     override def prepare(transformableRDD: TransformableRDD, columnIndex: Int) :Unit={
         val doubleRDD = transformableRDD.toDoubleRDD(columnIndex)
         maxValue = doubleRDD.max

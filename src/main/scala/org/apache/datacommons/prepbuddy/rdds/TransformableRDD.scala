@@ -17,7 +17,7 @@ import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
     def listFacets(columnIndexes: Array[Int]): TextFacets = {
-        val columnsValuePair: RDD[(String, Int)] = map((record) => {
+        val columnValuePair: RDD[(String, Int)] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
             var joinValue: String = ""
             columnIndexes.foreach((each) => {
@@ -25,7 +25,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             })
             (joinValue.trim, 1)
         })
-        val facets: RDD[(String, Int)] = columnsValuePair.reduceByKey((accumulator, currentValue) => {
+        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey((accumulator, currentValue) => {
             accumulator + currentValue
         })
         new TextFacets(facets)
@@ -81,13 +81,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(transformed, fileType)
     }
 
-    def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
-        val fingerprintedRDD: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => record)
-        new TransformableRDD(reducedRDD.values, fileType)
+    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
     }
 
-    def deduplicate(): TransformableRDD = deduplicate(List.empty)
+    def duplicates(): TransformableRDD = duplicates(List.empty)
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
@@ -99,11 +98,38 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
-    def duplicates(): TransformableRDD = duplicates(List.empty)
+    def deduplicate(): TransformableRDD = deduplicate(List.empty)
 
-    def duplicatesAt(columnIndex: Int): TransformableRDD = {
-        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
+        val fingerprintedRDD: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
+        val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => record)
+        new TransformableRDD(reducedRDD.values, fileType)
+    }
+
+    private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
+        map(record => {
+            val primaryKeyValues: Array[String] = extractPrimaryKeys(fileType.parse(record), primaryKeyColumns)
+            val fingerprint = generateFingerprint(primaryKeyValues)
+            (fingerprint, record)
+        })
+    }
+
+    private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
+        if (primaryKeyIndexes.isEmpty)
+            return columnValues
+
+        var primaryKeyValues: Array[String] = Array()
+        for (columnIndex <- primaryKeyIndexes)
+            primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
+
+        primaryKeyValues
+    }
+
+    private def generateFingerprint(columns: Array[String]): Long = {
+        val concatenatedString: String = columns.mkString("")
+        val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
+        algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
+        BigInt(algorithm.digest()).longValue()
     }
 
     def unique(columnIndex: Int): TransformableRDD = {
@@ -142,31 +168,5 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     override protected def getPartitions: Array[Partition] = parent.partitions
-
-    private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
-        map(record => {
-            val primaryKeyValues: Array[String] = extractPrimaryKeys(fileType.parse(record), primaryKeyColumns)
-            val fingerprint = generateFingerprint(primaryKeyValues)
-            (fingerprint, record)
-        })
-    }
-
-    private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty)
-            return columnValues
-
-        var primaryKeyValues: Array[String] = Array()
-        for (columnIndex <- primaryKeyIndexes)
-            primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
-
-        primaryKeyValues
-    }
-
-    private def generateFingerprint(columns: Array[String]): Long = {
-        val concatenatedString: String = columns.mkString("")
-        val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
-        algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
-        BigInt(algorithm.digest()).longValue()
-    }
 }
 
