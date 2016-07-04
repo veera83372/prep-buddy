@@ -3,7 +3,6 @@ package org.apache.datacommons.prepbuddy.rdds
 import java.lang.Double._
 import java.security.MessageDigest
 
-import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
@@ -61,9 +60,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty)
+        if (primaryKeyIndexes.isEmpty) {
             return columnValues
-
+        }
         var primaryKeyValues: Array[String] = Array()
         for (columnIndex <- primaryKeyIndexes)
             primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
@@ -83,7 +82,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val duplicateValuesWithKey: RDD[(Long, Iterable[String])] = fingerprintedRecord.groupByKey().filter(record => record._2.size.!=(1))
+        val duplicateValuesWithKey: RDD[(Long, Iterable[String])] = {
+            fingerprintedRecord.groupByKey().filter(record => record._2.size.!=(1))
+        }
         val duplicateRecords: RDD[String] = duplicateValuesWithKey.flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
