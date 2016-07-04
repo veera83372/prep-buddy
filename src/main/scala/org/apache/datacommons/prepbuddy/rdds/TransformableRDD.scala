@@ -15,8 +15,6 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
-
-
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
         val filterFunction = (record: String) => {
             val rowRecord = new RowRecord(fileType.parse(record))
@@ -25,6 +23,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val filteredRDD = this.filter(filterFunction)
         new TransformableRDD(filteredRDD, this.fileType)
     }
+
 
     def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
@@ -71,6 +70,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     def duplicates(): TransformableRDD = duplicates(List.empty)
+
+    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    }
 
     def listFacets(columnIndex: Int): TextFacets = {
         val columnValuePair: RDD[(String, Int)] = map((record) => {
