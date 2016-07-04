@@ -5,15 +5,12 @@ import org.apache.spark.rdd.RDD
 class TextFacets(facets: RDD[(String, Int)]) {
     private val tuples: Array[(String, Int)] = facets.collect()
 
-    def getFacetsBetween(lowerBound: Int, upperBound: Int): List[(String, Int)] = {
-        var list: List[(String, Int)] = List()
-        for (tuple <- tuples) {
-            val currentTupleValue: Int = tuple._2
-            if (isInRange(currentTupleValue, lowerBound, upperBound)) {
-                list = list.:+(tuple)
-            }
-        }
-        list
+    def getFacetsBetween(lowerBound: Int, upperBound: Int): Array[(String, Int)] = {
+        val tuplesBetween: Array[(String, Int)] = tuples.filter((tuple) => {
+            val currentTuple = tuple._2
+            isInRange(currentTuple, lowerBound, upperBound)
+        })
+        tuplesBetween
     }
 
     def lowest: List[(String, Int)] = {
