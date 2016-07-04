@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.rdds
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
-import org.apache.datacommons.prepbuddy.utils.RowRecord
+import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
 import org.junit.Assert._
 
@@ -78,26 +78,11 @@ class TransformableRDDTest extends SparkTestCase {
         assertTrue(collected.contains(4.0))
     }
 
-//    test("pivotByCount should give pivoted table of given row and column indexes") {
-//        val initialDataSet: JavaRDD[String] = javaSparkContext.parallelize(Arrays.asList("known,new,long,home,skips", "unknown,new,short,work,reads", "unknown,follow Up,long,work,skips", "known,follow Up,long,home,skips", "known,new,short,home,reads", "known,follow Up,long,work,skips", "unknown,follow Up,short,work,skips", "unknown,new,short,work,reads", "known,follow Up,long,home,skips", "known,new,long,work,skips", "unknown,follow Up,short,home,skips", "known,new,long,work,skips", "known,follow Up,short,home,reads", "known,new,short,work,reads", "known,new,short,home,reads", "known,follow Up,short,work,reads", "known,new,short,home,reads", "unknown,new,short,work,reads"))
-//        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
-//        val count: Long = initialRDD.count
-//        val pivotTable: PivotTable[Integer] = initialRDD.pivotByCount(4, Array[Int](0, 1, 2, 3))
-//        val transform: PivotTable[Probability] = pivotTable.transform(new TransformationFunction[Integer, Probability]() {
-//            def transform(integer: Integer): Probability = {
-//                return new Probability(integer.intValue.toDouble / count)
-//            }
-//
-//            def defaultValue: Probability = {
-//                return new Probability(0)
-//            }
-//        }).asInstanceOf[PivotTable[Probability]]
-//        val expected: Probability = new Probability(7.toDouble / 18)
-//        val actual: Probability = transform.valueAt("skips", "long")
-//
-//        assertEquals(expected, actual)
-//
-//        val expectedZero: Probability = new Probability(0)
-//        assertEquals(expectedZero, transform.valueAt("reads", "long"))
-//    }
+    test("select should give selected column of the RDD") {
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val selectedColumn: RDD[String] = initialRDD.select(1)
+
+        assert(selectedColumn.collect sameElements Array("1.0", "2.9", "3", "4", "0"))
+    }
 }

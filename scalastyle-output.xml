@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.0">
- <file name="/Users/lalitp/live/projects/prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/imputations/ImputationTest.scala">
-  <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
- </file>
- <file name="/Users/lalitp/live/projects/prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDD.scala">
-  <error line="86" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
-  <error column="8" line="64" source="org.scalastyle.scalariform.IfBraceChecker" severity="warning" message="If block needs braces"/>
- </file>
- <file name="/Users/lalitp/live/projects/prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDDTest.scala">
+ <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDDTest.scala">
   <error line="82" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error line="86" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+ </file>
+ <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/imputations/ImputationTest.scala">
+  <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
+         message="File line length exceeds 120 characters"/>
  </file>
 </checkstyle>

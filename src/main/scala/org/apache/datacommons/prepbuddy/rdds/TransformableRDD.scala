@@ -6,6 +6,7 @@ import java.security.MessageDigest
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
+import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
@@ -15,6 +16,21 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+    def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
+        normalizer.prepare(this, columnIndex)
+        val rdd: RDD[String] = map((record) => {
+            val columns: Array[String] = fileType.parse(record)
+            val normalizedColumn = normalizer.normalize(columns(columnIndex))
+            columns(columnIndex) = normalizedColumn
+            fileType.join(columns)
+        })
+        new TransformableRDD(rdd, fileType)
+    }
+
+    def select(columnIndex: Int): RDD[String] = {
+        map((record) => fileType.parse(record)(columnIndex))
+    }
+
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
         val filterFunction = (record: String) => {
             val rowRecord = new RowRecord(fileType.parse(record))
@@ -23,7 +39,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val filteredRDD = this.filter(filterFunction)
         new TransformableRDD(filteredRDD, this.fileType)
     }
-
 
     def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
