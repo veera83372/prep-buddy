@@ -1,16 +1,10 @@
 package org.apache.datacommons.prepbuddy.imputations
 
-import java.util.Arrays
-
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
-import org.apache.prepbuddy.cleansers.imputation.NaiveBayesSubstitution
-import org.apache.prepbuddy.rdds.TransformableRDD
-import org.apache.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
-import org.junit.Assert._
 
 class ImputationTest extends SparkTestCase {
 
