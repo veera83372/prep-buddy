@@ -101,7 +101,7 @@ class TransformableRDDTest extends SparkTestCase {
 //        assertEquals(expectedZero, transform.valueAt("reads", "long"))
 //    }
 
-    test("select should give selected colun of the RDD") {
+    test("select should give selected column of the RDD") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val selectedColumn: RDD[String] = initialRDD.select(1)

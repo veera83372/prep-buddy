@@ -24,4 +24,5 @@ class MinMaxNormalizerTest extends SparkTestCase{
         assert(expected sameElements normalizedDurations)
 
     }
+
 }

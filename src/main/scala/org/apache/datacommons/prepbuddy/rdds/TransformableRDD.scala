@@ -17,21 +17,19 @@ import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
-        normalizer.prepare(this,columnIndex)
+        normalizer.prepare(this, columnIndex)
         val rdd: RDD[String] = map((record) => {
             val columns: Array[String] = fileType.parse(record)
             val normalizedColumn = normalizer.normalize(columns(columnIndex))
             columns(columnIndex) = normalizedColumn
             fileType.join(columns)
         })
-        new TransformableRDD(rdd,fileType)
+        new TransformableRDD(rdd, fileType)
     }
 
-    def select(columnIndex: Int) :RDD[String]= {
-        map((record)=>fileType.parse(record)(columnIndex))
+    def select(columnIndex: Int): RDD[String] = {
+        map((record) => fileType.parse(record)(columnIndex))
     }
-
-
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
         val filterFunction = (record: String) => {
@@ -61,7 +59,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def dropColumn(columnIndex: Int): TransformableRDD = {
         val transformed: RDD[String] = map((record: String) => {
-            val recordInBuffer: Buffer[String] = fileType.parse(record).toBuffer
+            val recordInBuffer: mutable.Buffer[String] = fileType.parse(record).toBuffer
             recordInBuffer.remove(columnIndex)
             fileType.join(recordInBuffer.toArray)
         })
@@ -78,11 +76,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val recordsGroupedByFingerprint: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(List.empty[String])(
-            (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
-            (aggregator1, aggregator2) => aggregator1 ::: aggregator2
-        )
-        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint.filter(record => record._2.size != 1).flatMap(records => records._2)
+        val recordsGroupedByFingerprint: RDD[(Long, List[String])] =
+            fingerprintedRecord.aggregateByKey(List.empty[String])(
+                (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
+                (aggregator1, aggregator2) => aggregator1 ::: aggregator2
+            )
+        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint.filter(record => record._2.size != 1)
+            .flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
@@ -129,8 +129,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty)
+        if (primaryKeyIndexes.isEmpty) {
             return columnValues
+        }
 
         var primaryKeyValues: Array[String] = Array()
         for (columnIndex <- primaryKeyIndexes)
