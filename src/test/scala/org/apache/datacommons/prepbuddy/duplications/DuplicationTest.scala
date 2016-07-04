@@ -73,4 +73,42 @@ class DuplicationTest extends SparkTestCase {
         assert(duplicates.contains("Smith,Male,USA,12342"))
         assertFalse(duplicates.contains("Smith,Male,USA,12345"))
     }
+
+    test("should be able to detect duplicates at the specified column") {
+        val records: Array[String] = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,USA,12343",
+            "Cory,Male,India,12343",
+            "John,Male,Japan,122343",
+            "Adam,Male,India,1233243",
+            "Smith,Male,Singapore,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(records)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val duplicatesAtCol2: Array[String] = initialRDD.duplicatesAt(2).collect()
+
+        assertEquals(2, duplicatesAtCol2.length)
+
+        assertTrue(duplicatesAtCol2.contains("India"))
+        assertTrue(duplicatesAtCol2.contains("USA"))
+
+        assertFalse(duplicatesAtCol2.contains("Singapore"))
+        assertFalse(duplicatesAtCol2.contains("Japan"))
+    }
+
+    test("should deduplicate a particular column") {
+        val records: Array[String] = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,USA,12343",
+            "Cory,Male,India,12343",
+            "John,Male,Japan,122343",
+            "Adam,Male,India,1233243",
+            "Smith,Male,Singapore,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(records)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val deduplicatesAtCol2: Array[String] = initialRDD.unique(2).collect()
+
+        assertEquals(4, deduplicatesAtCol2.length)
+    }
 }

@@ -91,17 +91,25 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val recordsGroupedByFingerprint: RDD[(Long, List[String])] =
-            fingerprintedRecord.aggregateByKey(List.empty[String])(
-                (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
-                (aggregator1, aggregator2) => aggregator1 ::: aggregator2
-            )
-        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint.filter(record => record._2.size != 1)
-            .flatMap(records => records._2)
+        val recordsGroupedByFingerprint: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(List.empty[String])(
+            (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
+            (aggregator1, aggregator2) => aggregator1 ::: aggregator2
+        )
+        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint.filter(record => record._2.size != 1).flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
     def duplicates(): TransformableRDD = duplicates(List.empty)
+
+    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
+    }
 
     def listFacets(columnIndex: Int): TextFacets = {
         val columnValuePair: RDD[(String, Int)] = map((record) => {
@@ -144,9 +152,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty) {
+        if (primaryKeyIndexes.isEmpty)
             return columnValues
-        }
 
         var primaryKeyValues: Array[String] = Array()
         for (columnIndex <- primaryKeyIndexes)
