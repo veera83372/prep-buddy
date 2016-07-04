@@ -12,9 +12,5 @@ class RowRecord(columnValues: Array[String]) {
 
     def hasEmptyColumn: Boolean = {
         columnValues.exists(_.trim.isEmpty)
-        //    for (columnValue <- columnValues) {
-        //      if (columnValue.trim.isEmpty) true
-        //    }
-        //    false
     }
 }
