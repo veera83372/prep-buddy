@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.0">
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDDTest.scala">
-  <error line="82" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
-  <error line="86" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+ <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDD.scala">
+  <error line="94" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
+         message="File line length exceeds 120 characters"/>
+  <error line="98" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
+         message="File line length exceeds 120 characters"/>
+  <error column="8" line="155" source="org.scalastyle.scalariform.IfBraceChecker" severity="warning"
+         message="If block needs braces"/>
  </file>
  <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/imputations/ImputationTest.scala">
   <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
          message="File line length exceeds 120 characters"/>
+ </file>
+ <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/utils/PivotTable.scala">
+  <error line="19" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
+         message="File line length exceeds 120 characters"/>
+  <error column="8" line="7" source="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker" severity="warning"
+         message="Public method must have explicit type"/>
+  <error column="8" line="24" source="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker" severity="warning"
+         message="Public method must have explicit type"/>
  </file>
 </checkstyle>
