@@ -10,7 +10,8 @@ class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationS
             record.hasEmptyColumn
         })
         val facets: TextFacets = trainingSet.listFacets(missingDataColumn)
-        val permissibleValues: Array[String] = facets.cardinalValues
+        val cardinalValues: Array[String] = facets.cardinalValues
+        val rowKeys: Array[(String, Int)] = facets.rdd.collect()
 
     }
 

@@ -61,15 +61,16 @@ class ImputationTest extends SparkTestCase {
 //
 //        val naiveBayesSubstitution: NaiveBayesSubstitution = new NaiveBayesSubstitution(0, 1, 2, 3)
 //        naiveBayesSubstitution.prepareSubstitute(initialRDD, 4)
-//        var rowRecord: Array[String] = ("sunny,cool,high,false").split(",")
+//
+//        var rowRecord: Array[String] = "sunny,cool,high,false".split(",")
 //        val mostProbable: String = naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord))
 //
-//        assertEquals("N", mostProbable)
-//        rowRecord = ("rain,hot,high,false").split(",")
-//        assertEquals("N", naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)))
+//        assert("N" == mostProbable)
+//        rowRecord = "rain,hot,high,false".split(",")
+//        assert("N" == naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)))
 //
-//        val record: Array[String] = ("overcast, hot, high, true").split(",")
-//        assertEquals("P", naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
+//        val record: Array[String] = "overcast, hot, high, true".split(",")
+//        assert("P" == naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
 //    }
 
 }

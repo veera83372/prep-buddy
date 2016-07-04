@@ -16,6 +16,21 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+    def listFacets(columnIndexes: Array[Int]): TextFacets = {
+        val columnsValuePair: RDD[(String, Int)] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            var joinValue: String = ""
+            columnIndexes.foreach((each) => {
+                joinValue += recordAsArray(each)
+            })
+            (joinValue.trim, 1)
+        })
+        val facets: RDD[(String, Int)] = columnsValuePair.reduceByKey((accumulator, currentValue) => {
+            accumulator + currentValue
+        })
+        new TextFacets(facets)
+    }
+
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
         normalizer.prepare(this, columnIndex)
         val rdd: RDD[String] = map((record) => {

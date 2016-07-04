@@ -52,4 +52,5 @@ class TextFacets(facets: RDD[(String, Int)]) {
         tuples.foreach((tuple)=> cardinalValues = cardinalValues.:+(tuple._1))
         cardinalValues
     }
+    def rdd: RDD[(String, Int)] = facets
 }

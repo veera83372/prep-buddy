@@ -85,4 +85,10 @@ class TransformableRDDTest extends SparkTestCase {
 
         assert(selectedColumn.collect sameElements Array("1.0", "2.9", "3", "4", "0"))
     }
+
+    test("listFacets should give facets of given column indexes") {
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,B,C", "D,E,F", "G,H,I"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        initialRDD.listFacets(Array(1,2))
+    }
 }
