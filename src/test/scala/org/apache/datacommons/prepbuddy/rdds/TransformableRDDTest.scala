@@ -10,42 +10,11 @@ import org.junit.Assert._
 
 class TransformableRDDTest extends SparkTestCase {
 
-    test("should be able to count on transformableRdd") {
+    test("textfacets highest should give one highest pair if only one pair found") {
         val data = Array("1,23", "2,45", "3,65", "4,67", "5,23")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
         assert(5 == transformableRDD.count())
-    }
-
-    test("should deduplicate a dataset by considering all the columns") {
-        val records: Array[String] = Array(
-            "Smith,Male,USA,12345",
-            "John,Male,USA,12343",
-            "John,Male,USA,12343",
-            "Smith,Male,USA,12342",
-            "John,Male,India,12343",
-            "Smith,Male,USA,12342"
-        )
-        val initialDataset: RDD[String] = sparkContext.parallelize(records)
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate()
-        assert(4 == deduplicatedRDD.count)
-    }
-
-    test("should deduplicate a dataset by considering the given columns as primary key") {
-        val records: Array[String] = Array(
-            "Smith,Male,USA,12345",
-            "John,Male,USA,12343",
-            "John,Male,USA,12343",
-            "Smith,Male,USA,12342",
-            "John,Male,India,12343",
-            "Smith,Male,USA,12342"
-        )
-        val initialDataset: RDD[String] = sparkContext.parallelize(records)
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val deduplicatedRDD: TransformableRDD = initialRDD.deduplicate(List(0, 1))
-
-        assertEquals(2, deduplicatedRDD.count)
     }
 
     test("should drop the specified column from the given rdd") {
