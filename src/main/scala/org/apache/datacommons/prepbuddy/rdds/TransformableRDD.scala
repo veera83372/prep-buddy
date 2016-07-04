@@ -81,8 +81,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val duplicateValuesWithKey: RDD[(Long, Iterable[String])] = fingerprintedRecord.groupByKey().filter(record => record._2.size.!=(1))
-        val duplicateRecords: RDD[String] = duplicateValuesWithKey.flatMap(records => records._2)
+
+        val initialValue: List[String] = List[String]()
+        val mergeValues: (List[String], String) => List[String] = (accumulator, value) => accumulator.::(value)
+        val mergeCombiners: (List[String], List[String]) => List[String] = (agg1, agg2) => agg1 ::: agg2
+
+        val recordsGroupedByKey: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(initialValue)(
+            mergeValues,
+            mergeCombiners
+        )
+        val duplicateRecords: RDD[String] = recordsGroupedByKey.filter(record => record._2.size != 1).flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
