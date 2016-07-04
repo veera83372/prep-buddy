@@ -98,7 +98,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val filtered: RDD[String] = this.filter((record: String) => {
             val rowRecord: Array[String] = fileType.parseRecord(record)
             val value: String = rowRecord.apply(columnIndex)
-            !value.trim.isEmpty
+            val numberMatcher: String = "[+-]?\\d+.?\\d+"
+            !value.trim.isEmpty || value.matches(numberMatcher) || value == null
         })
 
         filtered.map((record) => {
