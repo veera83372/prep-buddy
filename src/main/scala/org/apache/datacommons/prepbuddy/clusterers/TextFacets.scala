@@ -24,7 +24,7 @@ class TextFacets(facets: RDD[(String, Int)]) {
         })
     }
 
-    def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
+    private def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
         var facetsCount: Array[(String, Int)] = Array()
         var peakTuple: (String, Int) = tuples(0)
         facetsCount = facetsCount.:+(peakTuple)
