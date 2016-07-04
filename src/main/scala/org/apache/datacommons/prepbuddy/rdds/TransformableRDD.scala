@@ -3,6 +3,8 @@ package org.apache.datacommons.prepbuddy.rdds
 import java.lang.Double._
 import java.security.MessageDigest
 
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
@@ -108,8 +110,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val filtered: RDD[String] = this.filter((record: String) => {
             val rowRecord: Array[String] = fileType.parse(record)
             val value: String = rowRecord.apply(columnIndex)
-            val numberMatcher: String = "[+-]?\\d+.?\\d+"
-            !value.trim.isEmpty || value.matches(numberMatcher) || value == null
+            NumberUtils.isNumber(value) && (value != null && !value.trim.isEmpty)
         })
 
         filtered.map((record) => {

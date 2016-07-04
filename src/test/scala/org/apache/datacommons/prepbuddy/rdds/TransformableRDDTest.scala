@@ -66,4 +66,15 @@ class TransformableRDDTest extends SparkTestCase {
         val finalRDD: TransformableRDD = initialRDD.removeRows(predicate)
         assertEquals(3, finalRDD.count)
     }
+
+    test("toDoubleRDD should give rdd of double") {
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1.0", "B,2.9", "C,3", "D,4", "E,w"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val doubleRDD: RDD[Double] = initialRDD.toDoubleRDD(1)
+        val collected: Array[Double] = doubleRDD.collect()
+        assertTrue(collected.contains(1.0))
+        assertTrue(collected.contains(2.9))
+        assertTrue(collected.contains(3.0))
+        assertTrue(collected.contains(4.0))
+    }
 }
