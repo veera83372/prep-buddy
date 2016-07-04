@@ -77,4 +77,27 @@ class TransformableRDDTest extends SparkTestCase {
         assertTrue(collected.contains(3.0))
         assertTrue(collected.contains(4.0))
     }
+
+//    test("pivotByCount should give pivoted table of given row and column indexes") {
+//        val initialDataSet: JavaRDD[String] = javaSparkContext.parallelize(Arrays.asList("known,new,long,home,skips", "unknown,new,short,work,reads", "unknown,follow Up,long,work,skips", "known,follow Up,long,home,skips", "known,new,short,home,reads", "known,follow Up,long,work,skips", "unknown,follow Up,short,work,skips", "unknown,new,short,work,reads", "known,follow Up,long,home,skips", "known,new,long,work,skips", "unknown,follow Up,short,home,skips", "known,new,long,work,skips", "known,follow Up,short,home,reads", "known,new,short,work,reads", "known,new,short,home,reads", "known,follow Up,short,work,reads", "known,new,short,home,reads", "unknown,new,short,work,reads"))
+//        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+//        val count: Long = initialRDD.count
+//        val pivotTable: PivotTable[Integer] = initialRDD.pivotByCount(4, Array[Int](0, 1, 2, 3))
+//        val transform: PivotTable[Probability] = pivotTable.transform(new TransformationFunction[Integer, Probability]() {
+//            def transform(integer: Integer): Probability = {
+//                return new Probability(integer.intValue.toDouble / count)
+//            }
+//
+//            def defaultValue: Probability = {
+//                return new Probability(0)
+//            }
+//        }).asInstanceOf[PivotTable[Probability]]
+//        val expected: Probability = new Probability(7.toDouble / 18)
+//        val actual: Probability = transform.valueAt("skips", "long")
+//
+//        assertEquals(expected, actual)
+//
+//        val expectedZero: Probability = new Probability(0)
+//        assertEquals(expectedZero, transform.valueAt("reads", "long"))
+//    }
 }
