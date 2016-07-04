@@ -6,40 +6,39 @@ class TextFacets(facets: RDD[(String, Int)]) {
     private val tuples: Array[(String, Int)] = facets.collect()
 
     def getFacetsBetween(lowerBound: Int, upperBound: Int): Array[(String, Int)] = {
-        val tuplesBetween: Array[(String, Int)] = tuples.filter((tuple) => {
-            val currentTuple = tuple._2
-            isInRange(currentTuple, lowerBound, upperBound)
+        tuples.filter((tuple) => {
+            val currentTupleCount = tuple._2
+            isInRange(currentTupleCount, lowerBound, upperBound)
         })
-        tuplesBetween
     }
 
-    def lowest: List[(String, Int)] = {
+    def lowest: Array[(String, Int)] = {
         getPeakListFor((currentTuple, peakTuple) => {
             currentTuple < peakTuple
         })
     }
 
-    def highest: List[(String, Int)] = {
+    def highest: Array[(String, Int)] = {
         getPeakListFor((currentTuple, peakTuple) => {
             currentTuple > peakTuple
         })
     }
 
-    def getPeakListFor(compareFunction: (Int, Int) => Boolean): List[(String, Int)] = {
-        var list: List[(String, Int)] = List()
+    private def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
+        var facetsCount: Array[(String, Int)] = Array()
         var peakTuple: (String, Int) = tuples(0)
-        list = list.:+(peakTuple)
-        for (tuple <- tuples) {
+        facetsCount = facetsCount.:+(peakTuple)
+        tuples.foreach((tuple)=>{
             if (compareFunction(tuple._2, peakTuple._2)) {
                 peakTuple = tuple
-                list = list.drop(list.size)
-                list = list.:+(peakTuple)
+                facetsCount = facetsCount.drop(facetsCount.length)
+                facetsCount = facetsCount.:+(peakTuple)
             }
             if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple)) {
-                list = list.:+(tuple)
+                facetsCount = facetsCount.:+(tuple)
             }
-        }
-        list
+        })
+        facetsCount
     }
 
     private def isInRange(currentTupleValue: Integer, minimum: Int, maximum: Int): Boolean = {
@@ -47,4 +46,10 @@ class TextFacets(facets: RDD[(String, Int)]) {
     }
 
     def count: Long = facets.count
+
+    def cardinalValues: Array[String] = {
+        var cardinalValues: Array[String] = Array()
+        tuples.foreach((tuple)=> cardinalValues = cardinalValues.:+(tuple._1))
+        cardinalValues
+    }
 }

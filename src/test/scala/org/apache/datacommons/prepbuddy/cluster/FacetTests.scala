@@ -13,7 +13,7 @@ class FacetTests extends SparkTestCase {
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val textFaceted: TextFacets = initialRDD.listFacets(0)
         val expected = ("A", 3)
-        assert(textFaceted.highest.size == 1)
+        assert(textFaceted.highest.length == 1)
         val highest = textFaceted.highest.head
 
         assert(expected == highest)
@@ -25,7 +25,7 @@ class FacetTests extends SparkTestCase {
         val textFaceted: TextFacets = initialRDD.listFacets(0)
         val listOfHighest = textFaceted.highest
 
-        assert(2 == listOfHighest.size)
+        assert(2 == listOfHighest.length)
         assert(2 == textFaceted.count)
 
         assertTrue(listOfHighest.contains(("A", 3)))
@@ -39,7 +39,7 @@ class FacetTests extends SparkTestCase {
         val textFaceted: TextFacets = initialRDD.listFacets(0)
         val listOfLowest = textFaceted.lowest
         assert(3 == textFaceted.count)
-        assert(2 == listOfLowest.size)
+        assert(2 == listOfLowest.length)
         assertTrue(listOfLowest.contains(("X", 2)))
         assertTrue(listOfLowest.contains(("Q", 2)))
     }
@@ -51,10 +51,18 @@ class FacetTests extends SparkTestCase {
         val facetedPair = textFaceted.getFacetsBetween(2, 3)
         assert(4 == textFaceted.count)
 
-        assert(3 == facetedPair.size)
+        assert(3 == facetedPair.length)
         assertTrue(facetedPair.contains(("X", 2)))
         assertTrue(facetedPair.contains(("Q", 2)))
         assertTrue(facetedPair.contains(("A", 3)))
     }
 
+    test(" cardinalValues  Should return cardinal values for the text facets "){
+        val initialDataset = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val cardinalValues: Array[String] = textFaceted.cardinalValues
+
+        assert(cardinalValues sameElements Array("Q", "A", "X", "W"))
+    }
 }
