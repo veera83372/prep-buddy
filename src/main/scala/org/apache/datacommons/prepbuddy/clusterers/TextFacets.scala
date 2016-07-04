@@ -25,20 +25,20 @@ class TextFacets(facets: RDD[(String, Int)]) {
     }
 
     def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
-        var list: Array[(String, Int)] = Array()
+        var facetsCount: Array[(String, Int)] = Array()
         var peakTuple: (String, Int) = tuples(0)
-        list = list.:+(peakTuple)
+        facetsCount = facetsCount.:+(peakTuple)
         tuples.foreach((tuple)=>{
             if (compareFunction(tuple._2, peakTuple._2)) {
                 peakTuple = tuple
-                list = list.drop(list.length)
-                list = list.:+(peakTuple)
+                facetsCount = facetsCount.drop(facetsCount.length)
+                facetsCount = facetsCount.:+(peakTuple)
             }
             if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple)) {
-                list = list.:+(tuple)
+                facetsCount = facetsCount.:+(tuple)
             }
         })
-        list
+        facetsCount
     }
 
     private def isInRange(currentTupleValue: Integer, minimum: Int, maximum: Int): Boolean = {
@@ -46,4 +46,10 @@ class TextFacets(facets: RDD[(String, Int)]) {
     }
 
     def count: Long = facets.count
+
+    def cardinalValues: Array[String] = {
+        var cardinalValues: Array[String] = Array()
+        tuples.foreach((tuple)=> cardinalValues = cardinalValues.:+(tuple._1))
+        cardinalValues
+    }
 }
