@@ -13,32 +13,32 @@ class TextFacets(facets: RDD[(String, Int)]) {
         tuplesBetween
     }
 
-    def lowest: List[(String, Int)] = {
+    def lowest: Array[(String, Int)] = {
         getPeakListFor((currentTuple, peakTuple) => {
             currentTuple < peakTuple
         })
     }
 
-    def highest: List[(String, Int)] = {
+    def highest: Array[(String, Int)] = {
         getPeakListFor((currentTuple, peakTuple) => {
             currentTuple > peakTuple
         })
     }
 
-    def getPeakListFor(compareFunction: (Int, Int) => Boolean): List[(String, Int)] = {
-        var list: List[(String, Int)] = List()
+    def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
+        var list: Array[(String, Int)] = Array()
         var peakTuple: (String, Int) = tuples(0)
         list = list.:+(peakTuple)
-        for (tuple <- tuples) {
+        tuples.foreach((tuple)=>{
             if (compareFunction(tuple._2, peakTuple._2)) {
                 peakTuple = tuple
-                list = list.drop(list.size)
+                list = list.drop(list.length)
                 list = list.:+(peakTuple)
             }
             if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple)) {
                 list = list.:+(tuple)
             }
-        }
+        })
         list
     }
 
