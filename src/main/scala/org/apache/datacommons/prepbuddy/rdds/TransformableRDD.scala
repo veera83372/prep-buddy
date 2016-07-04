@@ -16,6 +16,7 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
         normalizer.prepare(this, columnIndex)
         val rdd: RDD[String] = map((record) => {
@@ -89,6 +90,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     def duplicatesAt(columnIndex: Int): TransformableRDD = {
         val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def listFacets(columnIndex: Int): TextFacets = {
