@@ -1,10 +1,14 @@
 package org.apache.datacommons.prepbuddy.utils
 
-import scala.collection.{Set, mutable}
+import scala.collection.{mutable}
 
-class PivotTable[T] (defaultValue: T) {
+class PivotTable[T](defaultValue: T) {
 
-    def transform(transformedFunction: (Any) => Any, defValue: Any) = {
+    private var lookUpTable: mutable.Map[String, mutable.Map[String, T]] = {
+        new mutable.HashMap[String, mutable.Map[String, T]]()
+    }
+
+    def transform(transformedFunction: (Any) => Any, defValue: Any): Any = {
         val table = new PivotTable[Any](defValue)
         lookUpTable.keysIterator.foreach((each) => {
             val columns = lookUpTable(each)
@@ -16,12 +20,12 @@ class PivotTable[T] (defaultValue: T) {
         table
     }
 
-    private var lookUpTable: mutable.Map[String, mutable.Map[String, T]] = new mutable.HashMap[String, mutable.Map[String, T]]()
 
     def valueAt(rowKey: String, columnKey: String): T = {
         lookUpTable(rowKey)(columnKey)
     }
-    def addEntry(rowKey: String, columnKey: String, value: T) = {
+
+    def addEntry(rowKey: String, columnKey: String, value: T): Unit = {
         if (!lookUpTable.contains(rowKey)) {
             val columnMap = new mutable.HashMap[String, T]().withDefaultValue(defaultValue)
             lookUpTable += (rowKey -> columnMap)

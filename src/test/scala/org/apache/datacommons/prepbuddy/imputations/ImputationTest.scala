@@ -55,22 +55,22 @@ class ImputationTest extends SparkTestCase {
         assert(collected.contains("4,45"))
     }
 
-//    test("should impute by naive bayes substitution") {
-//        val initialDataSet: RDD[String] = sparkContext.parallelize(Array("sunny,hot,high,false,N", "sunny,hot,high,true,N", "overcast,hot,high,false,P", "rain,mild,high,false,P", "rain,cool,normal,false,P", "rain,cool,normal,true,N", "overcast,cool,normal,true,P", "sunny,mild,high,false,N", "sunny,cool,normal,false,P", "rain,mild,normal,false,P", "sunny,mild,normal,true,P", "overcast,mild,high,true,P", "overcast,hot,normal,false,P", "rain,mild,high,true,N"))
-//        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
-//
-//        val naiveBayesSubstitution: NaiveBayesSubstitution = new NaiveBayesSubstitution(0, 1, 2, 3)
-//        naiveBayesSubstitution.prepareSubstitute(initialRDD, 4)
-//
-//        var rowRecord: Array[String] = "sunny,cool,high,false".split(",")
-//        val mostProbable: String = naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord))
-//
-//        assert("N" == mostProbable)
-//        rowRecord = "rain,hot,high,false".split(",")
-//        assert("N" == naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)))
-//
-//        val record: Array[String] = "overcast, hot, high, true".split(",")
-//        assert("P" == naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
-//    }
+    test("should impute by naive bayes substitution") {
+        val initialDataSet: RDD[String] = sparkContext.parallelize(Array("sunny,hot,high,false,N", "sunny,hot,high,true,N", "overcast,hot,high,false,P", "rain,mild,high,false,P", "rain,cool,normal,false,P", "rain,cool,normal,true,N", "overcast,cool,normal,true,P", "sunny,mild,high,false,N", "sunny,cool,normal,false,P", "rain,mild,normal,false,P", "sunny,mild,normal,true,P", "overcast,mild,high,true,P", "overcast,hot,normal,false,P", "rain,mild,high,true,N"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+
+        val naiveBayesSubstitution: NaiveBayesSubstitution = new NaiveBayesSubstitution(0, 1, 2, 3)
+        naiveBayesSubstitution.prepareSubstitute(initialRDD, 4)
+
+        var rowRecord: Array[String] = "sunny,cool,high,false".split(",")
+        val mostProbable: String = naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord))
+
+        assert("N" == mostProbable)
+        rowRecord = "rain,hot,high,false".split(",")
+        assert("N" == naiveBayesSubstitution.handleMissingData(new RowRecord(rowRecord)))
+
+        val record: Array[String] = "overcast, hot, high, true".split(",")
+        assert("P" == naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
+    }
 
 }
