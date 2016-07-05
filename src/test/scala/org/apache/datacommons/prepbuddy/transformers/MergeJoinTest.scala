@@ -15,6 +15,7 @@ class MergeJoinTest extends SparkTestCase {
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
         val result: Array[String] = transformableRDD.mergeColumns(List(0, 3, 1), "_").collect()
 
         assert(result.length == 4)
@@ -31,6 +32,7 @@ class MergeJoinTest extends SparkTestCase {
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
         val result: Array[String] = transformableRDD.mergeColumns(List(0, 3, 1)).collect()
 
         assert(result.length == 4)
@@ -47,10 +49,96 @@ class MergeJoinTest extends SparkTestCase {
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
-        val result: Array[String] = transformableRDD.mergeColumns(List(0, 3, 1), "_", removeOriginal = false).collect()
+
+        val result: Array[String] = transformableRDD.mergeColumns(List(0, 3, 1), "_", retainColumns = true).collect()
 
         assert(result.length == 4)
         assert(result.contains("John,Male,21,Canada,John_Canada_Male"))
         assert(result.contains("Larry,Male,23,USA,Larry_USA_Male"))
+    }
+
+    test("should split the specified column value according to the given lengths by removing original columns") {
+        val data = Array(
+            "John,Male,21,+914382313832,Canada",
+            "Smith, Male, 30,+015314343462, UK",
+            "Larry, Male, 23,+009815432975, USA",
+            "Fiona, Female,18,+891015709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByFieldLength(3, List(3, 10)).collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,Canada,+91,4382313832"))
+        assert(result.contains("Smith,Male,30,UK,+01,5314343462"))
+    }
+
+    test("should split the specified column value according to the given lengths by keeping original columns") {
+        val data = Array(
+            "John,Male,21,+914382313832,Canada",
+            "Smith, Male, 30,+015314343462, UK",
+            "Larry, Male, 23,+009815432975, USA",
+            "Fiona, Female,18,+891015709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByFieldLength(3, List(3, 10), retainColumn = true).collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,+914382313832,Canada,+91,4382313832"))
+        assert(result.contains("Smith,Male,30,+015314343462,UK,+01,5314343462"))
+    }
+
+    test("should split the specified column value by delimiter while keeping the original column") {
+        val data = Array(
+            "John,Male,21,+91-4382313832,Canada",
+            "Smith, Male, 30,+01-5314343462, UK",
+            "Larry, Male, 23,+00-9815432975, USA",
+            "Fiona, Female,18,+89-1015709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", retainColumn = true).collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,+91-4382313832,Canada,+91,4382313832"))
+        assert(result.contains("Smith,Male,30,+01-5314343462,UK,+01,5314343462"))
+    }
+
+    test("should split the specified column value by delimiter while removing the original column") {
+        val data = Array(
+            "John,Male,21,+91-4382313832,Canada",
+            "Smith, Male, 30,+01-5314343462, UK",
+            "Larry, Male, 23,+00-9815432975, USA",
+            "Fiona, Female,18,+89-1015709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-").collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,Canada,+91,4382313832"))
+        assert(result.contains("Smith,Male,30,UK,+01,5314343462"))
+    }
+
+    test("should split the given column by delimiter into given number of split") {
+        val data = Array(
+            "John,Male,21,+91-4382-313832,Canada",
+            "Smith, Male, 30,+01-5314-343462, UK",
+            "Larry, Male, 23,+00-9815-432975, USA",
+            "Fiona, Female,18,+89-1015-709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", 2).collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,Canada,+91,4382-313832"))
+        assert(result.contains("Smith,Male,30,UK,+01,5314-343462"))
     }
 }

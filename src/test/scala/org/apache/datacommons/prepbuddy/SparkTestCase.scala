@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 class SparkTestCase extends FunSuite with BeforeAndAfterEach {

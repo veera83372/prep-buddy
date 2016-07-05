@@ -16,6 +16,21 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+    def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
+        val transformed: TransformableRDD = removeRows((record) => {
+            val firstColumnValue: String = record.valueAt(firstColumn)
+            val secondColumnValue: String = record.valueAt(secondColumn)
+            !NumberUtils.isNumber(secondColumnValue) || !NumberUtils.isNumber(firstColumnValue) || secondColumnValue.trim.isEmpty || firstColumnValue.trim.isEmpty
+        })
+        transformed.map((row) => {
+            val recordAsArray: Array[String] = fileType.parse(row)
+            val firstColumnValue: String = recordAsArray(firstColumn)
+            val secondColumnValue: String = recordAsArray(secondColumn)
+            firstColumnValue.toDouble * secondColumnValue.toDouble
+        })
+    }
+
     def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
         val table: PivotTable[Integer] = new PivotTable[Integer](0)
         independentColumnIndexes.foreach((each) => {
@@ -46,11 +61,55 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TextFacets(facets)
     }
 
-    def mergeColumns(columns: List[Int], separator: String = " ", removeOriginal: Boolean = true): TransformableRDD = {
+    def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
+        val transformed: RDD[String] = map((record) => {
+            var recordAsArray: Array[String] = fileType.parse(record)
+            val splitValue: Array[String] = splitValueByLength(recordAsArray(column), fieldLengths)
+            if (!retainColumn) {
+                recordAsArray = removeElements(recordAsArray, List(column))
+            }
+            fileType.join(recordAsArray ++ splitValue)
+        })
+        new TransformableRDD(transformed, fileType)
+    }
+
+    private def splitValueByLength(value: String, lengths: List[Int]): Array[String] = {
+        var result: Array[String] = Array.empty[String]
+        var startingIndex: Int = 0
+        lengths.foreach((length) => {
+            val endingIndex: Int = startingIndex + length
+            val splitValue: String = value.substring(startingIndex, endingIndex)
+            result = result.:+(splitValue)
+            startingIndex = startingIndex + length
+        })
+        result
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
+        val transformed: RDD[String] = map((record) => {
+            var recordAsArray: Array[String] = fileType.parse(record)
+            val splitValue: Array[String] = recordAsArray(column).split(delimiter, maxSplit)
+            if (!retainCol) {
+                recordAsArray = removeElements(recordAsArray, List(column))
+            }
+            fileType.join(recordAsArray ++ splitValue)
+        })
+        new TransformableRDD(transformed, fileType)
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1, retainColumn)
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1)
+    }
+
+    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
         val transformedRDD: RDD[String] = map((record) => {
             var recordAsArray: Array[String] = fileType.parse(record)
             val mergedValue: String = mergeValues(recordAsArray, columns, separator)
-            if (removeOriginal) {
+            if (!retainColumns) {
                 recordAsArray = removeElements(recordAsArray, columns)
             }
             fileType.join(recordAsArray :+ mergedValue)
