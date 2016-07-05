@@ -22,7 +22,7 @@ class MergeJoinTest extends SparkTestCase {
         assert(result.contains("23,Larry_USA_Male"))
     }
 
-    test("should merge the given columns with space by removing the original columns when only the list of columns are passed to it") {
+    test("should merge the given columns with space when no separator is passed") {
         val data = Array(
             "John,Male,21,Canada",
             "Smith, Male, 30, UK",
@@ -38,7 +38,7 @@ class MergeJoinTest extends SparkTestCase {
         assert(result.contains("23,Larry USA Male"))
     }
 
-    test("should merge the given columns with given seperator by removing the original columns by keeping the original values") {
+    test("should merge the given columns by keeping the original columns") {
         val data = Array(
             "John,Male,21,Canada",
             "Smith, Male, 30, UK",

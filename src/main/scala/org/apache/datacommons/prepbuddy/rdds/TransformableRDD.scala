@@ -34,9 +34,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val transformedRDD: RDD[String] = map((record) => {
             var recordAsArray: Array[String] = fileType.parse(record)
             val mergedValue: String = mergeValues(recordAsArray, columns, separator)
-            if (removeOriginal)
+            if (removeOriginal) {
                 recordAsArray = removeElements(recordAsArray, columns)
-
+            }
             fileType.join(recordAsArray :+ mergedValue)
         })
         new TransformableRDD(transformedRDD, fileType)
@@ -51,8 +51,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     private def removeElements(values: Array[String], columns: List[Int]): Array[String] = {
         var result: mutable.Buffer[String] = mutable.Buffer.empty
         for (index <- values.indices)
-            if (!columns.contains(index))
+            if (!columns.contains(index)) {
                 result += values(index)
+            }
         result.toArray
     }
 
@@ -132,11 +133,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val recordsGroupedByFingerprint: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(List.empty[String])(
+        val recordsGroupedByKey: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(List.empty[String])(
             (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
             (aggregator1, aggregator2) => aggregator1 ::: aggregator2
         )
-        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint
+        val duplicateRecords: RDD[String] = recordsGroupedByKey
             .filter(record => record._2.size != 1)
             .flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
@@ -162,7 +163,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty){
+        if (primaryKeyIndexes.isEmpty) {
             return columnValues
         }
         var primaryKeyValues: Array[String] = Array()
