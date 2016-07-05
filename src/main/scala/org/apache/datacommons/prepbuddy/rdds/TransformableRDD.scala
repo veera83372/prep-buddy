@@ -8,7 +8,7 @@ import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
-import org.apache.datacommons.prepbuddy.utils.RowRecord
+import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
@@ -16,12 +16,25 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+    def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
+        val table: PivotTable[Integer] = new PivotTable[Integer](0)
+        independentColumnIndexes.foreach((each) => {
+            val facets: TextFacets = listFacets(Array(pivotalColumn, each))
+            val tuples = facets.rdd.collect()
+            tuples.foreach((tuple) => {
+                val split: Array[String] = tuple._1.split("\n")
+                table.addEntry(split(0), split(1), tuple._2)
+            })
+        })
+        table
+    }
+
     def listFacets(columnIndexes: Array[Int]): TextFacets = {
         val columnsValuePair: RDD[(String, Int)] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
             var joinValue: String = ""
             columnIndexes.foreach((each) => {
-                joinValue += recordAsArray(each)
+                joinValue += recordAsArray(each) + "\n"
             })
             (joinValue.trim, 1)
         })

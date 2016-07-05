@@ -4,7 +4,7 @@ import scala.collection.{Set, mutable}
 
 class PivotTable[T] (defaultValue: T) {
 
-    def transform(transformedFunction: (Any) => Any, defValue: Any) = {
+    def transform(transformedFunction: (Any) => Any, defValue: Any): Any = {
         val table = new PivotTable[Any](defValue)
         lookUpTable.keysIterator.foreach((each) => {
             val columns = lookUpTable(each)
