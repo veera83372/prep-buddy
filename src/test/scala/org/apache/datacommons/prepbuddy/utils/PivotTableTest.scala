@@ -28,13 +28,13 @@ class PivotTableTest extends SparkTestCase{
 
         val transformed: PivotTable[Double] = pivotTable.transform((value: Any) => {
             0.9
-        }, 10).asInstanceOf[PivotTable[Double]]
+        }, 10.0).asInstanceOf[PivotTable[Double]]
 
 
         val value: Any = transformed.valueAt("row", "column1")
         assert(0.9 == value)
 
-        assert(10 == transformed.valueAt("row", "column"))
+        assert(10.0 == transformed.valueAt("row", "column"))
     }
 
     test("pivotByCount should give pivoted table of given column") {
