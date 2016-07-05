@@ -19,7 +19,7 @@ object TSV extends FileType {
     override def join(values: Array[String]): String = values.mkString("\t")
 
     override def parse(record: String): Array[String] = {
-        record.split("\t", -1).map(columnValue => columnValue.trim)
+        record.split("\t", -1).map(_.trim)
     }
 }
 

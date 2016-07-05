@@ -37,7 +37,7 @@ class DuplicationTest extends SparkTestCase {
         assertEquals(2, deduplicatedRDD.count)
     }
 
-    test("should detect duplicates from a dataset by considering the given columns as primary key") {
+    test("should detect duplicates in a dataSet by considering the given columns as primary key") {
         val records: Array[String] = Array(
             "Smith,Male,USA,12345",
             "John,Male,USA,12343",

@@ -9,9 +9,9 @@ class NumberMap() {
         numbers += (key -> value)
     }
 
-    def keyWithHighestValue : String = {
+    def keyWithHighestValue: String = {
         var highestTuple = ("", 0.0)
-        numbers.foreach( (tuple) => {
+        numbers.foreach((tuple) => {
             val value: Double = tuple._2
             if (value > highestTuple._2) highestTuple = tuple
         })

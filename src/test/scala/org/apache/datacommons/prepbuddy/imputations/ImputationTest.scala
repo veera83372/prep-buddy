@@ -39,7 +39,7 @@ class ImputationTest extends SparkTestCase {
         val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
-        val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution())
+        val imputedByMean: TransformableRDD = transformableRDD.impute(1, new ApproxMeanSubstitution)
         val collected: Array[String] = imputedByMean.collect()
 
         assert(collected.contains("1,50.0"))

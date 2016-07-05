@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.imputations
 
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
-import org.apache.datacommons.prepbuddy.utils.{NumberMap, Probability, PivotTable, RowRecord}
+import org.apache.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Probability, RowRecord}
 
 
 class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationStrategy{

@@ -1,6 +1,6 @@
 package org.apache.datacommons.prepbuddy.utils
 
-import scala.collection.{mutable}
+import scala.collection.mutable
 
 class PivotTable[T](defaultValue: T) {
 
@@ -18,17 +18,16 @@ class PivotTable[T](defaultValue: T) {
         table
     }
 
-
-    def valueAt(rowKey: String, columnKey: String): T = {
-        lookUpTable(rowKey)(columnKey)
-    }
-
     def addEntry(rowKey: String, columnKey: String, value: T): Unit = {
         if (!lookUpTable.contains(rowKey)) {
             val columnMap = new mutable.HashMap[String, T]().withDefaultValue(defaultValue)
             lookUpTable += (rowKey -> columnMap)
         }
         lookUpTable(rowKey) += (columnKey -> value)
+    }
+
+    def valueAt(rowKey: String, columnKey: String): T = {
+        lookUpTable(rowKey)(columnKey)
     }
 
 
