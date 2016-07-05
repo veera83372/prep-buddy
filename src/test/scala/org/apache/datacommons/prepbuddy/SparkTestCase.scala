@@ -17,6 +17,4 @@ class SparkTestCase extends FunSuite with BeforeAndAfterEach {
     override def afterEach() {
         sparkContext.stop()
     }
-
-
 }
