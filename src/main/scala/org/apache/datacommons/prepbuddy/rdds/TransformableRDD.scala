@@ -16,6 +16,20 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+    def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
+        val transformed: TransformableRDD = removeRows((record) => {
+            val firstColumnValue: String = record.valueAt(firstColumn)
+            val secondColumnValue: String = record.valueAt(secondColumn)
+            !NumberUtils.isNumber(secondColumnValue) || !NumberUtils.isNumber(firstColumnValue) || secondColumnValue.trim.isEmpty || firstColumnValue.trim.isEmpty
+        })
+        transformed.map((row) => {
+            val recordAsArray: Array[String] = fileType.parse(row)
+            val firstColumnValue: String = recordAsArray(firstColumn)
+            val secondColumnValue: String = recordAsArray(secondColumn)
+            firstColumnValue.toDouble * secondColumnValue.toDouble
+        })
+    }
+
     def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
         val table: PivotTable[Integer] = new PivotTable[Integer](0)
         independentColumnIndexes.foreach((each) => {

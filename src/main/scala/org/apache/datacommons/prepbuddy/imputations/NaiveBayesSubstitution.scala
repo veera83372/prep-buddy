@@ -8,6 +8,7 @@ import org.apache.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Probabilit
 class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationStrategy{
     private var probs: PivotTable[Probability] = null
     private var permissibleValues: Array[String] = null
+
     override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
         val trainingSet: TransformableRDD = rdd.removeRows(_.hasEmptyColumn)
         val facets: TextFacets = trainingSet.listFacets(missingDataColumn)
