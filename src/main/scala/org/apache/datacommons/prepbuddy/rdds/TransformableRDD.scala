@@ -18,17 +18,21 @@ import scala.collection.mutable
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
 
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
-        val transformed: TransformableRDD = removeRows((record) => {
+        val rddOfNumbers: TransformableRDD = removeRows((record) => {
             val firstColumnValue: String = record.valueAt(firstColumn)
             val secondColumnValue: String = record.valueAt(secondColumn)
-            !NumberUtils.isNumber(secondColumnValue) || !NumberUtils.isNumber(firstColumnValue) || secondColumnValue.trim.isEmpty || firstColumnValue.trim.isEmpty
+            isNotNumber(secondColumnValue) || isNotNumber(firstColumnValue)
         })
-        transformed.map((row) => {
+        rddOfNumbers.map((row) => {
             val recordAsArray: Array[String] = fileType.parse(row)
             val firstColumnValue: String = recordAsArray(firstColumn)
             val secondColumnValue: String = recordAsArray(secondColumn)
             firstColumnValue.toDouble * secondColumnValue.toDouble
         })
+    }
+
+    private def isNotNumber(value: String): Boolean = {
+        value.trim.isEmpty || !NumberUtils.isNumber(value)
     }
 
     def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
@@ -48,15 +52,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val columnValuePair: RDD[(String, Int)] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
             var joinValue: String = ""
-            columnIndexes.foreach((each) => {
-                joinValue += recordAsArray(each) + "\n"
+            columnIndexes.foreach((index) => {
+                joinValue += recordAsArray(index) + "\n"
             })
             (joinValue.trim, 1)
         })
         val facets: RDD[(String, Int)] = {
-            columnValuePair.reduceByKey((accumulator, currentValue) => {
-                accumulator + currentValue
-            })
+            columnValuePair.reduceByKey((accumulator, currentValue) => accumulator + currentValue)
         }
         new TextFacets(facets)
     }
@@ -85,12 +87,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         result
     }
 
-    def splitByDelimiter(column: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
+    def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
         val transformed: RDD[String] = map((record) => {
             var recordAsArray: Array[String] = fileType.parse(record)
-            val splitValue: Array[String] = recordAsArray(column).split(delimiter, maxSplit)
+            val splitValue: Array[String] = recordAsArray(col).split(delimiter, maxSplit)
             if (!retainCol) {
-                recordAsArray = removeElements(recordAsArray, List(column))
+                recordAsArray = removeElements(recordAsArray, List(col))
             }
             fileType.join(recordAsArray ++ splitValue)
         })

@@ -100,7 +100,7 @@ class TransformableRDDTest extends SparkTestCase {
     }
 
     test("should return a double rdd by multiplying the given column indexes") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("1,2", "1,3", "1,4"))
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("1,2", "1, 3", "1,4", "1, X"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val doubleRdd: RDD[Double] = initialRDD.multiplyColumns(0, 1)
         val collected: Array[Double] = doubleRdd.collect()
