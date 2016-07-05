@@ -93,7 +93,7 @@ class TransformableRDDTest extends SparkTestCase {
     test("listFacets should give facets of given column indexes") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,B,C", "D,E,F", "G,H,I"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val listFacets: TextFacets = initialRDD.listFacets(Array(1,2))
+        val listFacets: TextFacets = initialRDD.listFacets(Array(1, 2))
         val listOfHighest: Array[(String, Int)] = listFacets.highest
 
         assert(3 == listOfHighest.length)

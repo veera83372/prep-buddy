@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.imputations
 
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
-import org.apache.datacommons.prepbuddy.utils.{NumberMap, Probability, PivotTable, RowRecord}
+import org.apache.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Probability, RowRecord}
 
 
 class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationStrategy{
@@ -32,13 +32,13 @@ class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationS
 
     override def handleMissingData(record: RowRecord): String = {
         val numbers: NumberMap = new NumberMap()
-        for (permissibleValue <- permissibleValues){
+        for (permissibleValue <- permissibleValues) {
             var naiveProbability: Probability = new Probability(1)
             val permissibleProb: Probability = probs.valueAt(permissibleValue, permissibleValue)
             for (columnIndex <- independentColumnIndexes) {
                 val columnValue: String = record.valueAt(columnIndex).trim
                 val probability: Probability = probs.valueAt(permissibleValue, columnValue)
-                naiveProbability = naiveProbability.multiply( probability.divide(permissibleProb))
+                naiveProbability = naiveProbability.multiply(probability.divide(permissibleProb))
             }
             naiveProbability = naiveProbability.multiply(permissibleProb)
             numbers.put(permissibleValue, naiveProbability.doubleValue)
