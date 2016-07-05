@@ -29,6 +29,22 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         table
     }
 
+    def listFacets(columnIndexes: Array[Int]): TextFacets = {
+        val columnValuePair: RDD[(String, Int)] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            var joinValue: String = ""
+            columnIndexes.foreach((each) => {
+                joinValue += recordAsArray(each) + "\n"
+            })
+            (joinValue.trim, 1)
+        })
+        val facets: RDD[(String, Int)] = {
+            columnValuePair.reduceByKey((accumulator, currentValue) => {
+                accumulator + currentValue
+            })
+        }
+        new TextFacets(facets)
+    }
 
     def mergeColumns(columns: List[Int], separator: String = " ", removeOriginal: Boolean = true): TransformableRDD = {
         val transformedRDD: RDD[String] = map((record) => {
@@ -55,23 +71,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
                 result += values(index)
             }
         result.toArray
-    }
-
-    def listFacets(columnIndexes: Array[Int]): TextFacets = {
-        val columnValuePair: RDD[(String, Int)] = map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            var joinValue: String = ""
-            columnIndexes.foreach((each) => {
-                joinValue += recordAsArray(each) + "\n"
-            })
-            (joinValue.trim, 1)
-        })
-        val facets: RDD[(String, Int)] = {
-            columnValuePair.reduceByKey((accumulator, currentValue) => {
-                accumulator + currentValue
-            })
-        }
-        new TextFacets(facets)
     }
 
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
