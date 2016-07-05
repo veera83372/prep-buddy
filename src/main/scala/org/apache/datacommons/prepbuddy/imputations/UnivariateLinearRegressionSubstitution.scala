@@ -3,16 +3,46 @@ package org.apache.datacommons.prepbuddy.imputations
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
+import org.apache.spark.rdd.RDD
 
 class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends ImputationStrategy{
-    override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
-        val rddForRegression: TransformableRDD = rdd.removeRows((record) => {
-            val yColumnValue: String = record.valueAt(missingDataColumn)
-            val xColumnValue: String = record.valueAt(independentColumn)
-            !NumberUtils.isNumber(xColumnValue) || xColumnValue.trim.isEmpty || yColumnValue.trim.isEmpty
-        })
-//        rddForRegression.
+    private var slope: Double = 0
+    private var intercept: Double = 0
+    def setSlope(sumOfXs: Double, sumOfYs: Double, sumOfXYs: Double, sumOfSquared: Double, count: Long): Unit = {
+        val nominator: Double = (count * sumOfXYs) - (sumOfXs * sumOfYs)
+        val denominator: Double = (count * sumOfSquared) - sumOfXs * sumOfXs
+        slope = nominator / denominator
     }
 
-    override def handleMissingData(record: RowRecord): String = ???
+    def setIntercept(sumOfXs: Double, sumOfYs: Double, count: Long): Unit = {
+        intercept = (sumOfYs - (slope * sumOfXs)) / count
+    }
+
+    override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
+        val xyRDD: RDD[Double] = rdd.multiplyColumns(missingDataColumn, independentColumn)
+        val xSquareRDD: RDD[Double] = rdd.multiplyColumns(independentColumn, independentColumn)
+        val yRDD: RDD[Double] = rdd.toDoubleRDD(missingDataColumn)
+        val xRDD: RDD[Double] = rdd.toDoubleRDD(independentColumn)
+
+        val sumOfXY: Double = xyRDD.sum()
+        val sumOfSquareRDD: Double = xSquareRDD.sum()
+        val sumOfX: Double = xRDD.sum()
+        val sumOfY: Double = yRDD.sum()
+
+        val count: Long = xSquareRDD.count()
+        setSlope(sumOfX, sumOfY, sumOfXY, sumOfSquareRDD, count)
+        setIntercept(sumOfX, sumOfY, count)
+    }
+
+    override def handleMissingData(record: RowRecord): String = {
+        val independentValue: String = record.valueAt(independentColumn)
+        try {
+            val value: Double = independentValue.toDouble
+            val imputedValue: Double = (intercept + slope * value)
+            f"$imputedValue%1.2f"
+        }
+        catch {
+            case exp: NumberFormatException => ""
+        }
+    }
 }
