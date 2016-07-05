@@ -96,17 +96,24 @@ class ImputationTest extends SparkTestCase {
         assert("P" == naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
     }
 
-//    test("should impute by linear regression") {
-//        val initialDataSet: RDD[String] = {
-//            sparkContext.parallelize(Array("60,3.1", "61,3.6", "62,3.8", "63,4", "65,4.1"))
-//        }
-//        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
-//        val strategy: UnivariateLinearRegressionSubstitution = new UnivariateLinearRegressionSubstitution(0)
-//        strategy.prepareSubstitute(initialRDD, 1)
-//
-//        val record: Array[String] = Array[String]("64")
-//        val expected: String = "4.06"
-//        assert(expected == strategy.handleMissingData(new RowRecord(record)))
-//    }
+    test("should impute by linear regression") {
+        val initialDataSet: RDD[String] = {
+            sparkContext.parallelize(Array("60,3.1", "61,3.6", "62,3.8", "63,4", "65,4.1"))
+        }
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+        val strategy: UnivariateLinearRegressionSubstitution = new UnivariateLinearRegressionSubstitution(0)
+        strategy.prepareSubstitute(initialRDD, 1)
+
+        val record: Array[String] = Array[String]("64")
+        val expected: String = "4.06"
+
+        assert(expected == strategy.handleMissingData(new RowRecord(record)))
+
+        val emptyValue: Array[String] = Array[String]("")
+        val expected1: String = ""
+
+        assert(expected1 == strategy.handleMissingData(new RowRecord(emptyValue)))
+
+    }
 
 }
