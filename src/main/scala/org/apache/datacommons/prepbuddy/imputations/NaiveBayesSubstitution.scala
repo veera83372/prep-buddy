@@ -9,13 +9,13 @@ class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationS
     private var probs: PivotTable[Probability] = null
     private var permissibleValues: Array[String] = null
     override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
-        val trainingSet: TransformableRDD = rdd.removeRows((record) => {
-            record.hasEmptyColumn
-        })
+        val trainingSet: TransformableRDD = rdd.removeRows(_.hasEmptyColumn)
         val facets: TextFacets = trainingSet.listFacets(missingDataColumn)
         permissibleValues = facets.cardinalValues
         val rowKeys: Array[(String, Int)] = facets.rdd.collect()
-        val frequencyTable: PivotTable[Integer] = rdd.pivotByCount(missingDataColumn, independentColumnIndexes)
+        val frequencyTable: PivotTable[Integer] = {
+            rdd.pivotByCount(missingDataColumn, independentColumnIndexes)
+        }
         val totalRows: Long = trainingSet.count()
 
         probs = frequencyTable.transform((eachValue) => {
@@ -32,14 +32,14 @@ class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationS
 
     override def handleMissingData(record: RowRecord): String = {
         val numbers: NumberMap = new NumberMap()
-        for (permissibleValue <- permissibleValues) {
+        for (permissibleValue <- permissibleValues){
             var naiveProbability: Probability = new Probability(1)
             val permissibleProb: Probability = probs.valueAt(permissibleValue, permissibleValue)
-            for (columnIndex <- independentColumnIndexes) {
+            independentColumnIndexes.foreach((columnIndex) => {
                 val columnValue: String = record.valueAt(columnIndex).trim
                 val probability: Probability = probs.valueAt(permissibleValue, columnValue)
-                naiveProbability = naiveProbability.multiply(probability.divide(permissibleProb))
-            }
+                naiveProbability = naiveProbability.multiply( probability.divide(permissibleProb))
+            })
             naiveProbability = naiveProbability.multiply(permissibleProb)
             numbers.put(permissibleValue, naiveProbability.doubleValue)
         }

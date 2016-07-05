@@ -13,8 +13,7 @@ class NumberMap() {
         var highestTuple = ("", 0.0)
         numbers.foreach((tuple) => {
             val value: Double = tuple._2
-            if (value > highestTuple._2)
-                highestTuple = tuple
+            if (value > highestTuple._2) highestTuple = tuple
         })
         highestTuple._1
     }

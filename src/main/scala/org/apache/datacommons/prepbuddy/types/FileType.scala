@@ -12,6 +12,7 @@ object CSV extends FileType {
     override def parse(record: String): Array[String] = {
         record.split(",", -1).map(_.trim)
     }
+
 }
 
 object TSV extends FileType {
