@@ -1,10 +1,13 @@
 package org.apache.datacommons.prepbuddy.imputations
 
+import java.util.Arrays
+
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
+import org.junit.Assert._
 
 import scala.collection.mutable
 
@@ -92,5 +95,18 @@ class ImputationTest extends SparkTestCase {
         val record: Array[String] = "overcast, hot, high, true".split(",")
         assert("P" == naiveBayesSubstitution.handleMissingData(new RowRecord(record)))
     }
+
+//    test("should impute by linear regression") {
+//        val initialDataSet: RDD[String] = {
+//            sparkContext.parallelize(Array("60,3.1", "61,3.6", "62,3.8", "63,4", "65,4.1"))
+//        }
+//        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+//        val strategy: UnivariateLinearRegressionSubstitution = new UnivariateLinearRegressionSubstitution(0)
+//        strategy.prepareSubstitute(initialRDD, 1)
+//
+//        val record: Array[String] = Array[String]("64")
+//        val expected: String = "4.06"
+//        assert(expected == strategy.handleMissingData(new RowRecord(record)))
+//    }
 
 }
