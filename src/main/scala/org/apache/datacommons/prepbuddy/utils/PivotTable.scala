@@ -10,11 +10,9 @@ class PivotTable[T](defaultValue: T) {
 
     def transform(transformedFunction: (Any) => Any, defValue: Any): Any = {
         val table = new PivotTable[Any](defValue)
-        lookUpTable.keysIterator.foreach((each) => {
-            val columns = lookUpTable(each)
-            columns.keysIterator.foreach((eachColumn) => {
-                val columnValue = columns(eachColumn)
-                table.addEntry(each, eachColumn, transformedFunction(columnValue))
+        lookUpTable.foreach((rowTuple) => {
+            rowTuple._2.foreach((columnTuple) => {
+                table.addEntry(rowTuple._1, columnTuple._1, transformedFunction(columnTuple._2))
             })
         })
         table
