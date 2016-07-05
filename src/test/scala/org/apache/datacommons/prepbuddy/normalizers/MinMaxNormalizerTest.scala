@@ -19,7 +19,11 @@ class MinMaxNormalizerTest extends SparkTestCase{
 
         val finalRDD: TransformableRDD = transformableRDD.normalize(3, new MinMaxNormalizer)
         val normalizedDurations = finalRDD.select(3).collect
-        val expected = Array("1.0", "0.0", "0.2132701421800948", "0.2132701421800948", "0.05687203791469194")
+        val expected = Array("1.0",
+            "0.0",
+            "0.2132701421800948",
+            "0.2132701421800948",
+            "0.05687203791469194")
 
         assert(expected sameElements normalizedDurations)
 
