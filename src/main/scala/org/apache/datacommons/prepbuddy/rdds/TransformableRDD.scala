@@ -16,6 +16,33 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+    def mergeColumns(columns: List[Int], separator: String = " ", removeOriginal: Boolean = true): TransformableRDD = {
+        val transformedRDD: RDD[String] = map((record) => {
+            var recordAsArray: Array[String] = fileType.parse(record)
+            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
+            if (removeOriginal)
+                recordAsArray = removeElements(recordAsArray, columns)
+
+            fileType.join(recordAsArray :+ mergedValue)
+        })
+        new TransformableRDD(transformedRDD, fileType)
+    }
+
+    private def mergeValues(values: Array[String], combineOrder: List[Int], separator: String): String = {
+        var mergedValue = ""
+        combineOrder.foreach((index) => mergedValue += separator + values(index))
+        mergedValue.substring(separator.length, mergedValue.length)
+    }
+
+    private def removeElements(values: Array[String], columns: List[Int]): Array[String] = {
+        var result: mutable.Buffer[String] = mutable.Buffer.empty
+        for (index <- values.indices)
+            if (!columns.contains(index))
+                result += values(index)
+        result.toArray
+    }
+
     def listFacets(columnIndexes: Array[Int]): TextFacets = {
         val columnValuePair: RDD[(String, Int)] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
