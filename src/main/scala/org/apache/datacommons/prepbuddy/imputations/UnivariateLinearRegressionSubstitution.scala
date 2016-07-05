@@ -39,7 +39,7 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
         try {
             val value: Double = independentValue.toDouble
             val imputedValue: Double = (intercept + slope * value)
-            f"$imputedValue%1.2f"
+            "%1.2f".format(imputedValue)
         }
         catch {
             case exp: NumberFormatException => ""
