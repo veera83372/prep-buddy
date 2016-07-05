@@ -13,7 +13,8 @@ class MinMaxNormalizer(minRange:Int = 0,maxRange:Int=1) extends NormalizationStr
     }
 
     override def normalize(rawValue: String) :String= {
-        val normalizedValue = (rawValue.toDouble - minValue) / (maxValue - minValue) * (maxRange - minRange) + minRange
-        String.valueOf(normalizedValue)
+        val normalizedValue: Double = (rawValue.toDouble - minValue) / (maxValue - minValue)
+        val normalizedValueInRange = normalizedValue * (maxRange - minRange) + minRange
+        normalizedValueInRange.toString
     }
 }

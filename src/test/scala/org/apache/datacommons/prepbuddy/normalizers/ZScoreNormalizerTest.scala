@@ -18,7 +18,11 @@ class ZScoreNormalizerTest extends SparkTestCase {
 
         val finalRDD: TransformableRDD = transformableRDD.normalize(3, new ZScoreNormalizer)
         val normalizedDurations = finalRDD.select(3).collect
-        val expected = Array("1.944528306701421", "-0.8202659838241843", "-0.2306179123850742", "-0.2306179123850742", "-0.6630264981070882")
+        val expected = Array("1.944528306701421",
+            "-0.8202659838241843",
+            "-0.2306179123850742",
+            "-0.2306179123850742",
+            "-0.6630264981070882")
 
         assert(expected sameElements normalizedDurations)
 

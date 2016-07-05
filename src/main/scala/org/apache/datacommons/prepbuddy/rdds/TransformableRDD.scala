@@ -8,7 +8,7 @@ import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
-import org.apache.datacommons.prepbuddy.utils.RowRecord
+import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
@@ -16,6 +16,19 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+    def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
+        val table: PivotTable[Integer] = new PivotTable[Integer](0)
+        independentColumnIndexes.foreach((each) => {
+            val facets: TextFacets = listFacets(Array(pivotalColumn, each))
+            val tuples = facets.rdd.collect()
+            tuples.foreach((tuple) => {
+                val split: Array[String] = tuple._1.split("\n")
+                table.addEntry(split(0), split(1), tuple._2)
+            })
+        })
+        table
+    }
+
 
     def mergeColumns(columns: List[Int], separator: String = " ", removeOriginal: Boolean = true): TransformableRDD = {
         val transformedRDD: RDD[String] = map((record) => {
@@ -48,13 +61,15 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             val recordAsArray: Array[String] = fileType.parse(record)
             var joinValue: String = ""
             columnIndexes.foreach((each) => {
-                joinValue += recordAsArray(each)
+                joinValue += recordAsArray(each) + "\n"
             })
             (joinValue.trim, 1)
         })
-        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey((accumulator, currentValue) => {
-            accumulator + currentValue
-        })
+        val facets: RDD[(String, Int)] = {
+            columnValuePair.reduceByKey((accumulator, currentValue) => {
+                accumulator + currentValue
+            })
+        }
         new TextFacets(facets)
     }
 
@@ -121,7 +136,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
             (aggregator1, aggregator2) => aggregator1 ::: aggregator2
         )
-        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint.filter(record => record._2.size != 1).flatMap(records => records._2)
+        val duplicateRecords: RDD[String] = recordsGroupedByFingerprint
+            .filter(record => record._2.size != 1)
+            .flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
@@ -129,22 +146,25 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
         val fingerprintedRDD: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
-        val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => record)
+        val reducedRDD: RDD[(Long, String)] = {
+            fingerprintedRDD.reduceByKey((accumulator, record) => record)
+        }
         new TransformableRDD(reducedRDD.values, fileType)
     }
 
     private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
         map(record => {
-            val primaryKeyValues: Array[String] = extractPrimaryKeys(fileType.parse(record), primaryKeyColumns)
+            val columns: Array[String] = fileType.parse(record)
+            val primaryKeyValues: Array[String] = extractPrimaryKeys(columns, primaryKeyColumns)
             val fingerprint = generateFingerprint(primaryKeyValues)
             (fingerprint, record)
         })
     }
 
     private def extractPrimaryKeys(columnValues: Array[String], primaryKeyIndexes: List[Int]): Array[String] = {
-        if (primaryKeyIndexes.isEmpty)
+        if (primaryKeyIndexes.isEmpty){
             return columnValues
-
+        }
         var primaryKeyValues: Array[String] = Array()
         for (columnIndex <- primaryKeyIndexes)
             primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
@@ -160,7 +180,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
     }
 
     def unique(columnIndex: Int): TransformableRDD = {
-        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record).apply(columnIndex))
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record)(columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 

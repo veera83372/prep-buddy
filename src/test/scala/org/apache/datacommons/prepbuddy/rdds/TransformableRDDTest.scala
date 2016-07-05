@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.rdds
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.types.CSV
-import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
+import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 import org.junit.Assert._
 
@@ -50,27 +50,30 @@ class TransformableRDDTest extends SparkTestCase {
     }
 
     test("text facet should give count of Pair") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFacets: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFacets: TextFacets = transformableRDD.listFacets(0)
         assertEquals(2, textFacets.count)
     }
 
     test("should remove rows are based on a predicate") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1", "B,2", "C,3", "D,4", "E,5"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val dataSet = Array("A,1", "B,2", "C,3", "D,4", "E,5")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val predicate = (record: RowRecord) => {
             val valueAt: String = record.valueAt(0)
             valueAt.equals("A") || valueAt.equals("B")
         }
-        val finalRDD: TransformableRDD = initialRDD.removeRows(predicate)
+        val finalRDD: TransformableRDD = transformableRDD.removeRows(predicate)
         assertEquals(3, finalRDD.count)
     }
 
     test("toDoubleRDD should give rdd of double") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1.0", "B,2.9", "C,3", "D,4", "E,w"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val doubleRDD: RDD[Double] = initialRDD.toDoubleRDD(1)
+        val dataSet = Array("A,1.0", "B,2.9", "C,3", "D,4", "E,w")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val doubleRDD: RDD[Double] = transformableRDD.toDoubleRDD(1)
         val collected: Array[Double] = doubleRDD.collect()
         assertTrue(collected.contains(1.0))
         assertTrue(collected.contains(2.9))
@@ -79,9 +82,10 @@ class TransformableRDDTest extends SparkTestCase {
     }
 
     test("select should give selected column of the RDD") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val selectedColumn: RDD[String] = initialRDD.select(1)
+        val dataSet = Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val selectedColumn: RDD[String] = transformableRDD.select(1)
 
         assert(selectedColumn.collect sameElements Array("1.0", "2.9", "3", "4", "0"))
     }
@@ -89,6 +93,9 @@ class TransformableRDDTest extends SparkTestCase {
     test("listFacets should give facets of given column indexes") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("A,B,C", "D,E,F", "G,H,I"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        initialRDD.listFacets(Array(1,2))
+        val listFacets: TextFacets = initialRDD.listFacets(Array(1, 2))
+        val listOfHighest: Array[(String, Int)] = listFacets.highest
+
+        assert(3 == listOfHighest.length)
     }
 }

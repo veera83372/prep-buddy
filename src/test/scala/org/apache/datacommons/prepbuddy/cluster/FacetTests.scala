@@ -9,9 +9,10 @@ import org.junit.Assert.assertTrue
 class FacetTests extends SparkTestCase {
 
     test("should drop the specified column from the given rdd") {
-        val initialDataset: JavaRDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E")
+        val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val expected = ("A", 3)
         assert(textFaceted.highest.length == 1)
         val highest = textFaceted.highest.head
@@ -20,9 +21,10 @@ class FacetTests extends SparkTestCase {
     }
 
     test("highest should give one pair in List if only one lowest pair is found") {
-        val initialDataset: JavaRDD[String] = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "X,P"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "X,P")
+        val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val listOfHighest = textFaceted.highest
 
         assert(2 == listOfHighest.length)
@@ -34,9 +36,10 @@ class FacetTests extends SparkTestCase {
 
 
     test("Textfacet  lowest should give list of lowest pairs if more than one pair found") {
-        val initialDataset = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R")
+        val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val listOfLowest = textFaceted.lowest
         assert(3 == textFaceted.count)
         assert(2 == listOfLowest.length)
@@ -45,9 +48,10 @@ class FacetTests extends SparkTestCase {
     }
 
     test(" TextFacet_ get Facets Between Should Give List Of Faceted Pair In Given Range ") {
-        val initialDataset = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E")
+        val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val facetedPair = textFaceted.getFacetsBetween(2, 3)
         assert(4 == textFaceted.count)
 
@@ -58,9 +62,10 @@ class FacetTests extends SparkTestCase {
     }
 
     test(" cardinalValues  Should return cardinal values for the text facets "){
-        val initialDataset = sparkContext.parallelize(Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val textFaceted: TextFacets = initialRDD.listFacets(0)
+        val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E")
+        val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val cardinalValues: Array[String] = textFaceted.cardinalValues
 
         assert(cardinalValues sameElements Array("Q", "A", "X", "W"))
