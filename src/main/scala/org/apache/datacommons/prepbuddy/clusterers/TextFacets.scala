@@ -6,10 +6,11 @@ class TextFacets(facets: RDD[(String, Int)]) {
     private val tuples: Array[(String, Int)] = facets.collect()
 
     def getFacetsBetween(lowerBound: Int, upperBound: Int): Array[(String, Int)] = {
-        tuples.filter((tuple) => {
-            val currentTupleCount = tuple._2
-            isInRange(currentTupleCount, lowerBound, upperBound)
-        })
+        tuples.filter((tuple) => isInRange(tuple._2, lowerBound, upperBound))
+    }
+
+    private def isInRange(currentTupleValue: Integer, minimum: Int, maximum: Int): Boolean = {
+        currentTupleValue >= minimum && currentTupleValue <= maximum
     }
 
     def lowest: Array[(String, Int)] = {
@@ -39,10 +40,6 @@ class TextFacets(facets: RDD[(String, Int)]) {
             }
         })
         facetsCount
-    }
-
-    private def isInRange(currentTupleValue: Integer, minimum: Int, maximum: Int): Boolean = {
-        currentTupleValue >= minimum && currentTupleValue <= maximum
     }
 
     def count: Long = facets.count
