@@ -14,27 +14,21 @@ class TextFacets(facets: RDD[(String, Int)]) {
     }
 
     def lowest: Array[(String, Int)] = {
-        getPeakListFor((currentTuple, peakTuple) => {
-            currentTuple < peakTuple
-        })
+        getPeakListFor((currentTuple, peakTuple) => currentTuple < peakTuple)
     }
 
     def highest: Array[(String, Int)] = {
-        getPeakListFor((currentTuple, peakTuple) => {
-            currentTuple > peakTuple
-        })
+        getPeakListFor((currentTuple, peakTuple) => currentTuple > peakTuple)
     }
 
     private def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
-        var facetsCount: Array[(String, Int)] = Array()
-        val option: Option[(String, Int)] = tuples.find(_._1 != "")
+        val option: Option[(String, Int)] = tuples.find(!_._1.isEmpty)
         var peakTuple = option.head
-        facetsCount = facetsCount.:+(peakTuple)
-        tuples.foreach((tuple)=>{
+        var facetsCount: Array[(String, Int)] = Array(peakTuple)
+        tuples.foreach((tuple) => {
             if (compareFunction(tuple._2, peakTuple._2) && !tuple._1.trim.isEmpty) {
                 peakTuple = tuple
-                facetsCount = facetsCount.drop(facetsCount.length)
-                facetsCount = facetsCount.:+(peakTuple)
+                facetsCount = Array(peakTuple)
             }
             if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple) && !tuple._1.trim.isEmpty) {
                 facetsCount = facetsCount.:+(tuple)
@@ -45,8 +39,7 @@ class TextFacets(facets: RDD[(String, Int)]) {
 
     def count: Long = facets.count
 
-    def cardinalValues: Array[String] = {
-        tuples.map(_._1)
-    }
+    def cardinalValues: Array[String] = tuples.map(_._1)
+
     def rdd: RDD[(String, Int)] = facets
 }
