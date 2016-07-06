@@ -26,12 +26,29 @@ class TransformableRDDTest extends SparkTestCase {
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
-        val transformedRows: Array[String] = transformableRDD.dropColumn(2).collect()
+        val transformedRows: Array[String] = transformableRDD.drop(2).collect()
 
         assert(transformedRows.contains("John,Male,Canada"))
         assert(transformedRows.contains("Smith,Male,UK"))
         assert(transformedRows.contains("Larry,Male,USA"))
         assert(transformedRows.contains("Fiona,Female,USA"))
+    }
+
+    test("should be able to drop more than one specified column from the given rdd") {
+        val data = Array(
+            "John,Male,21,Canada",
+            "Smith, Male, 30, UK",
+            "Larry, Male, 23, USA",
+            "Fiona, Female,18,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+        val transformedRows: Array[String] = transformableRDD.drop(2, 3).collect()
+
+        assert(transformedRows.contains("John,Male"))
+        assert(transformedRows.contains("Smith,Male"))
+        assert(transformedRows.contains("Larry,Male"))
+        assert(transformedRows.contains("Fiona,Female"))
     }
 
     test("toDoubleRdd should give double RDD of given column index") {
