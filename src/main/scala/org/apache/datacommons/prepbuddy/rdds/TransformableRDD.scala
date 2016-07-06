@@ -17,6 +17,7 @@ import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
 
+
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
         val rddOfNumbers: TransformableRDD = removeRows((record) => {
             val firstColumnValue: String = record.valueAt(firstColumn)
@@ -126,10 +127,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     private def removeElements(values: Array[String], columns: List[Int]): Array[String] = {
         var result: mutable.Buffer[String] = mutable.Buffer.empty
-        for (index <- values.indices)
+        for (index <- values.indices) {
             if (!columns.contains(index)) {
                 result += values(index)
             }
+        }
         result.toArray
     }
 
@@ -144,8 +146,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(rdd, fileType)
     }
 
-    def select(columnIndex: Int): RDD[String] = {
-        map((record) => fileType.parse(record)(columnIndex))
+    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
+        val selectedColumnValues: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultValues: Array[String] = columnsToBeSelected.map((index) => recordAsArray(index))
+            fileType.join(resultValues)
+        })
+        new TransformableRDD(selectedColumnValues, fileType)
     }
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
@@ -174,11 +182,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(transformed, fileType)
     }
 
-    def dropColumn(columnIndex: Int): TransformableRDD = {
+    def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToDrop: Array[Int] = columnIndexes.+:(columnIndex).toArray
         val transformed: RDD[String] = map((record: String) => {
-            val recordInBuffer: mutable.Buffer[String] = fileType.parse(record).toBuffer
-            recordInBuffer.remove(columnIndex)
-            fileType.join(recordInBuffer.toArray)
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultRecord: Array[String] = recordAsArray.zipWithIndex
+                .filter { case (datum, index) => !columnsToDrop.contains(index) }
+                .map(_._1)
+            fileType.join(resultRecord)
         })
         new TransformableRDD(transformed, fileType)
     }
@@ -226,9 +237,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             return columnValues
         }
         var primaryKeyValues: Array[String] = Array()
-        for (columnIndex <- primaryKeyIndexes)
-            primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
-
+        primaryKeyIndexes.foreach((index) => primaryKeyValues = primaryKeyValues.:+(columnValues(index)))
         primaryKeyValues
     }
 
