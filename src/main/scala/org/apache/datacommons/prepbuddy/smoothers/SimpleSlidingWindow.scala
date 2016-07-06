@@ -18,7 +18,7 @@ class SimpleSlidingWindow(windowSize: Int) {
         if(isFull){
             windowValues.dequeue()
         }
-        windowValues = windowValues :+ value
+        windowValues += value
     }
 
 

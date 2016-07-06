@@ -23,8 +23,24 @@ class SmoothingMethodTest extends SparkTestCase{
         val movingAverage: SimpleMovingAverageMethod = new SimpleMovingAverageMethod(3)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
 
-//        val expected: Double = 4.0
-//        assert(expected == rdd.first)
+        val averages: Array[Double] = rdd.collect()
+        val expected: Double = 4.0
+
+        assert(averages.contains(expected))
+        assert(averages.contains(5.0))
+        assert(averages.contains(6.0))
+        assert(averages.contains(7.0))
+        assert(averages.contains(8.0))
+        assert(averages.contains(9.0))
+        assert(averages.contains(10.0))
+        assert(averages.contains(11.0))
+        assert(averages.contains(12.0))
+        assert(averages.contains(13.0))
+
+        assert(!averages.contains(14.0))
+
+
+
     }
 
 }
