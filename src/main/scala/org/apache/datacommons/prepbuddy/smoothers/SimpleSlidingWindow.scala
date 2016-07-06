@@ -1,11 +1,13 @@
 package org.apache.datacommons.prepbuddy.smoothers
 
+import scala.collection.mutable
+
 class SimpleSlidingWindow(windowSize: Int) {
-    def average(): Double = {
+    def average: Double = {
         windowValues.sum / windowSize
     }
 
-    protected var windowValues: List[Double] = List()
+    protected var windowValues: mutable.Queue[Double] = mutable.Queue()
 
     def isFull(): Boolean = {
         windowValues.length == windowSize
@@ -14,7 +16,7 @@ class SimpleSlidingWindow(windowSize: Int) {
 
     def add(value: Double): Unit = {
         if(isFull){
-            windowValues = windowValues.drop(1)
+            windowValues.dequeue()
         }
         windowValues = windowValues :+ value
     }
