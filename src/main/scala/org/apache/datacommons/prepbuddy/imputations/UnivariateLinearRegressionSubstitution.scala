@@ -1,6 +1,5 @@
 package org.apache.datacommons.prepbuddy.imputations
 
-import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
@@ -38,7 +37,7 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
         val independentValue: String = record.valueAt(independentColumn)
         try {
             val value: Double = independentValue.toDouble
-            val imputedValue: Double = (intercept + slope * value)
+            val imputedValue: Double = intercept + slope * value
             "%1.2f".format(imputedValue)
         }
         catch {
