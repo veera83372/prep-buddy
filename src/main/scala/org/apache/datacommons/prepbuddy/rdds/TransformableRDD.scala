@@ -17,6 +17,7 @@ import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
 
+
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
         val rddOfNumbers: TransformableRDD = removeRows((record) => {
             val firstColumnValue: String = record.valueAt(firstColumn)
@@ -144,8 +145,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(rdd, fileType)
     }
 
-    def select(columnIndex: Int): RDD[String] = {
-        map((record) => fileType.parse(record)(columnIndex))
+    def select(columnIndex: Int): RDD[String] = map((record) => fileType.parse(record)(columnIndex))
+
+    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
+        val selectedColumnValues: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultValues: Array[String] = columnsToBeSelected.map((index) => recordAsArray(index))
+            fileType.join(resultValues)
+        })
+        new TransformableRDD(selectedColumnValues, fileType)
     }
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {

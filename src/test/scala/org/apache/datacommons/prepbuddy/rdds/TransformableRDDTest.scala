@@ -84,10 +84,21 @@ class TransformableRDDTest extends SparkTestCase {
     test("select should give selected column of the RDD") {
         val dataSet = Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0")
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val selectedColumn: RDD[String] = transformableRDD.select(1)
 
         assert(selectedColumn.collect sameElements Array("1.0", "2.9", "3", "4", "0"))
+    }
+
+    test("select should give multiple selected column of the RDD") {
+        val dataSet = Array("A,1.0,Male", "B,2.9,Female", "C,3,Male", "D,4,Male", "E,0,Female")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val selectedColumns: TransformableRDD = transformableRDD.select(0, 2)
+
+        assert(selectedColumns.collect sameElements Array("A,Male", "B,Female", "C,Male", "D,Male", "E,Female"))
     }
 
     test("listFacets should give facets of given column indexes") {
