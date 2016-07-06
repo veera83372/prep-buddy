@@ -16,18 +16,24 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+
+
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
-        val transformed: TransformableRDD = removeRows((record) => {
+        val rddOfNumbers: TransformableRDD = removeRows((record) => {
             val firstColumnValue: String = record.valueAt(firstColumn)
             val secondColumnValue: String = record.valueAt(secondColumn)
-            !NumberUtils.isNumber(secondColumnValue) || !NumberUtils.isNumber(firstColumnValue) || secondColumnValue.trim.isEmpty || firstColumnValue.trim.isEmpty
+            isNotNumber(secondColumnValue) || isNotNumber(firstColumnValue)
         })
-        transformed.map((row) => {
+        rddOfNumbers.map((row) => {
             val recordAsArray: Array[String] = fileType.parse(row)
             val firstColumnValue: String = recordAsArray(firstColumn)
             val secondColumnValue: String = recordAsArray(secondColumn)
             firstColumnValue.toDouble * secondColumnValue.toDouble
         })
+    }
+
+    private def isNotNumber(value: String): Boolean = {
+        value.trim.isEmpty || !NumberUtils.isNumber(value)
     }
 
     def pivotByCount(pivotalColumn: Int, independentColumnIndexes: Seq[Int]): PivotTable[Integer] = {
@@ -47,32 +53,35 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         val columnValuePair: RDD[(String, Int)] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
             var joinValue: String = ""
-            columnIndexes.foreach((each) => {
-                joinValue += recordAsArray(each) + "\n"
+            columnIndexes.foreach((index) => {
+                joinValue += recordAsArray(index) + "\n"
             })
             (joinValue.trim, 1)
         })
         val facets: RDD[(String, Int)] = {
-            columnValuePair.reduceByKey((accumulator, currentValue) => {
-                accumulator + currentValue
-            })
+            columnValuePair.reduceByKey((accumulator, currentValue) => accumulator + currentValue)
         }
         new TextFacets(facets)
     }
 
-    def splitColumnByLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
+    private def arrangeRecords(values: Array[String], cols: List[Int], result: Array[String], retainColumn: Boolean) = {
+        var arrangedRecord = values
+        if (!retainColumn) {
+            arrangedRecord = removeElements(values, cols)
+        }
+        fileType.join(arrangedRecord ++ result)
+    }
+
+    def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
         val transformed: RDD[String] = map((record) => {
-            var recordAsArray: Array[String] = fileType.parse(record)
-            val splitValue: Array[String] = splitValueByLength(recordAsArray(column), fieldLengths)
-            if (!retainColumn) {
-                recordAsArray = removeElements(recordAsArray, List(column))
-            }
-            fileType.join(recordAsArray ++ splitValue)
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val splitValue: Array[String] = splitStringByLength(recordAsArray(column), fieldLengths)
+            arrangeRecords(recordAsArray, List(column), splitValue, retainColumn)
         })
         new TransformableRDD(transformed, fileType)
     }
 
-    private def splitValueByLength(value: String, lengths: List[Int]): Array[String] = {
+    private def splitStringByLength(value: String, lengths: List[Int]): Array[String] = {
         var result: Array[String] = Array.empty[String]
         var startingIndex: Int = 0
         lengths.foreach((length) => {
@@ -84,14 +93,28 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         result
     }
 
+    def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
+        val transformed: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val splitValue: Array[String] = recordAsArray(col).split(delimiter, maxSplit)
+            arrangeRecords(recordAsArray, List(col), splitValue, retainCol)
+        })
+        new TransformableRDD(transformed, fileType)
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1, retainColumn)
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1)
+    }
+
     def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
         val transformedRDD: RDD[String] = map((record) => {
-            var recordAsArray: Array[String] = fileType.parse(record)
+            val recordAsArray: Array[String] = fileType.parse(record)
             val mergedValue: String = mergeValues(recordAsArray, columns, separator)
-            if (!retainColumns) {
-                recordAsArray = removeElements(recordAsArray, columns)
-            }
-            fileType.join(recordAsArray :+ mergedValue)
+            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
         })
         new TransformableRDD(transformedRDD, fileType)
     }
@@ -104,10 +127,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
     private def removeElements(values: Array[String], columns: List[Int]): Array[String] = {
         var result: mutable.Buffer[String] = mutable.Buffer.empty
-        for (index <- values.indices)
+        for (index <- values.indices) {
             if (!columns.contains(index)) {
                 result += values(index)
             }
+        }
         result.toArray
     }
 
@@ -122,8 +146,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(rdd, fileType)
     }
 
-    def select(columnIndex: Int): RDD[String] = {
-        map((record) => fileType.parse(record)(columnIndex))
+    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
+        val selectedColumnValues: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultValues: Array[String] = columnsToBeSelected.map((index) => recordAsArray(index))
+            fileType.join(resultValues)
+        })
+        new TransformableRDD(selectedColumnValues, fileType)
     }
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
@@ -152,11 +182,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
         new TransformableRDD(transformed, fileType)
     }
 
-    def dropColumn(columnIndex: Int): TransformableRDD = {
+    def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToDrop: Array[Int] = columnIndexes.+:(columnIndex).toArray
         val transformed: RDD[String] = map((record: String) => {
-            val recordInBuffer: mutable.Buffer[String] = fileType.parse(record).toBuffer
-            recordInBuffer.remove(columnIndex)
-            fileType.join(recordInBuffer.toArray)
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultRecord: Array[String] = recordAsArray.zipWithIndex
+                .filter { case (datum, index) => !columnsToDrop.contains(index) }
+                .map(_._1)
+            fileType.join(resultRecord)
         })
         new TransformableRDD(transformed, fileType)
     }
@@ -204,9 +237,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
             return columnValues
         }
         var primaryKeyValues: Array[String] = Array()
-        for (columnIndex <- primaryKeyIndexes)
-            primaryKeyValues = primaryKeyValues.:+(columnValues(columnIndex))
-
+        primaryKeyIndexes.foreach((index) => primaryKeyValues = primaryKeyValues.:+(columnValues(index)))
         primaryKeyValues
     }
 

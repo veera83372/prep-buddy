@@ -26,12 +26,29 @@ class TransformableRDDTest extends SparkTestCase {
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
-        val transformedRows: Array[String] = transformableRDD.dropColumn(2).collect()
+        val transformedRows: Array[String] = transformableRDD.drop(2).collect()
 
         assert(transformedRows.contains("John,Male,Canada"))
         assert(transformedRows.contains("Smith,Male,UK"))
         assert(transformedRows.contains("Larry,Male,USA"))
         assert(transformedRows.contains("Fiona,Female,USA"))
+    }
+
+    test("should be able to drop more than one specified column from the given rdd") {
+        val data = Array(
+            "John,Male,21,Canada",
+            "Smith, Male, 30, UK",
+            "Larry, Male, 23, USA",
+            "Fiona, Female,18,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+        val transformedRows: Array[String] = transformableRDD.drop(2, 3).collect()
+
+        assert(transformedRows.contains("John,Male"))
+        assert(transformedRows.contains("Smith,Male"))
+        assert(transformedRows.contains("Larry,Male"))
+        assert(transformedRows.contains("Fiona,Female"))
     }
 
     test("toDoubleRdd should give double RDD of given column index") {
@@ -84,10 +101,21 @@ class TransformableRDDTest extends SparkTestCase {
     test("select should give selected column of the RDD") {
         val dataSet = Array("A,1.0", "B,2.9", "C,3", "D,4", "E,0")
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val selectedColumn: RDD[String] = transformableRDD.select(1)
 
         assert(selectedColumn.collect sameElements Array("1.0", "2.9", "3", "4", "0"))
+    }
+
+    test("select should give multiple selected column of the RDD") {
+        val dataSet = Array("A,1.0,Male", "B,2.9,Female", "C,3,Male", "D,4,Male", "E,0,Female")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val selectedColumns: TransformableRDD = transformableRDD.select(0, 2)
+
+        assert(selectedColumns.collect sameElements Array("A,Male", "B,Female", "C,Male", "D,Male", "E,Female"))
     }
 
     test("listFacets should give facets of given column indexes") {
@@ -100,7 +128,7 @@ class TransformableRDDTest extends SparkTestCase {
     }
 
     test("should return a double rdd by multiplying the given column indexes") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("1,2", "1,3", "1,4"))
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("1,2", "1, 3", "1,4", "1, X"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val doubleRdd: RDD[Double] = initialRDD.multiplyColumns(0, 1)
         val collected: Array[Double] = doubleRdd.collect()
