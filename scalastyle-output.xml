@@ -1,25 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.0">
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/utils/NumberMap.scala">
-  <error column="12" line="16" source="org.scalastyle.scalariform.IfBraceChecker" severity="warning"
-         message="If block needs braces"/>
- </file>
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDD.scala">
-  <error line="19" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 100 characters"/>
- </file>
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/imputations/ImputationTest.scala">
-  <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 100 characters"/>
-  <error line="66" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 100 characters"/>
- </file>
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/imputations/NaiveBayesSubstitution.scala">
-  <error line="18" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 100 characters"/>
- </file>
- <file name="/Users/abhishkg/Projects/scala-prep-buddy/src/test/scala/org/apache/datacommons/prepbuddy/utils/PivotTableTest.scala">
-  <error line="41" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 100 characters"/>
- </file>
+
 </checkstyle>

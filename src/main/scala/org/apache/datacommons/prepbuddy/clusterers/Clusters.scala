@@ -38,5 +38,4 @@ class Clusters {
     private def getClusterOf(key: String): Option[Cluster] = {
         clusters.find(_.isOfKey(key))
     }
-    
 }

@@ -15,4 +15,10 @@ class TypeAnalyzerTest extends SparkTestCase {
         assert(DECIMAL == typeAnalyzer.getType)
     }
 
+    test("should Be Able To Give The Type As Decimal For Decimal") {
+        val dataSet = List("0.56", ".56", ".23", "2345676543245678.7654564")
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
+        assert(DECIMAL == typeAnalyzer.getType)
+    }
+
 }

@@ -38,5 +38,4 @@ class ClusterTest extends SparkTestCase {
         assert(1 == clustersWithSizeGreaterThanOne.size)
         assert(2 == clustersWithSizeGreaterThanOne.head.size)
     }
-    
 }

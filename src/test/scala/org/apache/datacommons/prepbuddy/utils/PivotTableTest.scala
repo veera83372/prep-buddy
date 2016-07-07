@@ -36,9 +36,26 @@ class PivotTableTest extends SparkTestCase{
     }
 
     test("pivotByCount should give pivoted table of given column") {
-        val initialDataSet: RDD[String] = sparkContext.parallelize(Array("known,new,long,home,skips", "unknown,new,short,work,reads", "unknown,follow Up,long,work,skips", "known,follow Up,long,home,skips", "known,new,short,home,reads", "known,follow Up,long,work,skips", "unknown,follow Up,short,work,skips", "unknown,new,short,work,reads", "known,follow Up,long,home,skips", "known,new,long,work,skips", "unknown,follow Up,short,home,skips", "known,new,long,work,skips", "known,follow Up,short,home,reads", "known,new,short,work,reads", "known,new,short,home,reads", "known,follow Up,short,work,reads", "known,new,short,home,reads", "unknown,new,short,work,reads"))
+        val dataSet = Array("known,new,long,home,skips",
+            "unknown,new,short,work,reads",
+            "unknown,follow Up,long,work,skips",
+            "known,follow Up,long,home,skips",
+            "known,new,short,home,reads",
+            "known,follow Up,long,work,skips",
+            "unknown,follow Up,short,work,skips",
+            "unknown,new,short,work,reads",
+            "known,follow Up,long,home,skips",
+            "known,new,long,work,skips",
+            "unknown,follow Up,short,home,skips",
+            "known,new,long,work,skips",
+            "known,follow Up,short,home,reads",
+            "known,new,short,work,reads",
+            "known,new,short,home,reads",
+            "known,follow Up,short,work,reads",
+            "known,new,short,home,reads",
+            "unknown,new,short,work,reads")
+        val initialDataSet: RDD[String] = sparkContext.parallelize(dataSet)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
-        val count: Long = initialRDD.count
         val pivotTable: PivotTable[Integer] = initialRDD.pivotByCount(4, Seq[Int](0, 1, 2, 3))
 
         val expected: Int = 7
