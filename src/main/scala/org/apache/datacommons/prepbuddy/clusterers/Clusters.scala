@@ -6,23 +6,11 @@ class Clusters {
     def getAllClusters: List[Cluster] = clusters
 
     def getClustersWithSizeGreaterThan(threshold: Int): List[Cluster] = {
-        var list: List[Cluster] = List()
-        for (cluster <- clusters) {
-            if (cluster.size > threshold) {
-                list = list.:+(cluster)
-            }
-        }
-        list
+        clusters.filter(_.size > threshold)
     }
 
     def getClustersExactlyOfSize(size: Int): List[Cluster] = {
-        var list: List[Cluster] = List()
-        for (cluster <- clusters) {
-            if (cluster.size == size) {
-                list = list.:+(cluster)
-            }
-        }
-        list
+        clusters.filter(_.size equals size)
     }
 
     def add(key: String, tuple: (String, Int)): Unit = {
