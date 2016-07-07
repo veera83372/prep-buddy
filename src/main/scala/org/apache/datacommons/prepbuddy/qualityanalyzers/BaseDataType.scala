@@ -9,22 +9,6 @@ abstract class BaseDataType extends Serializable {
     }
 }
 
-object BaseDataType extends Serializable {
-    private val PATTERN: String = "^([+-]?\\d+?\\s?)(\\d*(\\.\\d+)?)+$"
-
-    def getBaseType(samples: List[String]): BaseDataType = {
-        if (matchesWith(PATTERN, samples)) return NUMERIC
-        STRING
-    }
-
-    def matchesWith(regex: String, samples: List[String]): Boolean = {
-        var counter: Int = 0
-        val threshold: Int = samples.length / 2
-        for (string <- samples) if (string.matches(regex)) counter += 1
-        counter >= threshold
-    }
-}
-
 object STRING extends BaseDataType {
     val subtypes: Array[DataType] = Array(ALPHANUMERIC_STRING)
 
