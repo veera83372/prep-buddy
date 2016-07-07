@@ -2,7 +2,6 @@ package org.apache.datacommons.prepbuddy.smoothers
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.spark.rdd.RDD
-import org.junit.Assert
 
 class SmoothingMethodTest extends SparkTestCase{
     test("should be able to duplicate data of given window size to previous partition") {

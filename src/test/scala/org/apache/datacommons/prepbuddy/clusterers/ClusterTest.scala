@@ -28,5 +28,15 @@ class ClusterTest extends SparkTestCase {
         assert(1 == clustersWithSizeGreaterThanOne.size)
         assert(3 == clustersWithSizeGreaterThanOne.head.size)
     }
+
+    test("clusterUsing LevenshteinDistance Should Give Clusters ByDistanceMethod") {
+        val dataSet = Array("cluster Of Finger print", "finger print of cluster", "finger print for cluster")
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+        val clusters: Clusters = transformableRDD.clusters(0, new LevenshteinDistance)
+        val clustersWithSizeGreaterThanOne: List[Cluster] = clusters.getClustersWithSizeGreaterThan(1)
+        assert(1 == clustersWithSizeGreaterThanOne.size)
+        assert(2 == clustersWithSizeGreaterThanOne.head.size)
+    }
     
 }

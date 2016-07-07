@@ -119,10 +119,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         splitByDelimiter(column, delimiter, -1, retainColumn)
     }
 
-    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
-        splitByDelimiter(column, delimiter, -1)
-    }
-
     def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
         val transformed: RDD[String] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
@@ -148,6 +144,10 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             }
         }
         result.toArray
+    }
+
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1)
     }
 
     def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {

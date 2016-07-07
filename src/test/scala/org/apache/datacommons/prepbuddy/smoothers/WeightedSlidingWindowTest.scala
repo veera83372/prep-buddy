@@ -1,9 +1,8 @@
 package org.apache.datacommons.prepbuddy.smoothers
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
-import org.junit.Assert._
 
-class WeightedSlidingWindowTest extends SparkTestCase{
+class WeightedSlidingWindowTest extends SparkTestCase {
     test("should add value till window is full then move values to left in every add") {
         val weights: Weights = new Weights(3)
         weights.add(0.2)
