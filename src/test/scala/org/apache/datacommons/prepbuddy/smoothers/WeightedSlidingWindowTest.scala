@@ -20,7 +20,7 @@ class WeightedSlidingWindowTest extends SparkTestCase{
         assert(expected == actual)
 
         slidingWindow.add(3)
-        val expected1: Double = 5.2
+        val expected1: Double = 3.8
         val actual1: Double = slidingWindow.average
         assert(expected1 == actual1)
     }

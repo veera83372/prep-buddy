@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.smoothers
 import scala.collection.mutable
 
 class WeightedSlidingWindow(windowSize: Int, weights: Weights) {
-    def average: Double = queue.sum
+    def average: Double = weights.multiplyWith(queue).sum
 
     private var queue: mutable.Queue[Double] = mutable.Queue()
 
@@ -11,8 +11,7 @@ class WeightedSlidingWindow(windowSize: Int, weights: Weights) {
 
     def add(value: Double): Unit = {
         if(isFull) queue.dequeue()
-        val weightValue: Double = weights.get(queue.length)
-        queue += value * weightValue
+        queue += value
     }
 
 
