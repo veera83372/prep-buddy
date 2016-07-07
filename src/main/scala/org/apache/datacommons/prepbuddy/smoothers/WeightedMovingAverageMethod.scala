@@ -4,19 +4,18 @@ import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ListBuffer
 
-class SimpleMovingAverageMethod(windowSize: Int) extends SmoothingMethod{
+class WeightedMovingAverageMethod(windowSize: Int, weights: Weights) extends SmoothingMethod{
+
     override def smooth(singleColumnDataset: RDD[String]): RDD[Double] = {
         val duplicateRDD: RDD[Double] = prepare(singleColumnDataset, windowSize)
         duplicateRDD.mapPartitions((eachIterator) => {
-            val slidingWindow: SimpleSlidingWindow = new SimpleSlidingWindow(windowSize)
-            var movingAverage: ListBuffer[Double] = ListBuffer()
+            val slidingWindow: WeightedSlidingWindow = new WeightedSlidingWindow(windowSize, weights)
+            val weightedMovingAverages: ListBuffer[Double] = ListBuffer()
             eachIterator.foreach((eachValue) => {
                 slidingWindow.add(eachValue)
-                if (slidingWindow.isFull()){
-                    movingAverage += slidingWindow.average
-                }
+                if(slidingWindow.isFull) weightedMovingAverages += slidingWindow.average
             })
-            movingAverage.iterator
+            weightedMovingAverages.iterator
         })
     }
 }

@@ -15,7 +15,10 @@ import org.apache.spark.{Partition, TaskContext}
 
 import scala.collection.mutable
 
-class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
+    def numberOfColumns(): Int = columnLength
+
     def clusters(columnIndex: Int, algorithm: ClusteringAlgorithm): Clusters = {
         //validateColumnIndex(columnIndex)
         val textFacets: TextFacets = this.listFacets(columnIndex)
@@ -24,7 +27,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RD
 
         algorithm.getClusters(tuples)
     }
-    
+
     def listFacets(columnIndex: Int): TextFacets = {
         val columnValuePair: RDD[(String, Int)] = map((record) => {
             val columns: Array[String] = fileType.parse(record)
