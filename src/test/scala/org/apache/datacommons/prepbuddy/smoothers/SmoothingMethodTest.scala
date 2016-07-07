@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.smoothers
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.spark.rdd.RDD
+import org.junit.Assert
 
 class SmoothingMethodTest extends SparkTestCase{
     test("should be able to duplicate data of given window size to previous partition") {
@@ -35,9 +36,22 @@ class SmoothingMethodTest extends SparkTestCase{
         assert(averages.contains(13.0))
 
         assert(!averages.contains(14.0))
+    }
 
+    test("should smooth the values by weighted moving average method") {
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array("10", "12", "16", "13", "17", "19", "15", "20", "22", "19", "21", "19"), 3)
 
+        val weights: Weights = new Weights(3)
+        weights.add(0.166)
+        weights.add(0.333)
+        weights.add(0.5)
 
+        val movingAverage: WeightedMovingAverageMethod = new WeightedMovingAverageMethod(3, weights)
+        val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
+
+        val expected: Double = 13.66
+        val actual: Double = "%1.2f".format(rdd.first).toDouble
+        assert(expected == actual)
     }
 
 }

@@ -9,7 +9,7 @@ class WeightedSlidingWindow(windowSize: Int, weights: Weights) {
 
     def isFull: Boolean = queue.length == windowSize
 
-    def add(value: Int): Unit = {
+    def add(value: Double): Unit = {
         if(isFull) queue.dequeue()
         val weightValue: Double = weights.get(queue.length)
         queue += value * weightValue
