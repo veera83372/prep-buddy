@@ -17,7 +17,11 @@ class SmoothingMethodTest extends SparkTestCase{
     }
 
     test("should be able to smooth by simple moving average method") {
-        val initialDataset: RDD[String] = sparkContext.parallelize(Array("3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"), 3)
+        val initialDataset: RDD[String] = sparkContext.parallelize(Array(
+            "3", "4", "5",
+            "6", "7", "8",
+            "9", "10", "11",
+            "12", "13", "14"), 3)
         val movingAverage: SimpleMovingAverageMethod = new SimpleMovingAverageMethod(3)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
 
@@ -59,5 +63,4 @@ class SmoothingMethodTest extends SparkTestCase{
         assert(collected.contains(17.32))
 
     }
-
 }
