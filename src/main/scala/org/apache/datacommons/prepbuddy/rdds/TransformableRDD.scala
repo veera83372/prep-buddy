@@ -15,7 +15,9 @@ import org.apache.spark.{Partition, TaskContext}
 
 import scala.collection.mutable
 
-class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
+class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
+    def numberOfColumns(): Int = columnLength
 
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
         val rddOfNumbers: TransformableRDD = removeRows((record) => {

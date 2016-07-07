@@ -129,6 +129,7 @@ class TransformableRDDTest extends SparkTestCase {
 
     test("should return a double rdd by multiplying the given column indexes") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array("1,2", "1, 3", "1,4", "1, X"))
+
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         val doubleRdd: RDD[Double] = initialRDD.multiplyColumns(0, 1)
         val collected: Array[Double] = doubleRdd.collect()
@@ -137,5 +138,18 @@ class TransformableRDDTest extends SparkTestCase {
         assert(collected.contains(2.0))
         assert(collected.contains(3.0))
         assert(collected.contains(4.0))
+    }
+
+    test("should return the number of columns in the record") {
+        val data = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,12343",
+            "John,Male,India,12343",
+            "Smith,Male,USA,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+
+        assertEquals(4, initialRDD.numberOfColumns())
     }
 }
