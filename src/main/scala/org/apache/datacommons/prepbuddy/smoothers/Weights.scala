@@ -13,4 +13,5 @@ class Weights(limit: Int) extends Serializable {
 
     def add(value: Double): Unit = weights = weights :+ value
 
+    def size : Int = weights.length
 }

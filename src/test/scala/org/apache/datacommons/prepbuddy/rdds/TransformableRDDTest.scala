@@ -1,7 +1,5 @@
 package org.apache.datacommons.prepbuddy.rdds
 
-import java.util.Arrays
-
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
