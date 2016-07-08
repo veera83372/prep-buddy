@@ -9,7 +9,7 @@ abstract class BaseDataType extends Serializable {
 }
 
 object STRING extends BaseDataType {
-    val subtypes: Array[DataType] = Array(ALPHANUMERIC_STRING)
+    val subtypes: Array[DataType] = Array(EMAIL)
 
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
@@ -17,7 +17,7 @@ object STRING extends BaseDataType {
 }
 
 object NUMERIC extends BaseDataType {
-    val subtypes: Array[DataType] = Array(DECIMAL)
+    val subtypes: Array[DataType] = Array(INTEGER, DECIMAL)
 
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
