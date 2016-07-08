@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.transformers
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
-import org.apache.datacommons.prepbuddy.types.CSV
+import org.apache.datacommons.prepbuddy.types.{CSV, TSV}
 import org.apache.spark.rdd.RDD
 
 class MergeJoinTest extends SparkTestCase {
@@ -127,18 +127,18 @@ class MergeJoinTest extends SparkTestCase {
 
     test("should split the given column by delimiter into given number of split") {
         val data = Array(
-            "John,Male,21,+91-4382-313832,Canada",
-            "Smith, Male, 30,+01-5314-343462, UK",
-            "Larry, Male, 23,+00-9815-432975, USA",
-            "Fiona, Female,18,+89-1015-709854,USA"
+            "John\tMale\t21\t+91-4382-313832\tCanada",
+            "Smith\tMale\t30\t+01-5314-343462\tUK",
+            "Larry\tMale\t23\t+00-9815-432975\tUSA",
+            "Fiona\tFemale\t18\t+89-1015-709854\tUSA"
         )
         val dataset: RDD[String] = sparkContext.parallelize(data)
-        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, TSV)
 
         val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", 2).collect()
 
         assert(result.length == 4)
-        assert(result.contains("John,Male,21,Canada,+91,4382-313832"))
-        assert(result.contains("Smith,Male,30,UK,+01,5314-343462"))
+        assert(result.contains("John\tMale\t21\tCanada\t+91\t4382-313832"))
+        assert(result.contains("Smith\tMale\t30\tUK\t+01\t5314-343462"))
     }
 }
