@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy
 
 import org.apache.datacommons.prepbuddy.exceptions.ApplicationException
-import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, WeightedMovingAverageMethod, Weights}
+import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, Weights}
 
 class ExceptionTest extends SparkTestCase{
     test("Weighted moving average should not creatable when weights sze and window size is not equal") {
