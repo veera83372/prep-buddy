@@ -10,4 +10,7 @@ object ErrorMessages {
     val SIZE_LIMIT_IS_EXCEEDED: ErrorMessage = {
         new ErrorMessage("SIZE_LIMIT_IS_EXCEEDED", "Can not add value more than size limit")
     }
+    val PROBABILITY_IS_NOT_IN_RANGE: ErrorMessage = {
+        new ErrorMessage("PROBABILITY_IS_NOT_IN_RANGE", "Probability can not be less than zero or greater than 1")
+    }
 }
