@@ -126,6 +126,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         splitByDelimiter(column, delimiter, -1, retainColumn)
     }
 
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        validateColumnIndex(column)
+        splitByDelimiter(column, delimiter, -1)
+    }
+
     def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
         validateColumnIndex(col)
         val transformed: RDD[String] = map((record) => {
@@ -134,21 +139,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             arrangeRecords(recordAsArray, List(col), splitValue, retainCol)
         })
         new TransformableRDD(transformed, fileType)
-    }
-
-    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
-        validateColumnIndex(column)
-        splitByDelimiter(column, delimiter, -1)
-    }
-
-    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
-        validateColumnIndex(columns)
-        val transformedRDD: RDD[String] = map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
-            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
-        })
-        new TransformableRDD(transformedRDD, fileType)
     }
 
     private def arrangeRecords(values: Array[String], cols: List[Int], result: Array[String], retainColumn: Boolean) = {
@@ -167,6 +157,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             }
         }
         result.toArray
+    }
+
+    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
+        validateColumnIndex(columns)
+        val transformedRDD: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
+            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
+        })
+        new TransformableRDD(transformedRDD, fileType)
     }
 
     private def mergeValues(values: Array[String], combineOrder: List[Int], separator: String): String = {
@@ -254,12 +254,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
-    def unique(columnIndex: Int): TransformableRDD = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record)(columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
-    }
-
     def deduplicate(): TransformableRDD = deduplicate(List.empty)
 
     def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
@@ -284,9 +278,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         if (primaryKeyIndexes.isEmpty) {
             return columnValues
         }
-        var primaryKeyValues: Array[String] = Array()
-        primaryKeyIndexes.foreach((index) => primaryKeyValues = primaryKeyValues.:+(columnValues(index)))
-        primaryKeyValues
+        primaryKeyIndexes.map(columnValues(_)).toArray
     }
 
     private def generateFingerprint(columns: Array[String]): Long = {
@@ -294,6 +286,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        validateColumnIndex(columnIndex)
+        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record)(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
