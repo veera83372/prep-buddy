@@ -9,6 +9,6 @@ class ExceptionTest extends SparkTestCase{
         val thrown = intercept[ApplicationException] {
             new WeightedMovingAverageMethod(1, weights)
         }
-        assert(thrown.getMessage == "Application Exception")
+        assert(thrown.getMessage == "To calculate weighted moving average weights sum should be up to one")
     }
 }

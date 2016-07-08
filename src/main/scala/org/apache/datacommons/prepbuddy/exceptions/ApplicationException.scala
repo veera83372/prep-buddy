@@ -1,5 +1,5 @@
 package org.apache.datacommons.prepbuddy.exceptions
 
-class ApplicationException(msg: String) extends Throwable{
-    override def getMessage: String = msg
+class ApplicationException(errorMessage: ErrorMessage) extends Throwable{
+    override def getMessage: String = errorMessage.getMessage
 }
