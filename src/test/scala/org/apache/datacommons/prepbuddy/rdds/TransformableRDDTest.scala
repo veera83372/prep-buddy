@@ -1,7 +1,10 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import java.util.Arrays
+
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
@@ -151,5 +154,29 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
 
         assertEquals(4, initialRDD.numberOfColumns())
+    }
+
+    test("should impute the missing values by considering missing hints") {
+        val initialDataSet: RDD[String] = sparkContext.parallelize(Array(
+            "1,NULL,2,3,4", "2,N/A,23,21,23",
+            "3,N/A,21,32,32", "4,-,2,3,4",
+            "5,,54,32,54", "6,32,22,33,23"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+
+        val imputed: Array[String] = initialRDD.impute(1, new ImputationStrategy() {
+            def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int) {
+            }
+
+            def handleMissingData(record: RowRecord): String = {
+                return "X"
+            }
+        }, List("N/A", "-", "NA", "NULL")).collect
+
+        assert(imputed.contains("1,X,2,3,4"))
+        assert(imputed.contains("2,X,23,21,23"))
+        assert(imputed.contains("3,X,21,32,32"))
+        assert(imputed.contains("4,X,2,3,4"))
+        assert(imputed.contains("5,X,54,32,54"))
+        assert(imputed.contains("6,32,22,33,23"))
     }
 }

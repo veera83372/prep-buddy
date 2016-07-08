@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import java.lang.Double._
 import java.security.MessageDigest
+import java.util
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, Clusters, TextFacets}
@@ -186,21 +187,24 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(selectedColumnValues, fileType)
     }
 
-    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+    def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {
             val columns: Array[String] = fileType.parse(record)
             val value: String = columns(columnIndex)
             var replacementValue: String = value
-            if (value.equals(null) || value.trim.isEmpty) {
+            if (value.equals(null) || value.trim.isEmpty || missingHints.contains(value)) {
                 replacementValue = strategy.handleMissingData(new RowRecord(columns))
             }
-
             columns(columnIndex) = replacementValue
             fileType.join(columns)
         })
 
         new TransformableRDD(transformed, fileType)
+    }
+
+    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+        impute(columnIndex, strategy, List())
     }
 
     def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
