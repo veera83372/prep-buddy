@@ -1,5 +1,6 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.spark.rdd.RDD
 
@@ -29,5 +30,20 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         lengthWithCount.reduce((first, second) => {
             if (first._2 > second._2) first else second
         })._1
+    }
+
+    protected def validateColumnIndex(columnIndex: Int): Unit = {
+        validateColumnIndex(List(columnIndex))
+    }
+
+    protected def validateColumnIndex(columnIndexes: List[Int]): Unit = {
+        for (index <- columnIndexes) {
+            if (columnLength <= index) {
+                throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND)
+            }
+            else if (index < 0) {
+                throw new ApplicationException(ErrorMessages.NEGATIVE_COLUMN_INDEX)
+            }
+        }
     }
 }
