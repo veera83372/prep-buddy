@@ -56,7 +56,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     private def isNotNumber(value: String): Boolean = {
-        value.trim.isEmpty || !NumberUtils.isNumber(value)
+        !NumberUtils.isNumber(value)
     }
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
@@ -132,6 +132,21 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        validateColumnIndex(column)
+        splitByDelimiter(column, delimiter, -1)
+    }
+
+    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
+        validateColumnIndex(columns)
+        val transformedRDD: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
+            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
+        })
+        new TransformableRDD(transformedRDD, fileType)
+    }
+
     private def arrangeRecords(values: Array[String], cols: List[Int], result: Array[String], retainColumn: Boolean) = {
         var arrangedRecord = values
         if (!retainColumn) {
@@ -186,7 +201,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val columnsToBeSelected: Array[Int] = allColumns.toArray
         val selectedColumnValues: RDD[String] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
-            val resultValues: Array[String] = columnsToBeSelected.map((index) => recordAsArray(index))
+            val resultValues: Array[String] = columnsToBeSelected.map(recordAsArray(_))
             fileType.join(resultValues)
         })
         new TransformableRDD(selectedColumnValues, fileType)

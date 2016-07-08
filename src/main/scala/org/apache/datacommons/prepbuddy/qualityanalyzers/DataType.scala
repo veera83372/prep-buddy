@@ -10,7 +10,7 @@ abstract class DataType {
 }
 
 object ALPHANUMERIC_STRING extends DataType {
-    override def matchingCount(sampleData: List[String]): Int = 1
+    override def matchingCount(sampleData: List[String]): Int = sampleData.size
 }
 
 object DECIMAL extends DataType {
@@ -30,6 +30,13 @@ object INTEGER extends DataType {
 object EMAIL extends DataType {
     override def matchingCount(sampleData: List[String]): Int = {
         val EXPRESSION: String = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
+        matches(EXPRESSION, sampleData)
+    }
+}
+
+object CURRENCY extends DataType {
+    override def matchingCount(sampleData: List[String]): Int = {
+        val EXPRESSION: String = "^(\\p{Sc})(\\d+|\\d+.\\d+)$"
         matches(EXPRESSION, sampleData)
     }
 }
