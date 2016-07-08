@@ -2,8 +2,8 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
-import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
+import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
@@ -174,7 +174,7 @@ class TransformableRDDTest extends SparkTestCase {
             }
 
             def handleMissingData(record: RowRecord): String = {
-                return "X"
+                "X"
             }
         }, List("N/A", "-", "NA", "NULL")).collect
 

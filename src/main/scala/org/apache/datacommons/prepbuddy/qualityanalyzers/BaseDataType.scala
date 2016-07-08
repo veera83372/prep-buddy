@@ -4,8 +4,7 @@ abstract class BaseDataType extends Serializable {
     def actualType(sampleData: List[String]): DataType
 
     protected def checkActualType(sampleData: List[String], subtypes: Array[DataType]): DataType = {
-        for (subtype <- subtypes) if (subtype.isOfType(sampleData)) return subtype
-        ALPHANUMERIC_STRING
+        subtypes.find(_.isOfType(sampleData)).getOrElse(ALPHANUMERIC_STRING)
     }
 }
 
