@@ -4,22 +4,19 @@ abstract class FileType extends Serializable {
     def join(values: Array[String]): String
 
     def parse(record: String): Array[String]
+
+    def valueAt(record: String, index: Int): String = parse(record)(index)
 }
 
 object CSV extends FileType {
     override def join(values: Array[String]): String = values.mkString(",")
 
-    override def parse(record: String): Array[String] = {
-        record.split(",", -1).map(_.trim)
-    }
-
+    override def parse(record: String): Array[String] = record.split(",", -1).map(_.trim)
 }
 
 object TSV extends FileType {
     override def join(values: Array[String]): String = values.mkString("\t")
 
-    override def parse(record: String): Array[String] = {
-        record.split("\t", -1).map(_.trim)
-    }
+    override def parse(record: String): Array[String] = record.split("\t", -1).map(_.trim)
 }
 
