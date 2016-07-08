@@ -7,4 +7,7 @@ object ErrorMessages {
     val WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING: ErrorMessage = {
         new ErrorMessage("WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING", "Window size and weighs size should be same")
     }
+    val SIZE_LIMIT_IS_EXCEEDED: ErrorMessage = {
+        new ErrorMessage("SIZE_LIMIT_IS_EXCEEDED", "Can not add value more than size limit")
+    }
 }
