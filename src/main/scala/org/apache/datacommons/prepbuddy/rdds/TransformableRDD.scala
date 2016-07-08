@@ -2,7 +2,6 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import java.lang.Double._
 import java.security.MessageDigest
-import java.util
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, Clusters, TextFacets}
@@ -56,7 +55,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     private def isNotNumber(value: String): Boolean = {
-        value.trim.isEmpty || !NumberUtils.isNumber(value)
+        !NumberUtils.isNumber(value)
     }
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
@@ -121,6 +120,10 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         splitByDelimiter(column, delimiter, -1, retainColumn)
     }
 
+    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
+        splitByDelimiter(column, delimiter, -1)
+    }
+
     def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
         val transformed: RDD[String] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
@@ -146,10 +149,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             }
         }
         result.toArray
-    }
-
-    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = {
-        splitByDelimiter(column, delimiter, -1)
     }
 
     def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
@@ -182,10 +181,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
         val selectedColumnValues: RDD[String] = map((record) => {
             val recordAsArray: Array[String] = fileType.parse(record)
-            val resultValues: Array[String] = columnsToBeSelected.map((index) => recordAsArray(index))
+            val resultValues: Array[String] = columnsToBeSelected.map(recordAsArray(_))
             fileType.join(resultValues)
         })
         new TransformableRDD(selectedColumnValues, fileType)
+    }
+
+    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+        impute(columnIndex, strategy, List())
     }
 
     def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
@@ -202,10 +205,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
 
         new TransformableRDD(transformed, fileType)
-    }
-
-    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
-        impute(columnIndex, strategy, List())
     }
 
     def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
@@ -237,11 +236,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             .filter(record => record._2.size != 1)
             .flatMap(records => records._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
-    }
-
-    def unique(columnIndex: Int): TransformableRDD = {
-        val specifiedColumnValues: RDD[String] = map((record) => fileType.parse(record)(columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def deduplicate(): TransformableRDD = deduplicate(List.empty)
@@ -277,6 +271,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        val specifiedColumnValues: RDD[String] = map(fileType.parse(_)(columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
