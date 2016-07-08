@@ -4,7 +4,7 @@ import org.apache.datacommons.prepbuddy.exceptions.{ErrorMessages, ApplicationEx
 
 import scala.collection.mutable
 
-class WeightedSlidingWindow(windowSize: Int, weights: Weights) {
+class WeightedSlidingWindow(windowSize: Int, weights: Weights) extends Serializable{
     if (windowSize != weights.size){
         throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING)
     }
