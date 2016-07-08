@@ -137,6 +137,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
+        validateColumnIndex(columns)
+        val transformedRDD: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
+            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
+        })
+        new TransformableRDD(transformedRDD, fileType)
+    }
+
     private def arrangeRecords(values: Array[String], cols: List[Int], result: Array[String], retainColumn: Boolean) = {
         var arrangedRecord = values
         if (!retainColumn) {
@@ -154,18 +164,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         }
         result.toArray
     }
-
-    def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
-        validateColumnIndex(columns)
-        val transformedRDD: RDD[String] = map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            val mergedValue: String = mergeValues(recordAsArray, columns, separator)
-            arrangeRecords(recordAsArray, columns, Array(mergedValue), retainColumns)
-        })
-        new TransformableRDD(transformedRDD, fileType)
-    }
-
-    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = splitByDelimiter(column, delimiter, -1)
 
     def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
         validateColumnIndex(columns)
@@ -294,20 +292,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
-    }
-
-    def toDoubleRDD(columnIndex: Int): RDD[Double] = {
-        validateColumnIndex(columnIndex)
-        val filtered: RDD[String] = this.filter((record: String) => {
-            val rowRecord: Array[String] = fileType.parse(record)
-            val value: String = rowRecord(columnIndex)
-            NumberUtils.isNumber(value) && (value != null && !value.trim.isEmpty)
-        })
-        filtered.map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            val value: String = recordAsArray(columnIndex)
-            parseDouble(value)
-        })
     }
 
     def inferType(columnIndex: Int): DataType = {
