@@ -4,13 +4,13 @@ import org.apache.datacommons.prepbuddy.exceptions.ApplicationException
 import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, Weights}
 import org.apache.datacommons.prepbuddy.utils.Probability
 
-class ExceptionTest extends SparkTestCase{
-    test("Weighted moving average should not be creatable when weights size and window size is not equal") {
+class ExceptionTest extends SparkTestCase {
+    test("Weighted moving average should not be creatable when weights and window size is not equal") {
         val weights: Weights = new Weights(3)
         val thrown = intercept[ApplicationException] {
             new WeightedSlidingWindow(1, weights)
         }
-        assert(thrown.getMessage == "Window size and weighs size should be same")
+        assert(thrown.getMessage == "Window size and weighs size should be same.")
     }
 
     test("weights add should throw exception when sum of weights is not equal to one") {
@@ -24,7 +24,7 @@ class ExceptionTest extends SparkTestCase{
         val thrown = intercept[ApplicationException] {
             otherWeights.add(0.333)
         }
-        assert(thrown.getMessage == "To calculate weighted moving average, weights sum should be up to one")
+        assert(thrown.getMessage == "To calculate weighted moving average weights sum should be up to one.")
     }
 
     test("weights should throw exception if size is exceeded") {
@@ -34,7 +34,7 @@ class ExceptionTest extends SparkTestCase{
         val thrown = intercept[ApplicationException] {
             weights.add(0.3)
         }
-        assert(thrown.getMessage == "Can not add value more than size limit")
+        assert(thrown.getMessage == "Can not add value more than size limit.")
     }
 
     test("Probability should not create new object if probability value is not valid") {
