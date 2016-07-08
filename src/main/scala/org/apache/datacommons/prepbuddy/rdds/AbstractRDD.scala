@@ -1,5 +1,8 @@
 package org.apache.datacommons.prepbuddy.rdds
 
+import java.lang.Double._
+
+import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.spark.rdd.RDD
@@ -45,5 +48,14 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
                 throw new ApplicationException(ErrorMessages.NEGATIVE_COLUMN_INDEX)
             }
         }
+    }
+
+    def toDoubleRDD(columnIndex: Int): RDD[Double] = {
+        validateColumnIndex(columnIndex)
+        val filtered: RDD[String] = this.filter(record => {
+            val value: String = fileType.parse(record)(columnIndex)
+            NumberUtils.isNumber(value) && (value != null && !value.trim.isEmpty)
+        })
+        filtered.map(record => parseDouble(fileType.parse(record)(columnIndex)))
     }
 }
