@@ -2,11 +2,11 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
-import org.junit.Assert._
 
 
 class TransformableRDDTest extends SparkTestCase {
@@ -72,7 +72,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val textFacets: TextFacets = transformableRDD.listFacets(0)
-        assertEquals(2, textFacets.count)
+        assert(2 == textFacets.count)
     }
 
     test("should remove rows are based on a predicate") {
@@ -84,7 +84,7 @@ class TransformableRDDTest extends SparkTestCase {
             valueAt.equals("A") || valueAt.equals("B")
         }
         val finalRDD: TransformableRDD = transformableRDD.removeRows(predicate)
-        assertEquals(3, finalRDD.count)
+        assert(3 == finalRDD.count)
     }
 
     test("toDoubleRDD should give rdd of double") {
@@ -93,10 +93,10 @@ class TransformableRDDTest extends SparkTestCase {
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val doubleRDD: RDD[Double] = transformableRDD.toDoubleRDD(1)
         val collected: Array[Double] = doubleRDD.collect()
-        assertTrue(collected.contains(1.0))
-        assertTrue(collected.contains(2.9))
-        assertTrue(collected.contains(3.0))
-        assertTrue(collected.contains(4.0))
+        assert(collected.contains(1.0))
+        assert(collected.contains(2.9))
+        assert(collected.contains(3.0))
+        assert(collected.contains(4.0))
     }
 
     test("select should give selected column of the RDD") {
@@ -125,7 +125,7 @@ class TransformableRDDTest extends SparkTestCase {
         val listFacets: TextFacets = initialRDD.listFacets(Array(1, 2))
         val listOfHighest: Array[(String, Int)] = listFacets.highest
 
-        assert(3 == listOfHighest.length)
+        assert(3 equals listOfHighest.length)
     }
 
     test("should return a double rdd by multiplying the given column indexes") {
@@ -135,7 +135,7 @@ class TransformableRDDTest extends SparkTestCase {
         val doubleRdd: RDD[Double] = initialRDD.multiplyColumns(0, 1)
         val collected: Array[Double] = doubleRdd.collect()
 
-        assert(3 == collected.length)
+        assert(3 equals collected.length)
         assert(collected.contains(2.0))
         assert(collected.contains(3.0))
         assert(collected.contains(4.0))
@@ -151,7 +151,15 @@ class TransformableRDDTest extends SparkTestCase {
         val initialDataset: RDD[String] = sparkContext.parallelize(data)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
 
-        assertEquals(4, initialRDD.numberOfColumns())
+        assert(4 equals initialRDD.numberOfColumns())
+    }
+
+    test("should return the type of a column") {
+        val data = Array("1,23.4", "2,45.1", "3,65.56", "4,67.12", "5,23.1")
+        val dataSet: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet)
+
+        assert(DECIMAL equals transformableRDD.inferType(1))
     }
 
     test("should impute the missing values by considering missing hints") {
