@@ -1,37 +1,35 @@
 package org.apache.datacommons.prepbuddy.qualityanalyzers
 
 abstract class DataType {
-    def isOfType(sampleData: List[String]): Boolean
+    def matchingCount(sampleData: List[String]): Int
 
-    def matchesCriteria(regex: String, samples: List[String]): Boolean = {
+    protected def matches(regex: String, samples: List[String]): Int = {
         val matches: List[String] = samples.filter(_.matches(regex))
-        val threshold = Math.round(samples.length * 0.75)
-        //DEBUG println(matches.size)
-        matches.size > threshold
+        matches.size
     }
 }
 
 object ALPHANUMERIC_STRING extends DataType {
-    override def isOfType(sampleData: List[String]): Boolean = true
+    override def matchingCount(sampleData: List[String]): Int = 1
 }
 
 object DECIMAL extends DataType {
-    override def isOfType(sampleData: List[String]): Boolean = {
+    override def matchingCount(sampleData: List[String]): Int = {
         val EXPRESSION: String = "^[+-]?(\\.\\d+|\\d+\\.\\d+)$"
-        matchesCriteria(EXPRESSION, sampleData)
+        matches(EXPRESSION, sampleData)
     }
 }
 
 object INTEGER extends DataType {
-    override def isOfType(sampleData: List[String]): Boolean = {
+    override def matchingCount(sampleData: List[String]): Int = {
         val EXPRESSION: String = "^[+-]?\\d+$"
-        matchesCriteria(EXPRESSION, sampleData)
+        matches(EXPRESSION, sampleData)
     }
 }
 
 object EMAIL extends DataType {
-    override def isOfType(sampleData: List[String]): Boolean = {
+    override def matchingCount(sampleData: List[String]): Int = {
         val EXPRESSION: String = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
-        matchesCriteria(EXPRESSION, sampleData)
+        matches(EXPRESSION, sampleData)
     }
 }

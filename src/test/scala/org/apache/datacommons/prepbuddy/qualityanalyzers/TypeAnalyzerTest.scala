@@ -5,7 +5,7 @@ import org.scalatest.FunSuite
 
 class TypeAnalyzerTest extends FunSuite {
     test("should be Able to Detect the type as a string") {
-        val dataSet = List("facebook", "mpire", "teachstreet", "twitter")
+        val dataSet = List("facebook", "Vampire", "teachStreet", "twitter")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(ALPHANUMERIC_STRING == typeAnalyzer.getType)
     }

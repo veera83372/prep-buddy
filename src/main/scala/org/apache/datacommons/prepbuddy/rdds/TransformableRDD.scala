@@ -199,6 +199,10 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(selectedColumnValues, fileType)
     }
 
+    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
+        impute(columnIndex, strategy, List())
+    }
+
     def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
         validateColumnIndex(columnIndex)
         strategy.prepareSubstitute(this, columnIndex)
@@ -214,10 +218,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
 
         new TransformableRDD(transformed, fileType)
-    }
-
-    def impute(columnIndex: Int, strategy: ImputationStrategy): TransformableRDD = {
-        impute(columnIndex, strategy, List())
     }
 
     def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
