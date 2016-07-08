@@ -20,5 +20,14 @@ class TypeAnalyzerTest extends FunSuite {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(DECIMAL == typeAnalyzer.getType)
     }
-
+    test("should be able to give type as integer") {
+        val dataSet = List("12", "23", "34", "-14", "-23")
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
+        assert(INTEGER == typeAnalyzer.getType)
+    }
+    test("should be able to give the type as email") {
+        val dataSet = List("max@fireworks.in", "jst@mls.co.in", "bil_man@cil.com", "bill.se@gmail.com", "a@b.ci")
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
+        assert(EMAIL == typeAnalyzer.getType)
+    }
 }
