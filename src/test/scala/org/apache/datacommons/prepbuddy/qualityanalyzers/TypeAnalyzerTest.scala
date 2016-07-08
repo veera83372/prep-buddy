@@ -10,7 +10,7 @@ class TypeAnalyzerTest extends FunSuite {
         assert(ALPHANUMERIC_STRING == typeAnalyzer.getType)
     }
     test("should be able to detect type as decimal") {
-        val dataSet = List(".56", "290.56", "23", "2345676543245678.7654564", "405.34")
+        val dataSet = List(".56", "290.56", ".23", "2345676543245678.7654564", "405.34")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(DECIMAL == typeAnalyzer.getType)
     }
