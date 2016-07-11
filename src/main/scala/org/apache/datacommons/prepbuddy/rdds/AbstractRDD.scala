@@ -34,9 +34,9 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
         validateColumnIndex(columnIndex)
-        val filtered: RDD[String] = this.filter(record => {
+        val filtered: RDD[String] = filter(record => {
             val value: String = fileType.valueAt(record, columnIndex)
-            NumberUtils.isNumber(value) && (value != null && !value.trim.isEmpty)
+            NumberUtils.isNumber(value)
         })
         filtered.map(record => parseDouble(fileType.valueAt(record, columnIndex)))
     }
