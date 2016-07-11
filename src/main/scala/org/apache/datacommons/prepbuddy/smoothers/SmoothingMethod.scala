@@ -7,8 +7,8 @@ abstract class SmoothingMethod extends Serializable{
         val duplicateRDD: RDD[(Int, String)] = rdd.mapPartitionsWithIndex((index: Int, iterator: Iterator[String]) => {
             var list: List[(Int, String)] = iterator.toList.map((index, _))
             if (index != 0) {
-                val duplicates: List[(Int, String)] = list.take(windowSize - 1).map((each) => (each._1 - 1, each._2))
-                duplicates.foreach((duplicate) => list = list :+ duplicate)
+                val duplicates: List[(Int, String)] = list.take(windowSize - 1).map((tuple) => (tuple._1 - 1, tuple._2))
+                duplicates.foreach((duplicateTuple) => list = list :+ duplicateTuple)
             }
             list.iterator
         })

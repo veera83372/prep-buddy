@@ -1,6 +1,6 @@
-package org.apache.datacommons.prepbuddy
+package org.apache.datacommons.prepbuddy.exceptions
 
-import org.apache.datacommons.prepbuddy.exceptions.ApplicationException
+import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, Weights}
 import org.apache.datacommons.prepbuddy.utils.Probability
 
