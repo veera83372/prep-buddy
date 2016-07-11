@@ -9,16 +9,15 @@ abstract class DataType {
     protected def matches(regex: String, samples: List[String]): Boolean = {
         val matches: List[String] = samples.filter(_.matches(regex))
         val threshold = Math.round(samples.length * 0.75)
-        //DEBUG
-        println(matches.size)
         matches.size > threshold
     }
 
 
     protected def matchInDictionary(sampleData: List[String], dictionary: Set[String]): Boolean = {
-        val qualifyingLimit: Double = sampleData.size * 0.75
         val sampleInLowerCase: Set[String] = sampleData.map(_.toLowerCase).toSet
-        dictionary.intersect(sampleInLowerCase).size >= qualifyingLimit
+        val qualifyingLimit: Long = Math.round(sampleInLowerCase.size * 0.75)
+        val size: Int = dictionary.intersect(sampleInLowerCase).size
+        size >= qualifyingLimit
     }
 
     protected def isCategorical(sampleData: List[String], categoricalSize: Int): Boolean = {
@@ -172,11 +171,8 @@ object CATEGORICAL_INTEGER extends DataType {
 
 object EMPTY extends DataType {
     override def isOfType(sampleData: List[String]): Boolean = {
-        val emptyRepresentation: List[String] = List("N\\A", "\\N", "NULL", "blank", "(blank)", "NaN", "NA")
-        emptyRepresentation.foreach(element => {
-            if (!emptyRepresentation.contains(element)) return false
-        })
-        true
+        val emptyRepresentation: Set[String] = Set("N\\A", "\\N", "NULL", "blank", "(blank)", "NaN", "NA")
+        matchInDictionary(sampleData, emptyRepresentation.map(_.toLowerCase))
     }
 }
 

@@ -114,8 +114,7 @@ class TypeAnalyzerTest extends FunSuite {
         assert(CATEGORICAL_STRING eq typeAnalyzer.getType)
     }
     test("should be able to detect type as EMPTY for empty values") {
-        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("N\\A", "\\N", "N\\A", "N\\A", "NA"))
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("N\\A", "\\N", "N\\A", "N\\A", "NA", "NAN"))
         assert(EMPTY eq typeAnalyzer.getType)
     }
-
 }
