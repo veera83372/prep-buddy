@@ -62,7 +62,7 @@ class TypeAnalyzerTest extends FunSuite {
     }
 
     test("should Be Able To Give Type As Mobile Number With Code") {
-        val dataSet: List[String] = List("+12 6723459812", "+92 9992345678", "+343 2424432489", "+324 543545445")
+        val dataSet: List[String] = List("+12 6723459812", "+92 9992345678", "+343 2424432489", "+324 5435454456")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(MOBILE_NUMBER eq typeAnalyzer.getType)
     }
@@ -105,4 +105,17 @@ class TypeAnalyzerTest extends FunSuite {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("0", "1", "2", "3", "4", "5"))
         assert(INTEGER eq typeAnalyzer.getType)
     }
+    test("should Be Able To Infer The Data Type As CATEGORICAL_INTEGER ") {
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("0", "1", "0", "1", "0", "1", "0", "1"))
+        assert(CATEGORICAL_INTEGER eq typeAnalyzer.getType)
+    }
+    test("should Be Able To Infer The Data Type As CATEGORICAL_STRING ") {
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("A", "A", "B", "B", "C", "C", "C", "C"))
+        assert(CATEGORICAL_STRING eq typeAnalyzer.getType)
+    }
+    test("should be able to detect type as EMPTY for empty values") {
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("N\\A", "\\N", "N\\A", "N\\A", "NA"))
+        assert(EMPTY eq typeAnalyzer.getType)
+    }
+
 }
