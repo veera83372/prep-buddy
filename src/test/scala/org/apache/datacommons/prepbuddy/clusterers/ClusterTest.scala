@@ -53,7 +53,7 @@ class ClusterTest extends SparkTestCase {
         assert(thrown.getMessage == "Column index can not be negative.")
     }
 
-    test("should throw COLUMN_INDEX_OUT_OF_BOUND exception when the given column index is more than the current rdd has") {
+    test("should throw COLUMN_INDEX_OUT_OF_BOUND exception when the given column index is more than the current rdd") {
         val initialDataSet: RDD[String] = sparkContext.parallelize(Array(
             "1,NULL,2,3,4", "2,N/A,23,21,23",
             "3,N/A,21,32,32", "4,-,2,3,4",
