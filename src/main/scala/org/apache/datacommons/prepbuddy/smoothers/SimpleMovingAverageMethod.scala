@@ -12,7 +12,7 @@ class SimpleMovingAverageMethod(windowSize: Int) extends SmoothingMethod{
             var movingAverage: ListBuffer[Double] = ListBuffer()
             eachPartitionsIterator.foreach((eachValue) => {
                 slidingWindow.add(eachValue)
-                if (slidingWindow.isFull()) {
+                if (slidingWindow.isFull) {
                     movingAverage += slidingWindow.average
                 }
             })
