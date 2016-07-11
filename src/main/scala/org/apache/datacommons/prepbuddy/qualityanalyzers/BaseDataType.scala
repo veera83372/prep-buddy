@@ -4,25 +4,24 @@ abstract class BaseDataType extends Serializable {
     def actualType(sampleData: List[String]): DataType
 
     protected def checkActualType(sampleData: List[String], subtypes: Array[DataType]): DataType = {
-        val tuples: Array[(DataType, Int)] = subtypes.map(dataType => (dataType, dataType.matchingCount(sampleData)))
-        val max: (DataType, Int) = tuples.reduce((tuple, another) => {
-            if (tuple._2 > another._2) tuple else another
-        })
-        val threshold = Math.round(sampleData.length * 0.75)
-        if (max._2 < threshold) ALPHANUMERIC_STRING else max._1
+        subtypes.find(_.isOfType(sampleData)).getOrElse(ALPHANUMERIC_STRING)
     }
 }
 
 object STRING extends BaseDataType {
-    val subtypes: Array[DataType] = Array(EMAIL,
+    val subtypes: Array[DataType] = Array(
+        EMPTY,
         CURRENCY,
+        EMAIL,
         URL,
-        ZIP_CODE_US,
-        TIMESTAMP,
         SOCIAL_SECURITY_NUMBER,
-        COUNTRY_NAME,
+        ZIP_CODE_US,
+        COUNTRY_CODE_2_CHARACTER,
         COUNTRY_CODE_3_CHARACTER,
-        COUNTRY_CODE_2_CHARACTER)
+        COUNTRY_NAME,
+        TIMESTAMP,
+        CATEGORICAL_STRING
+    )
 
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
@@ -30,13 +29,16 @@ object STRING extends BaseDataType {
 }
 
 object NUMERIC extends BaseDataType {
-    val subtypes: Array[DataType] = Array(INTEGER,
-        DECIMAL,
-        IP_ADDRESS,
+    val subtypes: Array[DataType] = Array(
         ZIP_CODE_US,
         MOBILE_NUMBER,
+        CATEGORICAL_INTEGER,
+        INTEGER,
+        IP_ADDRESS,
+        LATITUDE,
         LONGITUDE,
-        LATITUDE)
+        DECIMAL
+    )
 
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
