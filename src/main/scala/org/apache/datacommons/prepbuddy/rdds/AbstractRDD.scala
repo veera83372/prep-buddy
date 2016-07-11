@@ -14,7 +14,8 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     protected val columnLength = getNumberOfColumns
 
     private def getNumberOfColumns: Int = {
-        val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords.groupBy(fileType.parse(_).length)
+        val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords
+            .groupBy(fileType.parse(_).length)
             .mapValues(_.length)
         columnLengthWithOccurrence.maxBy(_._2)._1
     }
