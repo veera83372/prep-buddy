@@ -6,7 +6,6 @@ import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, Clusters, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
-import org.apache.datacommons.prepbuddy.qualityanalyzers.{DataType, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.annotation.DeveloperApi
@@ -271,17 +270,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         var primaryKeyValues: Array[String] = Array.empty
         primaryKeyIndexes.foreach(index => primaryKeyValues = primaryKeyValues.:+(columnValues(index)))
         primaryKeyValues
-    }
-
-    def inferType(columnIndex: Int): DataType = {
-        validateColumnIndex(columnIndex)
-        val columnSamples: List[String] = sampleColumnValues(columnIndex)
-        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(columnSamples)
-        typeAnalyzer.getType
-    }
-
-    private def sampleColumnValues(columnIndex: Int): List[String] = {
-        sampleRecords.map(fileType.valueAt(_, columnIndex)).toList
     }
 
     @DeveloperApi
