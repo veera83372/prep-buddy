@@ -1,11 +1,19 @@
 package org.apache.datacommons.prepbuddy.qualityanalyzers
 
+import java.util.Locale
+
+
 abstract class DataType {
     def matchingCount(sampleData: List[String]): Int
-
+    
     protected def matches(regex: String, samples: List[String]): Int = {
         val matches: List[String] = samples.filter(_.matches(regex))
         matches.size
+    }
+
+    protected def matchInDictionary(sampleData: List[String], dictionary: Set[String]): Int = {
+        val sampleInLowerCase: Set[String] = sampleData.map(_.toLowerCase).toSet
+        dictionary.intersect(sampleInLowerCase).size
     }
 }
 
@@ -94,6 +102,46 @@ object LATITUDE extends DataType {
     override def matchingCount(sampleData: List[String]): Int = {
         val EXPRESSION: String = "^[-+]([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$"
         matches(EXPRESSION, sampleData)
+    }
+}
+
+object COUNTRY_NAME extends DataType {
+
+    override def matchingCount(sampleData: List[String]): Int = {
+        val countryNames: Set[String] = getCountryNames
+        matchInDictionary(sampleData, countryNames)
+    }
+    
+    private def getCountryNames: Set[String] = {
+        val isoCountries: Array[String] = Locale.getISOCountries
+        val countryList: Array[String] = isoCountries.map((country) => {
+            val locale = new Locale("", country)
+            locale.getDisplayCountry.toLowerCase
+        })
+        countryList.toSet
+    }
+}
+
+object COUNTRY_CODE_3_CHARACTER extends DataType {
+    override def matchingCount(sampleData: List[String]): Int = {
+        val countryNames: Set[String] = getCountryCodes
+        matchInDictionary(sampleData, countryNames)
+    }
+
+    private def getCountryCodes: Set[String] = {
+        val isoCountries: Array[String] = Locale.getISOCountries
+        val countryList: Array[String] = isoCountries.map((country) => {
+            val locale = new Locale("", country)
+            locale.getISO3Country.toLowerCase
+        })
+        countryList.toSet
+    }
+}
+
+object COUNTRY_CODE_2_CHARACTER extends DataType {
+    override def matchingCount(sampleData: List[String]): Int = {
+        val countryNames: Set[String] = Locale.getISOCountries.map(_.toLowerCase).toSet
+        matchInDictionary(sampleData, countryNames)
     }
 }
 
