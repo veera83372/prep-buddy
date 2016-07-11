@@ -16,7 +16,7 @@ class SimpleSlidingWindow(windowSize: Int) {
         windowValues += value
     }
 
-    def isFull(): Boolean = {
+    def isFull: Boolean = {
         windowValues.length == windowSize
     }
 
