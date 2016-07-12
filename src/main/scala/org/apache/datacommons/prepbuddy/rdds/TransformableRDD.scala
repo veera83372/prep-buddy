@@ -15,6 +15,16 @@ import org.apache.spark.{Partition, TaskContext}
 import scala.collection.mutable
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+    def flag(symbol: String, markerPredicate: (RowRecord) => Boolean): TransformableRDD = {
+        val flagged: RDD[String] = map((record) => {
+            var newRow: String = fileType.appendDelimiter(record)
+            val recordAsArray: Array[String] = fileType.parse(record)
+            if (markerPredicate(new RowRecord(recordAsArray))) newRow += symbol
+            newRow
+        })
+        new TransformableRDD(flagged, fileType)
+    }
+
 
     def numberOfColumns(): Int = columnLength
 
