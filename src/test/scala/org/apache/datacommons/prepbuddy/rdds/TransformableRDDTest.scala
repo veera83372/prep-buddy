@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
-import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.types.CSV
@@ -229,6 +229,24 @@ class TransformableRDDTest extends SparkTestCase {
         assert(collected.contains("Flagged,Meeka,Female,India,12343,*"))
         assert(collected.contains("Smith,Male,USA,12342,"))
 
+    }
+
+    test("should replace cluster's values with new value") {
+        val data = Array(
+            "one two, three",
+            "two one, four"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val listOfClusters: List[Cluster] = initialRDD.clusters(0,
+            new SimpleFingerprintAlgorithm()).getClustersWithSizeGreaterThan(0)
+        val cluster: Cluster = listOfClusters.head
+
+        val replacedRDD: TransformableRDD = initialRDD.replaceValues(cluster, "One", 0)
+        val collected: Array[String] = replacedRDD.collect()
+
+        assert(collected.contains("One,four"))
+        assert(collected.contains("One,three"))
     }
 
 }
