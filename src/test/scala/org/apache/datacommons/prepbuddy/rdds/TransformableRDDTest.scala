@@ -1,7 +1,7 @@
 package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
-import org.apache.datacommons.prepbuddy.clusterers.TextFacets
+import org.apache.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.types.CSV
@@ -185,4 +185,68 @@ class TransformableRDDTest extends SparkTestCase {
         assert(imputed.contains("5,X,54,32,54"))
         assert(imputed.contains("6,32,22,33,23"))
     }
+
+    test("should mark by given symbol to predicated row") {
+        val data = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,,12343",
+            "Meeka,Female,India,12343",
+            "Smith,Male,USA,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+
+        val flagged: TransformableRDD = initialRDD.flag("*", (rowRecord: RowRecord) => {
+            rowRecord.valueAt(1).equals("Female")
+        })
+        assert(5 == flagged.numberOfColumns())
+
+        val collected: Array[String] = flagged.collect()
+
+        assert(collected.contains("Meeka,Female,India,12343,*"))
+        assert(collected.contains("Smith,Male,USA,12342,"))
+
+    }
+
+    test("should map on only flagged row") {
+        val data = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,,12343",
+            "Meeka,Female,India,12343",
+            "Smith,Male,USA,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+
+        val flagged: TransformableRDD = initialRDD.flag("*", (rowRecord: RowRecord) => {
+            rowRecord.valueAt(1).equals("Female")
+        })
+        assert(5 == flagged.numberOfColumns())
+
+        val afterFlagMapRDD: TransformableRDD = flagged.mapByFlag("*", 4, (row: String) => "Flagged," + row)
+        val collected: Array[String] = afterFlagMapRDD.collect()
+
+        assert(collected.contains("Flagged,Meeka,Female,India,12343,*"))
+        assert(collected.contains("Smith,Male,USA,12342,"))
+
+    }
+
+    test("should replace cluster's values with new value") {
+        val data = Array(
+            "one two, three",
+            "two one, four"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val listOfClusters: List[Cluster] = initialRDD.clusters(0,
+            new SimpleFingerprintAlgorithm()).getClustersWithSizeGreaterThan(0)
+        val cluster: Cluster = listOfClusters.head
+
+        val replacedRDD: TransformableRDD = initialRDD.replaceValues(cluster, "One", 0)
+        val collected: Array[String] = replacedRDD.collect()
+
+        assert(collected.contains("One,four"))
+        assert(collected.contains("One,three"))
+    }
+
 }

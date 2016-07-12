@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.rdds
 import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
-import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, Clusters, TextFacets}
+import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
@@ -13,6 +13,35 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+    def replaceValues(cluster: Cluster, newValue: String, columnIndex: Int): TransformableRDD = {
+        val mapped: RDD[String] = map((row) => {
+            val recordAsArray: Array[String] = fileType.parse(row)
+            val value: String = recordAsArray(columnIndex)
+            if (cluster.containsValue(value)) recordAsArray(columnIndex) = newValue
+            fileType.join(recordAsArray)
+        })
+        new TransformableRDD(mapped, fileType)
+    }
+
+    def mapByFlag(symbol: String, symbolColumnIndex: Int, mapFunction: (String) => String): TransformableRDD = {
+        val mappedRDD: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val symbolColumn: String = recordAsArray(symbolColumnIndex)
+            if (symbolColumn.equals(symbol)) mapFunction(record) else record
+        })
+        new TransformableRDD(mappedRDD, fileType)
+    }
+
+    def flag(symbol: String, markerPredicate: (RowRecord) => Boolean): TransformableRDD = {
+        val flagged: RDD[String] = map((record) => {
+            var newRow: String = fileType.appendDelimiter(record)
+            val recordAsArray: Array[String] = fileType.parse(record)
+            if (markerPredicate(new RowRecord(recordAsArray))) newRow += symbol
+            newRow
+        })
+        new TransformableRDD(flagged, fileType)
+    }
+
 
     def numberOfColumns(): Int = columnLength
 

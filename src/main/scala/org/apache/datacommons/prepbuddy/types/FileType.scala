@@ -1,6 +1,7 @@
 package org.apache.datacommons.prepbuddy.types
 
 class FileType(delimiter: String) extends Serializable {
+    def appendDelimiter(row: String): String = row + delimiter
 
     def join(values: Array[String]): String = values.mkString(delimiter)
 
