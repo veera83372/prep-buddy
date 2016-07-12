@@ -12,8 +12,6 @@ import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
-import scala.collection.mutable
-
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
 
     def numberOfColumns(): Int = columnLength
@@ -82,7 +80,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         table
     }
-
 
     def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
         validateColumnIndex(column)
