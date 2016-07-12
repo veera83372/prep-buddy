@@ -208,4 +208,27 @@ class TransformableRDDTest extends SparkTestCase {
 
     }
 
+    test("should map on only flagged row") {
+        val data = Array(
+            "Smith,Male,USA,12345",
+            "John,Male,,12343",
+            "Meeka,Female,India,12343",
+            "Smith,Male,USA,12342"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+
+        val flagged: TransformableRDD = initialRDD.flag("*", (rowRecord: RowRecord) => {
+            rowRecord.valueAt(1).equals("Female")
+        })
+        assert(5 == flagged.numberOfColumns())
+
+        val afterFlagMapRDD: TransformableRDD = flagged.mapByFlag("*", 4, (row: String) => "Flagged," + row)
+        val collected: Array[String] = afterFlagMapRDD.collect()
+
+        assert(collected.contains("Flagged,Meeka,Female,India,12343,*"))
+        assert(collected.contains("Smith,Male,USA,12342,"))
+
+    }
+
 }
