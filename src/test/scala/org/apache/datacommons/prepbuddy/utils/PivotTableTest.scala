@@ -3,7 +3,6 @@ package org.apache.datacommons.prepbuddy.utils
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
-import org.junit.Assert._
 
 class PivotTableTest extends SparkTestCase{
     test("pivotByCount should give pivoted table of given row and column indexes") {
@@ -12,7 +11,7 @@ class PivotTableTest extends SparkTestCase{
 
         val expected: Int = 5
         val actual: Int = pivotTable.valueAt("row", "column1")
-        assertEquals(expected, actual)
+        assert(expected == actual)
 
         assert(0 == pivotTable.valueAt("row", "column"))
 

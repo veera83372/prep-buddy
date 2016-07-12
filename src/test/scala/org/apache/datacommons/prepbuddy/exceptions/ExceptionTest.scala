@@ -1,10 +1,10 @@
 package org.apache.datacommons.prepbuddy.exceptions
 
-import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, Weights}
 import org.apache.datacommons.prepbuddy.utils.Probability
+import org.scalatest.FunSuite
 
-class ExceptionTest extends SparkTestCase {
+class ExceptionTest extends FunSuite {
     test("Weighted moving average should not be creatable when weights and window size is not equal") {
         val weights: Weights = new Weights(3)
         val thrown = intercept[ApplicationException] {
