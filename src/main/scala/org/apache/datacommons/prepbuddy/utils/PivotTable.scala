@@ -26,6 +26,4 @@ class PivotTable[T](defaultValue: T) {
     def valueAt(rowKey: String, columnKey: String): T = {
         lookUpTable(rowKey)(columnKey)
     }
-
-
 }
