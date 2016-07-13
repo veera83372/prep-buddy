@@ -54,6 +54,7 @@ class SmoothingMethodTest extends SparkTestCase{
 
         val movingAverage: WeightedMovingAverageMethod = new WeightedMovingAverageMethod(3, weights)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
+        val collect: Array[Double] = rdd.collect()
         val collected: Array[Double] = rdd.collect().map("%1.2f".format(_).toDouble)
 
         assert(collected.contains(13.66))
