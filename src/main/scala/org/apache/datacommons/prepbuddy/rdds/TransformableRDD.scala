@@ -6,6 +6,7 @@ import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
+import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.annotation.DeveloperApi
@@ -13,6 +14,10 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+    def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
+        val columnDataset: RDD[String] = select(columnIndex)
+        smoothingMethod.smooth(columnDataset)
+    }
     def replaceValues(cluster: Cluster, newValue: String, columnIndex: Int): TransformableRDD = {
         val mapped: RDD[String] = map((row) => {
             val recordAsArray: Array[String] = fileType.parse(row)
