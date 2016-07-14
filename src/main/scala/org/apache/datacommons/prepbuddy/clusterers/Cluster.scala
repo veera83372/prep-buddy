@@ -1,8 +1,10 @@
 package org.apache.datacommons.prepbuddy.clusterers
 
+import scala.collection.mutable.ListBuffer
+
 class Cluster(key: String) extends Serializable {
 
-    var tuples: List[(String, Int)] = List()
+    private val tuples: ListBuffer[(String, Int)] = ListBuffer.empty
 
     def contain(tuple: (String, Int)): Boolean = tuples.contains(tuple)
 
@@ -12,6 +14,6 @@ class Cluster(key: String) extends Serializable {
 
     def containsValue(value: String): Boolean = tuples.exists(_._1 == value)
 
-    def add(tuple: (String, Int)): Unit = tuples = tuples.:+(tuple)
+    def add(tuple: (String, Int)): Unit = tuples += tuple
 
 }

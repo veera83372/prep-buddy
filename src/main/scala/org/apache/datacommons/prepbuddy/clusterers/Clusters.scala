@@ -1,24 +1,22 @@
 package org.apache.datacommons.prepbuddy.clusterers
 
+import scala.collection.mutable.ListBuffer
+
 class Clusters {
-    private var clusters: List[Cluster] = List()
+    private val clusters: ListBuffer[Cluster] = ListBuffer.empty
 
-    def getAllClusters: List[Cluster] = clusters
+    def getAllClusters: List[Cluster] = clusters.toList
 
-    def getClustersWithSizeGreaterThan(threshold: Int): List[Cluster] = {
-        clusters.filter(_.size > threshold)
-    }
+    def getClustersWithSizeGreaterThan(threshold: Int): List[Cluster] = clusters.filter(_.size > threshold).toList
 
-    def getClustersExactlyOfSize(size: Int): List[Cluster] = {
-        clusters.filter(_.size equals size)
-    }
+    def getClustersExactlyOfSize(size: Int): List[Cluster] = clusters.filter(_.size == size).toList
 
-    def add(key: String, tuple: (String, Int)): Unit = {
+    def add(key: String, tuple: (String, Int)) {
         val option: Option[Cluster] = getClusterOf(key)
         var cluster: Cluster = option.orNull
         if (cluster == null) {
             cluster = new Cluster(key)
-            clusters = clusters.:+(cluster)
+            clusters += cluster
         }
         cluster.add(tuple)
     }

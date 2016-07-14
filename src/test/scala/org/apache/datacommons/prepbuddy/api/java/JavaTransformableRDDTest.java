@@ -1,37 +1,19 @@
-import org.apache.datacommons.prepbuddy.api.java.JavaTransformableRDD;
+package org.apache.datacommons.prepbuddy.api.java;
+
+import org.apache.datacommons.prepbuddy.api.JavaSparkTestCase;
+import org.apache.datacommons.prepbuddy.api.java.types.FileType;
 import org.apache.datacommons.prepbuddy.imputations.ApproxMeanSubstitution;
 import org.apache.datacommons.prepbuddy.imputations.MeanSubstitution;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class JavaTransformableRDDTest implements Serializable {
-    protected transient JavaSparkContext javaSparkContext;
-
-    @Before
-    public void setUp() throws Exception {
-        SparkConf sparkConf = new SparkConf().setAppName(getClass().getName()).setMaster("local");
-        javaSparkContext = new JavaSparkContext(sparkConf);
-        Logger.getLogger("org").setLevel(Level.OFF);
-        Logger.getLogger("akka").setLevel(Level.OFF);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        javaSparkContext.close();
-    }
+public class JavaTransformableRDDTest extends JavaSparkTestCase {
 
     @Test
     public void shouldBeAbleToDeduplicate() {
@@ -41,7 +23,7 @@ public class JavaTransformableRDDTest implements Serializable {
                 "One,Two,Three",
                 "Ten,Eleven,Twelve"
         ));
-        JavaTransformableRDD javaTransformableRDD = new JavaTransformableRDD(numbers);
+        JavaTransformableRDD javaTransformableRDD = new JavaTransformableRDD(numbers, FileType.CSV);
         JavaTransformableRDD javaRdd = javaTransformableRDD.deduplicate();
         assertEquals(2, javaRdd.count());
     }
@@ -55,7 +37,7 @@ public class JavaTransformableRDDTest implements Serializable {
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
 
         ));
-        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet);
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
         JavaTransformableRDD imputed = initialRDD.impute(3, new MeanSubstitution());
         List<String> listOfRecord = imputed.collect();
         assertEquals(4, listOfRecord.size());
@@ -72,7 +54,7 @@ public class JavaTransformableRDDTest implements Serializable {
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
 
         ));
-        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet);
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
         JavaTransformableRDD imputed = initialRDD.impute(3, new ApproxMeanSubstitution());
         List<String> listOfRecord = imputed.collect();
         String expected = "07641036117,07371326239,Incoming,21.0,Mon Feb 11 07:45:42 +0000 1980";

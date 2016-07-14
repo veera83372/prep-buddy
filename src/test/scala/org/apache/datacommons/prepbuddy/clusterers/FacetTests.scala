@@ -59,7 +59,7 @@ class FacetTests extends SparkTestCase {
         assert(facetedPair.contains(("A", 3)))
     }
 
-    test(" cardinalValues  Should return cardinal values for the text facets "){
+    test(" cardinalValues  Should return cardinal values for the text facets ") {
         val dataSet = Array("X,Y", "A,B", "X,Z", "A,Q", "A,E", "Q,E", "Q,R", "W,E")
         val initialRDD: JavaRDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)

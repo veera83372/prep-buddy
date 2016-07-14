@@ -3,17 +3,10 @@ package org.apache.datacommons.prepbuddy.clusterers
 import scala.collection.mutable
 
 class NGramFingerprintAlgorithm(nGram: Int) extends FingerprintAlgorithm {
-    override def getClusters(tuples: Array[(String, Int)]): Clusters = {
-        val clusters: Clusters = new Clusters
-        tuples.foreach((tuple) => {
-            val key: String = generateNGramFingerprint(tuple._1)
-            clusters.add(key, tuple)
-        })
-        clusters
-    }
+    def getClusters(tuples: Array[(String, Int)]): Clusters = super.getClusters(tuples, generateNGramFingerprint)
 
-    def generateNGramFingerprint(string: String): String = {
-        val someString: String = removeAllPunctuations(string.trim.toLowerCase)
+    def generateNGramFingerprint(value: String): String = {
+        val someString: String = removeAllPunctuations(value.trim.toLowerCase)
         val set: mutable.TreeSet[String] = getNGramSetOf(someString)
         set.mkString("")
     }
