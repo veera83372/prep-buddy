@@ -195,16 +195,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(rdd, fileType)
     }
 
-    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
-        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
-        validateColumnIndex(columnsToBeSelected.toList)
-        val selectedColumnValues: RDD[String] = map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            val resultValues: Array[String] = columnsToBeSelected.map(recordAsArray(_))
-            fileType.join(resultValues)
-        })
-        new TransformableRDD(selectedColumnValues, fileType)
-    }
 
     def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
         validateColumnIndex(columnIndex)

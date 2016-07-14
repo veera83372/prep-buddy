@@ -13,8 +13,19 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
     protected val columnLength = getNumberOfColumns
 
+    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
+        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
+        validateColumnIndex(columnsToBeSelected.toList)
+        val selectedColumnValues: RDD[String] = map((record) => {
+            val recordAsArray: Array[String] = fileType.parse(record)
+            val resultValues: Array[String] = columnsToBeSelected.map(recordAsArray(_))
+            fileType.join(resultValues)
+        })
+        new TransformableRDD(selectedColumnValues, fileType)
+    }
+
     def isNumericColumn(columnIndex: Int): Boolean = {
-        val records: Array[String] = sampleRecords
+        val records: Array[String] = select(columnIndex).takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
         val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
         baseType.equals(NUMERIC)
     }

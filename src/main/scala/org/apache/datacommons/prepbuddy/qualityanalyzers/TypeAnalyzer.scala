@@ -16,6 +16,6 @@ class TypeAnalyzer(sampleData: List[String]) {
     private def matchesNumericCriteria: Boolean = {
         val matches: List[String] = sampleData.filter(_.matches(PATTERN))
         val threshold = Math.round(sampleData.length * 0.75)
-        matches.size > threshold
+        matches.size >= threshold
     }
 }
