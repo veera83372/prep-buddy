@@ -1,4 +1,5 @@
 import org.apache.datacommons.prepbuddy.api.java.JavaTransformableRDD;
+import org.apache.datacommons.prepbuddy.imputations.ApproxMeanSubstitution;
 import org.apache.datacommons.prepbuddy.imputations.MeanSubstitution;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -58,6 +59,22 @@ public class JavaTransformableRDDTest implements Serializable {
         JavaTransformableRDD imputed = initialRDD.impute(3, new MeanSubstitution());
         List<String> listOfRecord = imputed.collect();
         assertEquals(4, listOfRecord.size());
+        String expected = "07641036117,07371326239,Incoming,21.0,Mon Feb 11 07:45:42 +0000 1980";
+        assertTrue(listOfRecord.contains(expected));
+    }
+
+    @Test
+    public void shouldImputeTheValueWithTheMeanApprox() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "07434677419,07371326239,Incoming,31,Wed Sep 15 19:17:44 +0100 2010",
+                "07641036117,01666472054,Outgoing,20,Mon Feb 11 07:18:23 +0000 1980",
+                "07641036117,07371326239,Incoming, ,Mon Feb 11 07:45:42 +0000 1980",
+                "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
+
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet);
+        JavaTransformableRDD imputed = initialRDD.impute(3, new ApproxMeanSubstitution());
+        List<String> listOfRecord = imputed.collect();
         String expected = "07641036117,07371326239,Incoming,21.0,Mon Feb 11 07:45:42 +0000 1980";
         assertTrue(listOfRecord.contains(expected));
     }

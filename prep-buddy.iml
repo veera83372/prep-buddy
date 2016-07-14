@@ -9,7 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/functionaltests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/functionaltest" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/api/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/api" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
