@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.exceptions
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
-import org.apache.datacommons.prepbuddy.smoothers.{SimpleMovingAverageMethod, WeightedSlidingWindow, Weights}
+import org.apache.datacommons.prepbuddy.smoothers.{SimpleMovingAverageMethod, WeightedMovingAverageMethod, Weights}
 import org.apache.datacommons.prepbuddy.utils.Probability
 import org.apache.spark.rdd.RDD
 
@@ -10,7 +10,7 @@ class ExceptionTest extends SparkTestCase {
     test("Weighted moving average should not be creatable when weights and window size is not equal") {
         val weights: Weights = new Weights(3)
         val thrown = intercept[ApplicationException] {
-            new WeightedSlidingWindow(1, weights)
+            new WeightedMovingAverageMethod(1, weights)
         }
         assert(thrown.getMessage == "Window size and weighs size should be same.")
     }

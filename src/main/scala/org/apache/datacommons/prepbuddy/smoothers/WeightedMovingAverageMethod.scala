@@ -1,23 +1,17 @@
 package org.apache.datacommons.prepbuddy.smoothers
 
-import org.apache.datacommons.prepbuddy.exceptions.{ErrorMessages, ApplicationException}
+import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.spark.rdd.RDD
 
-import scala.collection.mutable.ListBuffer
-
 class WeightedMovingAverageMethod(windowSize: Int, weights: Weights) extends SmoothingMethod {
-    val slidingWindow: WeightedSlidingWindow = new WeightedSlidingWindow(windowSize, weights)
+    if (windowSize != weights.size) {
+        throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING)
+    }
 
     override def smooth(singleColumnDataset: RDD[String]): RDD[Double] = {
         val duplicateRDD: RDD[Double] = prepare(singleColumnDataset, windowSize)
-        duplicateRDD.mapPartitions((eachIterator) => {
-
-            val weightedMovingAverages: ListBuffer[Double] = ListBuffer()
-            eachIterator.foreach((eachValue) => {
-                slidingWindow.add(eachValue)
-                if (slidingWindow.isFull) weightedMovingAverages += slidingWindow.average
-            })
-            weightedMovingAverages.iterator
-        })
+        duplicateRDD.mapPartitions(_.sliding(windowSize).map(average))
     }
+
+    private def average(windowValues: Seq[Double]) = weights.multiplyWith(windowValues.toList).sum
 }

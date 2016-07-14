@@ -2,11 +2,13 @@ package org.apache.datacommons.prepbuddy.clusterers
 
 import org.apache.commons.lang.StringUtils
 
+import scala.collection.mutable.ListBuffer
+
 class LevenshteinDistance extends ClusteringAlgorithm {
     override def getClusters(tuples: Array[(String, Int)]): Clusters = {
         val clusters: Clusters = new Clusters
-        var indexes: List[Int] = List()
-        tuples.zipWithIndex.foreach {
+        val indexes: ListBuffer[Int] = ListBuffer.empty
+        tuples.view.zipWithIndex.foreach {
             case (tuple, index) =>
                 val key: String = tuple._1
                 clusters.add(key, tuple)
@@ -17,7 +19,7 @@ class LevenshteinDistance extends ClusteringAlgorithm {
                     val distance: Int = StringUtils.getLevenshteinDistance(key, anotherKey)
                     if (distance < 4 && !indexes.contains(secondIndex)) {
                         clusters.add(key, anotherTuple)
-                        indexes = indexes.:+(secondIndex)
+                        indexes += secondIndex
                     }
                     secondIndex += 1
                 }
