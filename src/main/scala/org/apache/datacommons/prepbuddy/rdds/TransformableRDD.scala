@@ -7,7 +7,6 @@ import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
-import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
@@ -16,12 +15,6 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
-
-    def isNumericColumn(columnIndex: Int): Boolean = {
-        val records: Array[String] = sampleRecords
-        val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
-        baseType.equals(NUMERIC)
-    }
 
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
         validateColumnIndex(columnIndex)

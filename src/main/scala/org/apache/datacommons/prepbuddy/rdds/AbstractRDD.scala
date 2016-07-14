@@ -4,7 +4,7 @@ import java.lang.Double._
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
-import org.apache.datacommons.prepbuddy.qualityanalyzers.{DataType, TypeAnalyzer}
+import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.spark.rdd.RDD
 
@@ -12,6 +12,12 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     val DEFAULT_SAMPLE_SIZE: Int = 1000
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
     protected val columnLength = getNumberOfColumns
+
+    def isNumericColumn(columnIndex: Int): Boolean = {
+        val records: Array[String] = sampleRecords
+        val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
+        baseType.equals(NUMERIC)
+    }
 
     private def getNumberOfColumns: Int = {
         val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords
@@ -35,6 +41,9 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
         validateColumnIndex(columnIndex)
+        if (!isNumericColumn(columnIndex)) {
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
+        }
         val filtered: RDD[String] = filter(record => {
             val value: String = fileType.valueAt(record, columnIndex)
             NumberUtils.isNumber(value)

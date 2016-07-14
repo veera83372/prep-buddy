@@ -51,7 +51,7 @@ class ExceptionTest extends SparkTestCase {
         assert(otherThrown.getMessage == "Probability can not be less than zero or greater than 1")
     }
 
-    test("toDoubleRDD should throw exception if given column is not numeric") {
+    test("smooth should throw exception if given column is not numeric") {
         val data = Array(
             "one two, three",
             "two one, four"
@@ -64,4 +64,16 @@ class ExceptionTest extends SparkTestCase {
         assert(thrown.getMessage == "Values of column are not numeric")
     }
 
+    test("toDoubleRDD should throw exception if given column is not numeric") {
+        val data = Array(
+            "one two, three",
+            "two one, four"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val thrown = intercept[ApplicationException] {
+            initialRDD.toDoubleRDD(0)
+        }
+        assert(thrown.getMessage == "Values of column are not numeric")
+    }
 }
