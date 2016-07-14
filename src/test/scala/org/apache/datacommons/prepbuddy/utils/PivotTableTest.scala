@@ -4,7 +4,7 @@ import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
 
-class PivotTableTest extends SparkTestCase{
+class PivotTableTest extends SparkTestCase {
     test("pivotByCount should give pivoted table of given row and column indexes") {
         val pivotTable: PivotTable[Int] = new PivotTable[Int](0)
         pivotTable.addEntry("row", "column1", 5)

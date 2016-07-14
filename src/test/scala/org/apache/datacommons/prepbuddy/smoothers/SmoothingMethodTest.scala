@@ -25,18 +25,16 @@ class SmoothingMethodTest extends SparkTestCase {
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
 
         val averages: Array[Double] = rdd.collect()
-        val expected: Double = 4.0
-
-        assert(averages.contains(expected))
-        assert(averages.contains(5.0))
-        assert(averages.contains(6.0))
-        assert(averages.contains(7.0))
-        assert(averages.contains(8.0))
-        assert(averages.contains(9.0))
-        assert(averages.contains(10.0))
-        assert(averages.contains(11.0))
-        assert(averages.contains(12.0))
-        assert(averages.contains(13.0))
+        assert(averages(0) == 4.0)
+        assert(averages(1) == 5.0)
+        assert(averages(2) == 6.0)
+        assert(averages(3) == 7.0)
+        assert(averages(4) == 8.0)
+        assert(averages(5) == 9.0)
+        assert(averages(6) == 10.0)
+        assert(averages(7) == 11.0)
+        assert(averages(8) == 12.0)
+        assert(averages(9) == 13.0)
 
         assert(!averages.contains(14.0))
     }
@@ -57,10 +55,10 @@ class SmoothingMethodTest extends SparkTestCase {
         val collect: Array[Double] = rdd.collect()
         val collected: Array[Double] = rdd.collect().map("%1.2f".format(_).toDouble)
 
-        assert(collected.contains(13.66))
-        assert(collected.contains(13.82))
-        assert(collected.contains(15.49))
-        assert(collected.contains(17.32))
+        assert(collected(0) == 13.66)
+        assert(collected(1) == 13.82)
+        assert(collected(2) == 15.49)
+        assert(collected(3) == 17.32)
 
     }
 }
