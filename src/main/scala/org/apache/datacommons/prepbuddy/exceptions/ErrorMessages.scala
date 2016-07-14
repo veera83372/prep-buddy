@@ -1,6 +1,12 @@
 package org.apache.datacommons.prepbuddy.exceptions
 
 object ErrorMessages {
+    val COLUMN_VALUES_ARE_NOT_NUMERIC: ErrorMessage = {
+        val message: String = "Values of column are not numeric"
+        val key: String = "COLUMN_VALUES_ARE_NOT_NUMERIC"
+        new ErrorMessage(key, message)
+    }
+
     val WEIGHTS_SUM_IS_NOT_EQUAL_TO_ONE: ErrorMessage = {
         val message: String = "To calculate weighted moving average weights sum should be up to one."
         val key: String = "WEIGHTS_SUM_IS_NOT_EQUAL_TO_ONE"

@@ -1,10 +1,12 @@
 package org.apache.datacommons.prepbuddy.exceptions
 
-import org.apache.datacommons.prepbuddy.smoothers.{WeightedSlidingWindow, Weights}
+import org.apache.datacommons.prepbuddy.SparkTestCase
+import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
+import org.apache.datacommons.prepbuddy.smoothers.{SimpleMovingAverageMethod, WeightedSlidingWindow, Weights}
 import org.apache.datacommons.prepbuddy.utils.Probability
-import org.scalatest.FunSuite
+import org.apache.spark.rdd.RDD
 
-class ExceptionTest extends FunSuite {
+class ExceptionTest extends SparkTestCase {
     test("Weighted moving average should not be creatable when weights and window size is not equal") {
         val weights: Weights = new Weights(3)
         val thrown = intercept[ApplicationException] {
@@ -47,6 +49,19 @@ class ExceptionTest extends FunSuite {
             new Probability(-1)
         }
         assert(otherThrown.getMessage == "Probability can not be less than zero or greater than 1")
+    }
+
+    test("toDoubleRDD should throw exception if given column is not numeric") {
+        val data = Array(
+            "one two, three",
+            "two one, four"
+        )
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+        val thrown = intercept[ApplicationException] {
+            initialRDD.smooth(0, new SimpleMovingAverageMethod(2))
+        }
+        assert(thrown.getMessage == "Values of column are not numeric")
     }
 
 }

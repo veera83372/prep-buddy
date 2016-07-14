@@ -9,7 +9,7 @@ class TypeAnalyzer(sampleData: List[String]) {
         baseType.actualType(sampleData)
     }
 
-    private def getBaseType: BaseDataType = {
+    def getBaseType: BaseDataType = {
         if (matchesNumericCriteria) NUMERIC else STRING
     }
 

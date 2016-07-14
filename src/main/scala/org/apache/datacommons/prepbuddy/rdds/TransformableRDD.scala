@@ -4,8 +4,10 @@ import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
+import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
+import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
@@ -14,10 +16,23 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
+    def isNumericColumn(columnIndex: Int): Boolean = {
+        val records: Array[String] = sampleRecords
+        val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
+        baseType.equals(NUMERIC)
+    }
+
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
-        val columnDataset: RDD[String] = select(columnIndex)
+        validateColumnIndex(columnIndex)
+        if (!isNumericColumn(columnIndex)) {
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
+        }
+        val cleanRDD: TransformableRDD = removeRows((rowRecord) => isNotNumber(rowRecord.valueAt(columnIndex)))
+        val columnDataset: RDD[String] = cleanRDD.select(columnIndex)
         smoothingMethod.smooth(columnDataset)
     }
+
     def replaceValues(cluster: Cluster, newValue: String, columnIndex: Int): TransformableRDD = {
         val mapped: RDD[String] = map((row) => {
             val recordAsArray: Array[String] = fileType.parse(row)
