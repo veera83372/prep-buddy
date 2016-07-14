@@ -55,13 +55,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def numberOfColumns(): Int = columnLength
 
-    def clusters(columnIndex: Int, algorithm: ClusteringAlgorithm): Clusters = {
+    def clusters(columnIndex: Int, clusteringAlgorithm: ClusteringAlgorithm): Clusters = {
         validateColumnIndex(columnIndex)
         val textFacets: TextFacets = listFacets(columnIndex)
         val rdd: RDD[(String, Int)] = textFacets.rdd
         val tuples: Array[(String, Int)] = rdd.collect
 
-        algorithm.getClusters(tuples)
+        clusteringAlgorithm.getClusters(tuples)
     }
 
     def listFacets(columnIndex: Int): TextFacets = {
