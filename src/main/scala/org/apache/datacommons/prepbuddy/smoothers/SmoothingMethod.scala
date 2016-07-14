@@ -8,7 +8,7 @@ abstract class SmoothingMethod extends Serializable{
             var list: List[(Int, String)] = iterator.toList.map((index, _))
             if (index != 0) {
                 val duplicates: List[(Int, String)] = list.take(windowSize - 1).map((tuple) => (tuple._1 - 1, tuple._2))
-                duplicates.foreach((duplicateTuple) => list = list :+ duplicateTuple)
+                list = list ++ duplicates
             }
             list.iterator
         })

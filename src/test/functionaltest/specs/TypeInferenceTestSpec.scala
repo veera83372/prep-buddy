@@ -14,5 +14,5 @@ class TypeInferenceTestSpec(dataset: TestableDataset) extends DatasetTestSpec(da
         DatasetAssertion.assertType(MOBILE_NUMBER, actualDatatype)
     }
 
-    override protected var testResults: DatasetTestResults = _
+    override protected var testResults: DatasetTestResults = testResults
 }

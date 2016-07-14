@@ -3,11 +3,11 @@ package org.apache.datacommons.prepbuddy.smoothers
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.spark.rdd.RDD
 
-class SmoothingMethodTest extends SparkTestCase{
+class SmoothingMethodTest extends SparkTestCase {
     test("should be able to duplicate data of given window size to previous partition") {
         val data = Array("1", "2", "3")
         val dataSet: RDD[String] = sparkContext.parallelize(data, 3)
-        val method: SmoothingMethod = new SmoothingMethod{
+        val method: SmoothingMethod = new SmoothingMethod {
             override def smooth(singleColumnDataset: RDD[String]): RDD[Double] = ???
         }
         val doubleRdd: RDD[Double] = method.prepare(dataSet, 3)
@@ -54,6 +54,7 @@ class SmoothingMethodTest extends SparkTestCase{
 
         val movingAverage: WeightedMovingAverageMethod = new WeightedMovingAverageMethod(3, weights)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
+        val collect: Array[Double] = rdd.collect()
         val collected: Array[Double] = rdd.collect().map("%1.2f".format(_).toDouble)
 
         assert(collected.contains(13.66))

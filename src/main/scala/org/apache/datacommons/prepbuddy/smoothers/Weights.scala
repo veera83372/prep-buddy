@@ -1,6 +1,6 @@
 package org.apache.datacommons.prepbuddy.smoothers
 
-import org.apache.datacommons.prepbuddy.exceptions.{ErrorMessages, ApplicationException}
+import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 
 import scala.collection.mutable
 
@@ -13,7 +13,7 @@ class Weights(limit: Int) extends Serializable {
 
     def get(index: Int): Double = weights(index)
 
-    def sumWith(value: Double): Double = "%1.1f".format(weights.sum + value).toDouble
+    private def sumWith(value: Double): Double = "%1.1f".format(weights.sum + value).toDouble
 
     def add(value: Double): Unit = {
         if (size == limit) throw new ApplicationException(ErrorMessages.SIZE_LIMIT_IS_EXCEEDED)
