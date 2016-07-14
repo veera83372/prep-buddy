@@ -4,7 +4,6 @@ import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
-import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
@@ -18,9 +17,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
         validateColumnIndex(columnIndex)
-        if (!isNumericColumn(columnIndex)) {
-            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
-        }
+        validateNumericColumn(columnIndex)
         val cleanRDD: TransformableRDD = removeRows((rowRecord) => isNotNumber(rowRecord.valueAt(columnIndex)))
         val columnDataset: RDD[String] = cleanRDD.select(columnIndex)
         smoothingMethod.smooth(columnDataset)

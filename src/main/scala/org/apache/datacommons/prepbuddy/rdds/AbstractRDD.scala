@@ -41,14 +41,18 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
 
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
         validateColumnIndex(columnIndex)
-        if (!isNumericColumn(columnIndex)) {
-            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
-        }
+        validateNumericColumn(columnIndex)
         val filtered: RDD[String] = filter(record => {
             val value: String = fileType.valueAt(record, columnIndex)
             NumberUtils.isNumber(value)
         })
         filtered.map(record => parseDouble(fileType.valueAt(record, columnIndex)))
+    }
+
+    protected def validateNumericColumn(columnIndex: Int): Unit = {
+        if (!isNumericColumn(columnIndex)) {
+            throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
+        }
     }
 
     def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.valueAt(_, columnIndex)).toList
