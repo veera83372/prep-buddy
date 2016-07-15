@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.api.java
 
 import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
+import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.FileType
@@ -27,5 +28,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def listFacets(columnIndex: Int): TextFacets = {
         tRDD.listFacets(columnIndex)
+    }
+
+    def normalize(columnIndex: Int, normalizationStrategy: NormalizationStrategy): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
+    }
+
+    def select(columnIndex: Int): JavaRDD[String] = {
+        tRDD.select(columnIndex).toJavaRDD()
     }
 }
