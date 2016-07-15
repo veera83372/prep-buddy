@@ -2,19 +2,19 @@ package org.apache.datacommons.prepbuddy
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.scalatest.{BeforeAndAfterEach, FunSuite}
+import org.scalatest.{BeforeAndAfterAll, FunSuite}
 
-class SparkTestCase extends FunSuite with BeforeAndAfterEach {
+class SparkTestCase extends FunSuite with BeforeAndAfterAll {
     var sparkContext: SparkContext = null
 
-    override def beforeEach() {
+    override def beforeAll() {
         val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName).setMaster("local")
-        sparkContext = new SparkContext(sparkConf)
         Logger.getLogger("org").setLevel(Level.OFF)
         Logger.getLogger("akka").setLevel(Level.OFF)
+        sparkContext = new SparkContext(sparkConf)
     }
 
-    override def afterEach() {
+    override def afterAll() {
         sparkContext.stop()
     }
 }
