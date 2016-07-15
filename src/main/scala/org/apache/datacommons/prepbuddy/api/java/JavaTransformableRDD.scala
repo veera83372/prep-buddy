@@ -1,6 +1,6 @@
 package org.apache.datacommons.prepbuddy.api.java
 
-import org.apache.datacommons.prepbuddy.clusterers.ClusteringAlgorithm
+import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
@@ -23,5 +23,9 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def clusters(columnIndex: Int, clusteringAlgorithm: ClusteringAlgorithm): JavaClusters = {
         new JavaClusters(tRDD.clusters(columnIndex, clusteringAlgorithm))
+    }
+
+    def listFacets(columnIndex: Int): TextFacets = {
+        tRDD.listFacets(columnIndex)
     }
 }
