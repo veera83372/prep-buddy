@@ -23,7 +23,10 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD javaTransformableRDD = new JavaTransformableRDD(numbers, FileType.CSV);
         JavaTransformableRDD javaRdd = javaTransformableRDD.deduplicate();
         assertEquals(2, javaRdd.count());
+    }
 
+    @Test
+    public void shouldBeAbleToRemoveRowsAccordingToPredicate() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "X,Y,", "XX,YY,ZZ"));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
 
