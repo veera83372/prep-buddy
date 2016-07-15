@@ -21,7 +21,5 @@ class Clusters {
         cluster.add(tuple)
     }
 
-    private def getClusterOf(key: String): Option[Cluster] = {
-        clusters.find(_.isOfKey(key))
-    }
+    private def getClusterOf(key: String): Option[Cluster] = clusters.find(_.isOfKey(key))
 }
