@@ -26,15 +26,11 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaClusters(tRDD.clusters(columnIndex, clusteringAlgorithm))
     }
 
-    def listFacets(columnIndex: Int): TextFacets = {
-        tRDD.listFacets(columnIndex)
-    }
+    def listFacets(columnIndex: Int): TextFacets = tRDD.listFacets(columnIndex)
 
     def normalize(columnIndex: Int, normalizationStrategy: NormalizationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
     }
 
-    def select(columnIndex: Int): JavaRDD[String] = {
-        tRDD.select(columnIndex).toJavaRDD()
-    }
+    def select(columnIndex: Int): JavaRDD[String] = tRDD.select(columnIndex).toJavaRDD()
 }
