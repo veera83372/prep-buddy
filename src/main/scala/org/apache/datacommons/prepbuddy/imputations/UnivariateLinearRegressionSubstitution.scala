@@ -17,7 +17,10 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
         intercept = (sumOfYs - (slope * sumOfXs)) / count
     }
 
-    override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
+    override def prepareSubstitute(tRdd: TransformableRDD, missingDataColumn: Int): Unit = {
+        val rdd: TransformableRDD = tRdd.removeRows((row) => {
+            row.valueAt(missingDataColumn).trim.isEmpty || row.valueAt(independentColumn).trim.isEmpty
+        })
         val xyRDD: RDD[Double] = rdd.multiplyColumns(missingDataColumn, independentColumn)
         val xSquareRDD: RDD[Double] = rdd.multiplyColumns(independentColumn, independentColumn)
         val yRDD: RDD[Double] = rdd.toDoubleRDD(missingDataColumn)
