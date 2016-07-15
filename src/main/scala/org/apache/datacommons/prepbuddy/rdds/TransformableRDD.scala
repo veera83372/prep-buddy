@@ -4,7 +4,7 @@ import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
-import org.apache.datacommons.prepbuddy.imputations.strategy
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
@@ -194,9 +194,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(rdd, fileType)
     }
 
-    def impute(column: Int, strategy: strategy): TransformableRDD = impute(column, strategy, List.empty)
+    def impute(column: Int, strategy: ImputationStrategy): TransformableRDD = impute(column, strategy, List.empty)
 
-    def impute(columnIndex: Int, strategy: strategy, missingHints: List[String]): TransformableRDD = {
+    def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
         validateColumnIndex(columnIndex)
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {
@@ -226,6 +226,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+        validateColumnIndex(columnIndex)
+        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    }
+
+    def duplicates(): TransformableRDD = duplicates(List.empty)
+
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
@@ -235,20 +243,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         )
         val duplicateRecords: RDD[String] = recordsGroupedByKey.filter(_._2.size != 1).flatMap(_._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
-    }
-
-    def duplicates(): TransformableRDD = duplicates(List.empty)
-
-    def duplicatesAt(columnIndex: Int): TransformableRDD = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
-    }
-
-    def unique(columnIndex: Int): TransformableRDD = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def deduplicate(): TransformableRDD = deduplicate(List.empty)
@@ -277,6 +271,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        validateColumnIndex(columnIndex)
+        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     @DeveloperApi

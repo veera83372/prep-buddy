@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.rdds
 
 import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
-import org.apache.datacommons.prepbuddy.imputations.strategy
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import org.apache.datacommons.prepbuddy.types.CSV
 import org.apache.datacommons.prepbuddy.utils.RowRecord
@@ -169,7 +169,7 @@ class TransformableRDDTest extends SparkTestCase {
             "5,,54,32,54", "6,32,22,33,23"))
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
 
-        val imputed: Array[String] = initialRDD.impute(1, new strategy() {
+        val imputed: Array[String] = initialRDD.impute(1, new ImputationStrategy() {
             def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int) {
             }
 

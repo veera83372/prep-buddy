@@ -14,7 +14,7 @@ class ImputationTest extends SparkTestCase {
         val data = Array("1,", "2,45", "3,65", "4,67", "5,23")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataSet, CSV)
-        val imputed: TransformableRDD = transformableRDD.impute(1, new strategy {
+        val imputed: TransformableRDD = transformableRDD.impute(1, new ImputationStrategy {
             override def handleMissingData(record: RowRecord): String = "hello"
 
             override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {}

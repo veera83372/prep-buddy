@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.api.java
 import java.util
 
 import org.apache.datacommons.prepbuddy.clusterers.{ClusteringAlgorithm, TextFacets}
-import org.apache.datacommons.prepbuddy.imputations.strategy
+import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
@@ -20,13 +20,14 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def removeRows(rowPurger: RowPurger): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.removeRows(rowPurger.evaluate), fileType)
     }
+
     def deduplicate: JavaTransformableRDD = new JavaTransformableRDD(tRDD.deduplicate().toJavaRDD(), fileType)
 
-    def impute(columnIndex: Int, imputationStrategy: strategy, missingHints: util.List[String]): JavaTransformableRDD = {
-        new JavaTransformableRDD(tRDD.impute(columnIndex, imputationStrategy, missingHints.asScala.toList), fileType)
+    def impute(columnIndex: Int, strategy: ImputationStrategy, missingHint: util.List[String]): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.impute(columnIndex, strategy, missingHint.asScala.toList), fileType)
     }
 
-    def impute(columnIndex: Int, imputationStrategy: strategy): JavaTransformableRDD = {
+    def impute(columnIndex: Int, imputationStrategy: ImputationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.impute(columnIndex, imputationStrategy).toJavaRDD(), fileType)
     }
 
