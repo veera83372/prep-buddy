@@ -3,7 +3,7 @@ package org.apache.datacommons.prepbuddy.imputations
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
-class MeanSubstitution extends ImputationStrategy {
+class MeanSubstitution extends strategy {
     private var mean: Double = 0
 
     def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {

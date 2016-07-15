@@ -4,7 +4,7 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 
-class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends ImputationStrategy{
+class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends strategy {
     private var slope: Double = 0
     private var intercept: Double = 0
     def setSlope(sumOfXs: Double, sumOfYs: Double, sumOfXYs: Double, sumOfSquared: Double, count: Long): Unit = {

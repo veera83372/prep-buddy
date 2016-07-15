@@ -4,7 +4,7 @@ import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
-import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
+import org.apache.datacommons.prepbuddy.imputations.strategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
@@ -194,9 +194,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(rdd, fileType)
     }
 
-    def impute(column: Int, strategy: ImputationStrategy): TransformableRDD = impute(column, strategy, List.empty)
+    def impute(column: Int, strategy: strategy): TransformableRDD = impute(column, strategy, List.empty)
 
-    def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
+    def impute(columnIndex: Int, strategy: strategy, missingHints: List[String]): TransformableRDD = {
         validateColumnIndex(columnIndex)
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {

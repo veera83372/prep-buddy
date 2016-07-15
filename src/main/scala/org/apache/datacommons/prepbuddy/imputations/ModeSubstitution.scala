@@ -4,7 +4,7 @@ import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
-class ModeSubstitution() extends ImputationStrategy {
+class ModeSubstitution() extends strategy {
     private var mode: (String, Int) = null
 
     override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
