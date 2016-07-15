@@ -22,7 +22,6 @@ public class JavaNormalizersTest extends JavaSparkTestCase {
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
-
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
         JavaTransformableRDD finalRDD = initialRDD.normalize(3, new MinMaxNormalizer(0, 1));
@@ -40,7 +39,6 @@ public class JavaNormalizersTest extends JavaSparkTestCase {
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
-
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
         JavaTransformableRDD finalRDD = initialRDD.normalize(3, new ZScoreNormalizer());
@@ -57,11 +55,11 @@ public class JavaNormalizersTest extends JavaSparkTestCase {
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07371326239,Incoming,45,Mon Feb 11 07:45:42 +0000 1980",
                 "07641036117,07681546436,Missed,12,Mon Feb 11 08:04:42 +0000 1980"
-
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
         JavaTransformableRDD finalRDD = initialRDD.normalize(3, new DecimalScalingNormalizer());
         List<String> normalizedDurations = finalRDD.select(3).collect();
+
         List<String> expected = Arrays.asList("2.11", "0.0", "0.45", "0.45", "0.12");
         assertEquals(expected, normalizedDurations);
     }
