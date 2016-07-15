@@ -70,5 +70,17 @@ public class JavaSmoothingTest extends JavaSparkTestCase {
         Double expected = 13.66;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
         assertEquals(expected, actual);
+
+        List<Double> movingAverages = transformed.collect();
+        Double secondAverage = movingAverages.get(1);
+        Double thirdAverage = movingAverages.get(2);
+        Double fourthAverage = movingAverages.get(3);
+
+        thirdAverage = Double.parseDouble(new DecimalFormat("##.##").format(thirdAverage));
+        fourthAverage = Double.parseDouble(new DecimalFormat("##.##").format(fourthAverage));
+
+        assertTrue(secondAverage.equals(13.82));
+        assertTrue(thirdAverage.equals(15.49));
+        assertTrue(fourthAverage.equals(17.32));
     }
 }
