@@ -24,7 +24,6 @@ class FacetTests extends SparkTestCase {
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val listOfHighest = textFaceted.highest
-
         assert(2 == listOfHighest.length)
         assert(2 == textFaceted.count)
 

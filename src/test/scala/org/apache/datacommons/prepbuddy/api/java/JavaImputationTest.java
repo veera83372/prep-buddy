@@ -2,10 +2,9 @@ package org.apache.datacommons.prepbuddy.api.java;
 
 import org.apache.datacommons.prepbuddy.api.JavaSparkTestCase;
 import org.apache.datacommons.prepbuddy.api.java.types.FileType;
-import org.apache.datacommons.prepbuddy.imputations.ApproxMeanSubstitution;
-import org.apache.datacommons.prepbuddy.imputations.MeanSubstitution;
-import org.apache.datacommons.prepbuddy.imputations.ModeSubstitution;
-import org.apache.datacommons.prepbuddy.imputations.UnivariateLinearRegressionSubstitution;
+import org.apache.datacommons.prepbuddy.imputations.*;
+import org.apache.datacommons.prepbuddy.rdds.TransformableRDD;
+import org.apache.datacommons.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -92,6 +91,37 @@ public class JavaImputationTest extends JavaSparkTestCase {
         assertTrue(listOfRecord.contains(expected));
     }
 
+    @Test
+    public void shouldImputeTheMissingValueByConsideringGivenHints() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "1,NULL,2,3,4",
+                "2,N/A,23,21,23",
+                "3,N/A,21,32,32",
+                "4,-,2,3,4",
+                "5,,54,32,54",
+                "6,32,22,33,23"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
+
+        List<String> imputedRDD = initialRDD.impute(1, new ImputationStrategy() {
+            @Override
+            public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
+
+            }
+
+            @Override
+            public String handleMissingData(RowRecord record) {
+                return "X";
+            }
+        }, Arrays.asList("N/A", "-", "NA", "NULL")).collect();
+
+        assertTrue(imputedRDD.contains("1,X,2,3,4"));
+        assertTrue(imputedRDD.contains("2,X,23,21,23"));
+        assertTrue(imputedRDD.contains("3,X,21,32,32"));
+        assertTrue(imputedRDD.contains("4,X,2,3,4"));
+        assertTrue(imputedRDD.contains("5,X,54,32,54"));
+        assertTrue(imputedRDD.contains("6,32,22,33,23"));
+    }
 //    @Test
 //    public void shouldImputeMissingValuesWithTheNaiveBayes() {
 //        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(

@@ -117,4 +117,13 @@ class TypeAnalyzerTest extends FunSuite {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("N\\A", "\\N", "N\\A", "N\\A", "NA", "NAN"))
         assert(EMPTY eq typeAnalyzer.getType)
     }
+    test("should Not Give The Type As Country Code2 CHARACTER When The Data Consist Of NAorNULL") {
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("\\N", "N\\A"))
+        assert(COUNTRY_CODE_2_CHARACTER != typeAnalyzer.getType)
+    }
+    test("should Not Classify As Latitude Or Longitude") {
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("40.2201", "40.7415", "19.05939", "100", "182"))
+        assert(LONGITUDE != typeAnalyzer.getType)
+        assert(LATITUDE != typeAnalyzer.getType)
+    }
 }

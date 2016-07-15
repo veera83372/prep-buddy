@@ -226,6 +226,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+        validateColumnIndex(columnIndex)
+        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+    }
+
+    def duplicates(): TransformableRDD = duplicates(List.empty)
+
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
@@ -235,20 +243,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         )
         val duplicateRecords: RDD[String] = recordsGroupedByKey.filter(_._2.size != 1).flatMap(_._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
-    }
-
-    def duplicates(): TransformableRDD = duplicates(List.empty)
-
-    def duplicatesAt(columnIndex: Int): TransformableRDD = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
-    }
-
-    def unique(columnIndex: Int): TransformableRDD = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     def deduplicate(): TransformableRDD = deduplicate(List.empty)
@@ -277,6 +271,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
+    }
+
+    def unique(columnIndex: Int): TransformableRDD = {
+        validateColumnIndex(columnIndex)
+        val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
+        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
     @DeveloperApi
