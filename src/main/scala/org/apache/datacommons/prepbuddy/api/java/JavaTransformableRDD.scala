@@ -7,13 +7,18 @@ import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
-import org.apache.datacommons.prepbuddy.types.FileType
+import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.spark.api.java.{JavaDoubleRDD, JavaRDD}
 
 import scala.collection.JavaConverters._
 
 class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends JavaRDD[String](rdd.rdd) {
+
     private val tRDD: TransformableRDD = new TransformableRDD(rdd.rdd)
+
+    def this(rdd: JavaRDD[String]) {
+        this(rdd, CSV)
+    }
 
     def removeRows(rowPurger: RowPurger): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.removeRows(rowPurger.evaluate), fileType)
@@ -24,6 +29,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def deduplicate(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.deduplicate(primaryKeyColumns.asScala.toList), fileType)
     }
+
     def deduplicate: JavaTransformableRDD = new JavaTransformableRDD(tRDD.deduplicate().toJavaRDD(), fileType)
 
     def duplicates(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
