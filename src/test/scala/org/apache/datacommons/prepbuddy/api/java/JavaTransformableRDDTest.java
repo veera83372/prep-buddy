@@ -84,4 +84,18 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD duplicates = initialRDD.duplicates();
         assertEquals(1, duplicates.count());
     }
+
+    @Test
+    public void shouldBeAbleToSelectAColumnFromTheDataSet() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        JavaRDD<String> columnValues = initialRDD.select(0);
+        List<String> expectedValues = Arrays.asList("Smith", "John", "John", "Smith");
+        assertEquals(expectedValues, columnValues.collect());
+    }
 }
