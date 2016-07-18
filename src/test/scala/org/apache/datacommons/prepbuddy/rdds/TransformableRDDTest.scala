@@ -154,6 +154,14 @@ class TransformableRDDTest extends SparkTestCase {
         assert(4 equals initialRDD.numberOfColumns())
     }
 
+    test("should return number of columns as zero when the rdd is empty") {
+        val data = Array.empty[String]
+        val initialDataset: RDD[String] = sparkContext.parallelize(data)
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
+
+        assert(0 equals initialRDD.numberOfColumns())
+    }
+
     test("should return the type of a column") {
         val data = Array("1,23.4", "2,45.1", "3,65.56", "4,67.12", "5,23.1")
         val dataSet: RDD[String] = sparkContext.parallelize(data)
