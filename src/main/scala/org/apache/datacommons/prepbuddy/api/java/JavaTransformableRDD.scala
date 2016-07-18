@@ -57,6 +57,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def listFacets(columnIndex: Int): TextFacets = tRDD.listFacets(columnIndex)
 
+    def listFacets(columnIndexes: util.List[Integer]): TextFacets = tRDD.listFacets(columnIndexes.asScala.toList)
+
     def normalize(columnIndex: Int, normalizationStrategy: NormalizationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
     }
