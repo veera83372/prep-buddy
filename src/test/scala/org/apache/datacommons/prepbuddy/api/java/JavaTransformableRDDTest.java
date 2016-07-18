@@ -158,4 +158,23 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         int valueAtReadsLong = pivotTable.valueAt("reads", "long");
         assertEquals(0, valueAtReadsLong);
     }
+
+    @Test
+    public void shouldMergeGivenColumnsWithTheSeparator() {
+        List<String> data = Arrays.asList(
+                "John,Male,21,Canada",
+                "Smith, Male, 30, UK",
+                "Larry, Male, 23, USA",
+                "Fiona, Female,18,USA"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(data);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+
+        List<Integer> columnIndexes = Arrays.asList(0, 3, 1);
+        List<String> result = transformableRDD.mergeColumns(columnIndexes, "_", false).collect();
+
+        assertTrue(result.size() == 4);
+        assertTrue(result.contains("21,John_Canada_Male"));
+        assertTrue(result.contains("23,Larry_USA_Male"));
+    }
 }
