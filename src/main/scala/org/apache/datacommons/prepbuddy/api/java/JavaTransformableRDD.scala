@@ -95,4 +95,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def splitByDelimiter(columnIndex: Int, delimiter: String, retainColumn: Boolean): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn), fileType)
     }
+
+    def splitByDelimiter(columnIndex: Int, delimiter: String): JavaTransformableRDD = {
+        splitByDelimiter(columnIndex, delimiter, false)
+    }
 }

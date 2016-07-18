@@ -122,4 +122,21 @@ public class JavaMergeSplitTest extends JavaSparkTestCase {
         assertTrue(result.contains("John,Male,21,+91-4382313832,Canada,+91,4382313832"));
         assertTrue(result.contains("Smith,Male,30,+01-5314343462,UK,+01,5314343462"));
     }
+
+    @Test
+    public void shouldSplitTheSpecifiedColumnValueByDelimiterWhileRemovingTheOriginalColumn() {
+        List<String> data = Arrays.asList(
+                "John,Male,21,+91-4382313832,Canada",
+                "Smith, Male, 30,+01-5314343462, UK",
+                "Larry, Male, 23,+00-9815432975, USA",
+                "Fiona, Female,18,+89-1015709854,USA"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(data);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+
+        List<String> result = transformableRDD.splitByDelimiter(3, "-").collect();
+        assertTrue(result.size() == 4);
+        assertTrue(result.contains("John,Male,21,Canada,+91,4382313832"));
+        assertTrue(result.contains("Smith,Male,30,UK,+01,5314343462"));
+    }
 }
