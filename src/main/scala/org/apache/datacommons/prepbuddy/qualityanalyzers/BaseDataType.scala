@@ -19,7 +19,8 @@ object STRING extends BaseDataType {
         COUNTRY_CODE_2_CHARACTER,
         COUNTRY_CODE_3_CHARACTER,
         COUNTRY_NAME,
-        TIMESTAMP
+        TIMESTAMP,
+        CATEGORICAL_STRING
     )
 
     override def actualType(sampleData: List[String]): DataType = {
@@ -31,6 +32,7 @@ object NUMERIC extends BaseDataType {
     val subtypes: Array[DataType] = Array(
         ZIP_CODE_US,
         MOBILE_NUMBER,
+        CATEGORICAL_INTEGER,
         INTEGER,
         IP_ADDRESS,
         LATITUDE,
@@ -43,12 +45,5 @@ object NUMERIC extends BaseDataType {
     }
 }
 
-object CATEGORICAL extends BaseDataType {
-    val subtypes: Array[DataType] = Array(CATEGORICAL_INTEGER, CATEGORICAL_STRING, EMPTY)
-
-    override def actualType(sampleData: List[String]): DataType = {
-        super.checkActualType(sampleData, subtypes)
-    }
-}
 
 
