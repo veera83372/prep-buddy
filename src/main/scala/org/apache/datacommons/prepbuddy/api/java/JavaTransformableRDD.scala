@@ -8,6 +8,7 @@ import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
+import org.apache.datacommons.prepbuddy.utils.PivotTable
 import org.apache.spark.api.java.{JavaDoubleRDD, JavaRDD}
 
 import scala.collection.JavaConverters._
@@ -66,4 +67,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     }
 
     def numberOfColumns: Int = tRDD.numberOfColumns()
+
+    def pivotByCount(pivotalColumn: Int, independentColumnIndex: util.List[Integer]): PivotTable[Integer] = {
+        tRDD.pivotByCount(pivotalColumn, independentColumnIndex.asScala.toList)
+    }
 }
