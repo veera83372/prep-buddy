@@ -58,4 +58,6 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def select(columnIndex: Int, columnIndexes: Int*): JavaRDD[String] = {
         tRDD.select(columnIndex, columnIndexes: _*).toJavaRDD()
     }
+
+    def numberOfColumns: Int = tRDD.numberOfColumns()
 }

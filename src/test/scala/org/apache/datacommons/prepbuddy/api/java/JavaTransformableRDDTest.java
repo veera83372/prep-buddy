@@ -113,4 +113,17 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
         assertEquals(expected, selectedFeatures.collect());
     }
+
+    @Test
+    public void sizeShouldGiveTheNumberOfColumnInRdd() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        int size = initialRDD.numberOfColumns();
+        assertEquals(4, size);
+    }
 }
