@@ -103,7 +103,7 @@ public class JavaImputationTest extends JavaSparkTestCase {
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet, FileType.CSV);
 
-        List<String> imputedRDD = initialRDD.impute(1, new strategy() {
+        List<String> imputedRDD = initialRDD.impute(1, new ImputationStrategy() {
             @Override
             public void prepareSubstitute(TransformableRDD rdd, int missingDataColumn) {
 

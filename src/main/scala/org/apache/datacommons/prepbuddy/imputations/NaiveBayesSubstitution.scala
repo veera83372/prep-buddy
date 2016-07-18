@@ -5,7 +5,7 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Probability, RowRecord}
 
 
-class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends strategy {
+class NaiveBayesSubstitution(independentColumnIndexes: Int*) extends ImputationStrategy {
     private var probs: PivotTable[Probability] = null
     private var permissibleValues: Array[String] = null
 

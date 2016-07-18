@@ -6,7 +6,7 @@ import org.apache.spark.rdd.RDD
 
 object SampleTest extends FunctionalTestRunner {
     test("should infer the value type to be mobile number at the specified column") {
-        val testableRDD: RDD[String] = sparkContext.textFile("data/calls.csv")
+        val testableRDD: RDD[String] = sc.textFile("data/calls.csv")
         val callRecords: TransformableRDD = new TransformableRDD(testableRDD)
         callRecords.cache()
 
@@ -16,8 +16,10 @@ object SampleTest extends FunctionalTestRunner {
     }
 
     test("should fail because of wrong assertion value") {
-        val testableRDD: RDD[String] = sparkContext.textFile("data/calls.csv")
+        val testableRDD: RDD[String] = sc.textFile("data/calls.csv")
         val callRecords: TransformableRDD = new TransformableRDD(testableRDD)
         assert(1 == callRecords.count)
     }
+
+    printReport()
 }
