@@ -215,4 +215,23 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         assertTrue(result.contains("John,Male,21,Canada,John_Canada_Male"));
         assertTrue(result.contains("Larry,Male,23,USA,Larry_USA_Male"));
     }
+
+    @Test
+    public void shouldSplitTheSpecifiedColumnValueAccordingToTheGivenLengthsByRemovingOriginalColumns() {
+        List<String> data = Arrays.asList(
+                "John,Male,21,+914382313832,Canada",
+                "Smith, Male, 30,+015314343462, UK",
+                "Larry, Male, 23,+009815432975, USA",
+                "Fiona, Female,18,+891015709854,USA"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(data);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+
+        List<String> result = transformableRDD.splitByFieldLength(3, Arrays.asList(3, 10), false).collect();
+
+        assertTrue(result.size() == 4);
+        assertTrue(result.contains("John,Male,21,Canada,+91,4382313832"));
+        assertTrue(result.contains("Smith,Male,30,UK,+01,5314343462"));
+
+    }
 }

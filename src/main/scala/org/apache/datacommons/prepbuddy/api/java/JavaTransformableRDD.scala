@@ -80,4 +80,11 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     }
 
     def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = mergeColumns(columnIndexes, " ", false)
+
+    def splitByFieldLength(columnIndex: Int, fieldLengths: util.List[Integer], retainColumn: Boolean):
+    JavaTransformableRDD = {
+        val toScalaList: List[Int] = fieldLengths.asScala.toList
+        val splitRDD: JavaRDD[String] = tRDD.splitByFieldLength(columnIndex, toScalaList, retainColumn)
+        new JavaTransformableRDD(splitRDD, fileType)
+    }
 }
