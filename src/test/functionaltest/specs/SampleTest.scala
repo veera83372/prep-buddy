@@ -11,7 +11,7 @@ object SampleTest extends FunctionalTestRunner {
         callRecords.cache()
 
         val actualType: DataType = callRecords.inferType(0)
-
+        println(actualType)
         assert(MOBILE_NUMBER == actualType)
     }
 
