@@ -19,7 +19,6 @@ object SampleTest extends FunctionalTestRunner {
         val callRecords: TransformableRDD = new TransformableRDD(testableRDD)
 
         val deduplicateRDD: TransformableRDD = callRecords.deduplicate(0 :: Nil)
-        println(deduplicateRDD.count)
         assert(deduplicateRDD.count() == 27)
     }
 
