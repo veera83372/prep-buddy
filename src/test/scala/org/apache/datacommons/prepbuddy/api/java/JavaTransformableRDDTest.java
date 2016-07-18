@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.api.java;
 
 import org.apache.datacommons.prepbuddy.api.JavaSparkTestCase;
 import org.apache.datacommons.prepbuddy.api.java.types.FileType;
+import org.apache.datacommons.prepbuddy.utils.PivotTable;
 import org.apache.datacommons.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
@@ -112,5 +113,49 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaRDD<String> selectedFeatures = initialRDD.select(0, 1);
         List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
         assertEquals(expected, selectedFeatures.collect());
+    }
+
+    @Test
+    public void sizeShouldGiveTheNumberOfColumnInRdd() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        int size = initialRDD.numberOfColumns();
+        assertEquals(4, size);
+    }
+
+    @Test
+    public void pivotByCountsShouldGiveCountsWithGivenColumns() {
+        JavaRDD<String> initialDataSet = javaSparkContext.parallelize(Arrays.asList(
+                "known,new,long,home,skips",
+                "unknown,new,short,work,reads",
+                "unknown,follow Up,long,work,skips",
+                "known,follow Up,long,home,skips",
+                "known,new,short,home,reads",
+                "known,follow Up,long,work,skips",
+                "unknown,follow Up,short,work,skips",
+                "unknown,new,short,work,reads",
+                "known,follow Up,long,home,skips",
+                "known,new,long,work,skips",
+                "unknown,follow Up,short,home,skips",
+                "known,new,long,work,skips",
+                "known,follow Up,short,home,reads",
+                "known,new,short,work,reads",
+                "known,new,short,home,reads",
+                "known,follow Up,short,work,reads",
+                "known,new,short,home,reads",
+                "unknown,new,short,work,reads"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataSet);
+        PivotTable<Integer> pivotTable = initialRDD.pivotByCount(4, Arrays.asList(0, 1, 2, 3));
+        int valueAtSkipsLong = pivotTable.valueAt("skips", "long");
+        assertEquals(7, valueAtSkipsLong);
+
+        int valueAtReadsLong = pivotTable.valueAt("reads", "long");
+        assertEquals(0, valueAtReadsLong);
     }
 }
