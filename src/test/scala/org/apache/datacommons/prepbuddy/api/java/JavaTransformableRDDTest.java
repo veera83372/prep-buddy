@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class JavaTransformableRDDTest extends JavaSparkTestCase {
 
@@ -52,5 +53,64 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         List<Integer> primaryKeyColumns = Arrays.asList(0, 3);
         JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate(primaryKeyColumns);
         assertEquals(3, deduplicatedRDD.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDeduplicateRecordsByConsideringTheGivenColumnsAsPrimaryKey() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        JavaTransformableRDD duplicates = initialRDD.duplicates(Arrays.asList(0, 3));
+        assertEquals(2, duplicates.count());
+
+        List<String> listOfDuplicates = duplicates.collect();
+        assertTrue(listOfDuplicates.contains("John,Male,USA,12343"));
+        assertTrue(listOfDuplicates.contains("John,Male,India,12343"));
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDeduplicateRecordsByConsideringAllTheColumns() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12345"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        JavaTransformableRDD duplicates = initialRDD.duplicates();
+        assertEquals(1, duplicates.count());
+    }
+
+    @Test
+    public void shouldBeAbleToSelectAColumnFromTheDataSet() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        JavaRDD<String> columnValues = initialRDD.select(0);
+        List<String> expectedValues = Arrays.asList("Smith", "John", "John", "Smith");
+        assertEquals(expectedValues, columnValues.collect());
+    }
+
+    @Test
+    public void shouldBeAbleToSelectSomeFeaturesFromTheDataSet() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+
+        JavaRDD<String> selectedFeatures = initialRDD.select(0, 1);
+        List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
+        assertEquals(expected, selectedFeatures.collect());
     }
 }
