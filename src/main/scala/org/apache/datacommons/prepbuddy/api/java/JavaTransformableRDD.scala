@@ -87,4 +87,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val splitRDD: JavaRDD[String] = tRDD.splitByFieldLength(columnIndex, toScalaList, retainColumn)
         new JavaTransformableRDD(splitRDD, fileType)
     }
+
+    def splitByFieldLength(columnIndex: Int, fieldLengths: util.List[Integer]): JavaTransformableRDD = {
+        splitByFieldLength(columnIndex, fieldLengths, false)
+    }
+
+
+
+
+
 }
