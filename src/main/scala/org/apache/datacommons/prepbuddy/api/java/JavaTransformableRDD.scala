@@ -78,4 +78,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.mergeColumns(columnIndexes.asScala.toList, separator, retainColumn), fileType)
     }
+
+    def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
+        mergeColumns(columnIndexes, " ")
+    }
 }
