@@ -107,4 +107,13 @@ public class JavaFacetTest extends JavaSparkTestCase {
         assertTrue(facetedPair[1].equals(expected3));
         assertTrue(facetedPair[2].equals(expected1));
     }
+
+    @Test
+    public void _TextFacet_getFacetsShouldGiveListOfFacetedForTheProvideColumns() throws Exception {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("A,B", "A,B", "A,B", "A,B"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        TextFacets textFacets = initialRDD.listFacets(Arrays.asList(0, 1));
+
+        assertEquals(1, textFacets.count());
+    }
 }
