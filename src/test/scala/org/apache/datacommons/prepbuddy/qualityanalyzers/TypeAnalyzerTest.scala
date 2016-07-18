@@ -123,7 +123,6 @@ class TypeAnalyzerTest extends FunSuite {
     }
     test("should Not Classify As Latitude Or Longitude") {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(List("40.2201", "40.7415", "19.05939", "100", "182"))
-        assert(LONGITUDE != typeAnalyzer.getType)
-        assert(LATITUDE != typeAnalyzer.getType)
+        assert(DECIMAL eq typeAnalyzer.getType)
     }
 }

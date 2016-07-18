@@ -34,10 +34,21 @@ object NUMERIC extends BaseDataType {
         MOBILE_NUMBER,
         CATEGORICAL_INTEGER,
         INTEGER,
-        IP_ADDRESS,
         LATITUDE,
         LONGITUDE,
         DECIMAL
+    )
+
+    override def actualType(sampleData: List[String]): DataType = {
+        super.checkActualType(sampleData, subtypes)
+    }
+}
+
+object ALPHANUMERIC extends BaseDataType {
+    val subtypes: Array[DataType] = Array(
+        ZIP_CODE_US,
+        MOBILE_NUMBER,
+        IP_ADDRESS
     )
 
     override def actualType(sampleData: List[String]): DataType = {

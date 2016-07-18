@@ -33,7 +33,7 @@ object ALPHANUMERIC_STRING extends DataType {
 
 object DECIMAL extends DataType {
     override def isOfType(sampleData: List[String]): Boolean = {
-        val EXPRESSION: String = "^[+-]?(\\.\\d+|\\d+\\.\\d+)$"
+        val EXPRESSION: String = "^[+-]?(\\.?\\d+|\\d+\\.\\d+)$"
         matches(EXPRESSION, sampleData)
     }
 }
