@@ -5,7 +5,7 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.types.{CSV, TSV}
 import org.apache.spark.rdd.RDD
 
-class MergeJoinTest extends SparkTestCase {
+class MergeSplitTest extends SparkTestCase {
     test("should merge the given columns with the separator by removing the original columns") {
         val data = Array(
             "John,Male,21,Canada",
