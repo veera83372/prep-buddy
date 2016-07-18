@@ -7,6 +7,6 @@ class RowRecord(columnValues: Array[String]) {
     def length: Int = columnValues.length
 
     def hasEmptyColumn: Boolean = {
-        refArrayOps(columnValues).exists(_.trim.isEmpty)
+        columnValues.exists(_.trim.isEmpty)
     }
 }
