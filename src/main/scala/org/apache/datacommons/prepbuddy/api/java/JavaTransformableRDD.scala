@@ -54,5 +54,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
     }
 
-    def select(columnIndex: Int): JavaRDD[String] = tRDD.select(columnIndex).toJavaRDD()
+    @annotation.varargs
+    def select(columnIndex: Int, columnIndexes: Int*): JavaRDD[String] = {
+        tRDD.select(columnIndex, columnIndexes: _*).toJavaRDD()
+    }
 }
