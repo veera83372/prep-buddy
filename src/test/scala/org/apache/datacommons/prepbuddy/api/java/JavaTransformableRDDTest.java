@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,5 +38,19 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
             }
         });
         assertEquals(2, purged.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDeduplicateRecordsByConsideringTheGivenColumnsAsPrimaryKey() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
+        List<Integer> primaryKeyColumns = Arrays.asList(0, 3);
+        JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate(primaryKeyColumns);
+        assertEquals(3, deduplicatedRDD.count());
     }
 }

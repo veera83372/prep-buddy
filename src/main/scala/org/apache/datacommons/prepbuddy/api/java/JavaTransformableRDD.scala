@@ -20,6 +20,10 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def removeRows(rowPurger: RowPurger): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.removeRows(rowPurger.evaluate), fileType)
     }
+
+    def deduplicate(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.deduplicate(primaryKeyColumns.asScala.toList.asInstanceOf[List[Int]]), fileType)
+    }
     def deduplicate: JavaTransformableRDD = new JavaTransformableRDD(tRDD.deduplicate().toJavaRDD(), fileType)
 
     def impute(columnIndex: Int, imputationStrategy: strategy, missingHints: util.List[String]): JavaTransformableRDD = {
