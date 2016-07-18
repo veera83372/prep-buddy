@@ -39,7 +39,7 @@ class FacetTests extends SparkTestCase {
         val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val listOfLowest = textFaceted.lowest
         assert(3 == textFaceted.count)
-        //assert(2 == listOfLowest.length)
+        assert(2 == listOfLowest.length)
         assert(listOfLowest.contains(("X", 2)))
         assert(listOfLowest.contains(("Q", 2)))
     }
