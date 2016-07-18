@@ -177,4 +177,42 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         assertTrue(result.contains("21,John_Canada_Male"));
         assertTrue(result.contains("23,Larry_USA_Male"));
     }
+
+    @Test
+    public void shouldMergeColumnsBySpaceIfNoSeparatorIsGiven() {
+        List<String> data = Arrays.asList(
+                "John,Male,21,Canada",
+                "Smith, Male, 30, UK",
+                "Larry, Male, 23, USA",
+                "Fiona, Female,18,USA"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(data);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+
+        List<Integer> columnIndexes = Arrays.asList(0, 3, 1);
+        List<String> result = transformableRDD.mergeColumns(columnIndexes).collect();
+
+        assertTrue(result.size() == 4);
+        assertTrue(result.contains("21,John Canada Male"));
+        assertTrue(result.contains("23,Larry USA Male"));
+    }
+
+    @Test
+    public void shouldMergeColumnsByKeepingTheOriginalColumns() {
+        List<String> data = Arrays.asList(
+                "John,Male,21,Canada",
+                "Smith, Male, 30, UK",
+                "Larry, Male, 23, USA",
+                "Fiona, Female,18,USA"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(data);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+
+        List<Integer> columnIndexes = Arrays.asList(0, 3, 1);
+        List<String> result = transformableRDD.mergeColumns(columnIndexes, "_", true).collect();
+
+        assertTrue(result.size() == 4);
+        assertTrue(result.contains("John,Male,21,Canada,John_Canada_Male"));
+        assertTrue(result.contains("Larry,Male,23,USA,Larry_USA_Male"));
+    }
 }
