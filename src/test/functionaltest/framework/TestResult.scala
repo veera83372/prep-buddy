@@ -12,10 +12,14 @@ class TestResult(testName: String) {
 
     def markAsFailure(error: AssertionError) {
         cause = error
-        message = "FAILED => " + testName + "\r\n" +
-            getCause + "\n" +
-            error.getStackTrace.mkString("\r\n")
+        message = getFailureMessage(error)
         passed = false
+    }
+
+    private def getFailureMessage(error: AssertionError): String = {
+        "FAILED => " + testName + "\r\n" +
+            "\t" + getCause.toUpperCase + "\n" +
+            "\t\t" + error.getStackTrace.mkString("\r\n\t\t")
     }
 
     def getOutcome: String = message

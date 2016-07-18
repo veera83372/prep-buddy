@@ -1,26 +1,24 @@
 package specs
 
-import framework.{TestReport, TestResult}
+import framework.{DuplicateTestNameException, TestReport, TestResult}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.scalatest
 
 import scala.collection.mutable.ListBuffer
 
 class FunctionalTestRunner extends App {
-    private var testNames: ListBuffer[String] = ListBuffer.empty
     private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
+    protected val sc: SparkContext = new SparkContext(sparkConf)
 
+    private var testNames: ListBuffer[String] = ListBuffer.empty
     private val testReport = new TestReport
-
-    protected var sc: SparkContext = new SparkContext(sparkConf)
 
     def shutDown(): Unit = sc.stop()
 
     def test(testName: String)(testFunction: => Unit) {
         validateTestEnvironment(testName)
+        testNames += testName
         val testResult: TestResult = runTest(testName, testFunction)
         testReport.add(testResult)
-        shutDown()
     }
 
     def runTest(testName: String, testFunction: => Unit): TestResult = {
@@ -37,12 +35,12 @@ class FunctionalTestRunner extends App {
 
     def validateTestEnvironment(testName: String) {
         if (testNames.contains(testName)) {
-            throw new scalatest.DuplicateTestNameException(testName, -1)
-        }
-        if (sc.isStopped) {
-            sc = new SparkContext(sparkConf)
+            throw new DuplicateTestNameException("Duplicate test name: " + testName)
         }
     }
 
-    def printReport(): Unit = testReport.show()
+    def printReport() {
+        testReport.show()
+        shutDown()
+    }
 }
