@@ -80,7 +80,7 @@ public class JavaMergeSplitTest extends JavaSparkTestCase {
         JavaRDD<String> dataset = javaSparkContext.parallelize(data);
         JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
 
-        List<String> result = transformableRDD.splitByFieldLength(3, Arrays.asList(3, 10)).collect();
+        List<String> result = transformableRDD.splitByFieldLength(3, Arrays.asList(3, 10), false).collect();
 
         assertTrue(result.size() == 4);
         assertTrue(result.contains("John,Male,21,Canada,+91,4382313832"));
@@ -134,7 +134,7 @@ public class JavaMergeSplitTest extends JavaSparkTestCase {
         JavaRDD<String> dataset = javaSparkContext.parallelize(data);
         JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
 
-        List<String> result = transformableRDD.splitByDelimiter(3, "-").collect();
+        List<String> result = transformableRDD.splitByDelimiter(3, "-", false).collect();
         assertTrue(result.size() == 4);
         assertTrue(result.contains("John,Male,21,Canada,+91,4382313832"));
         assertTrue(result.contains("Smith,Male,30,UK,+01,5314343462"));
