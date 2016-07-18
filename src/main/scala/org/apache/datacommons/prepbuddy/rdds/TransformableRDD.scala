@@ -15,6 +15,8 @@ import org.apache.spark.{Partition, TaskContext}
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
 
+    private def getFileType: FileType = fileType
+
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
@@ -277,6 +279,24 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(columnIndex)
         val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
+    }
+
+    def addColumnsFrom(otherRDD: TransformableRDD): TransformableRDD = {
+        val otherRDDInCurrentFileFormat = {
+            if (this.getFileType != otherRDD.getFileType) {
+                otherRDD.map(record => {
+                    val recordAsArray: Array[String] = otherRDD.getFileType.parse(record)
+                    fileType.join(recordAsArray)
+                })
+            }
+            else {
+                otherRDD
+            }
+        }
+        val zippedRecords: RDD[(String, String)] = zip(otherRDDInCurrentFileFormat)
+        val recordsWithAddedColumns: RDD[String] = zippedRecords.map(row => fileType.join(Array(row._1, row._2)))
+
+        new TransformableRDD(recordsWithAddedColumns, fileType)
     }
 
     @DeveloperApi

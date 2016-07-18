@@ -4,7 +4,7 @@ import org.apache.datacommons.prepbuddy.SparkTestCase
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.qualityanalyzers.DECIMAL
-import org.apache.datacommons.prepbuddy.types.CSV
+import org.apache.datacommons.prepbuddy.types.{CSV, TSV}
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 
@@ -255,5 +255,29 @@ class TransformableRDDTest extends SparkTestCase {
 
         assert(collected.contains("One,four"))
         assert(collected.contains("One,three"))
+    }
+
+    test("shouldMergeAllTheColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD") {
+        val initialSpelledNumbers: RDD[String] = sparkContext.parallelize(Array(
+            "One,Two,Three",
+            "Four,Five,Six",
+            "Seven,Eight,Nine",
+            "Ten,Eleven,Twelve"
+        ))
+        val spelledNumbers: TransformableRDD = new TransformableRDD(initialSpelledNumbers)
+        val initialNumericData: RDD[String] = sparkContext.parallelize(Array(
+            "1\t2\t3",
+            "4\t5\t6",
+            "7\t8\t9",
+            "10\t11\t12"
+        ))
+        val numericData: TransformableRDD = new TransformableRDD(initialNumericData, TSV)
+
+        val result: Array[String] = spelledNumbers.addColumnsFrom(numericData).collect()
+
+        assert(result.contains("One,Two,Three,1,2,3"))
+        assert(result.contains("Four,Five,Six,4,5,6"))
+        assert(result.contains("Seven,Eight,Nine,7,8,9"))
+        assert(result.contains("Ten,Eleven,Twelve,10,11,12"))
     }
 }
