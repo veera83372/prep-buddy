@@ -5,6 +5,7 @@ import org.apache.datacommons.prepbuddy.api.java.types.FileType;
 import org.apache.datacommons.prepbuddy.smoothers.SimpleMovingAverageMethod;
 import org.apache.datacommons.prepbuddy.smoothers.WeightedMovingAverageMethod;
 import org.apache.datacommons.prepbuddy.smoothers.Weights;
+import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.junit.Test;
 
@@ -23,7 +24,7 @@ public class JavaSmoothingTest extends JavaSparkTestCase {
         ), 3);
         JavaTransformableRDD transformableRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
         SimpleMovingAverageMethod movingAverage = new SimpleMovingAverageMethod(3);
-        JavaRDD<Double> smoothed = transformableRDD.smooth(0, movingAverage);
+        JavaDoubleRDD smoothed = transformableRDD.smooth(0, movingAverage);
         List<Double> listOfRecord = smoothed.collect();
 
         assertEquals(10, listOfRecord.size());
@@ -45,7 +46,7 @@ public class JavaSmoothingTest extends JavaSparkTestCase {
                 "52,3,53", "23,4,64", "23,5,64", "23,6,64", "23,7,64", "23,8,64", "23,9,64"
         ), 3);
         JavaTransformableRDD transformableRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
-        JavaRDD<Double> transformed = transformableRDD.smooth(1, new SimpleMovingAverageMethod(3));
+        JavaDoubleRDD transformed = transformableRDD.smooth(1, new SimpleMovingAverageMethod(3));
 
         Double excepted = 4.0;
         assertEquals(excepted, transformed.first());
@@ -65,7 +66,7 @@ public class JavaSmoothingTest extends JavaSparkTestCase {
         weights.add(0.166);
         weights.add(0.333);
         weights.add(0.5);
-        JavaRDD<Double> transformed = transformableRDD.smooth(1, new WeightedMovingAverageMethod(3, weights));
+        JavaDoubleRDD transformed = transformableRDD.smooth(1, new WeightedMovingAverageMethod(3, weights));
 
         Double expected = 13.66;
         Double actual = Double.parseDouble(new DecimalFormat("##.##").format(transformed.first()));
