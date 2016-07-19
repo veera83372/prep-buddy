@@ -5,7 +5,7 @@ import org.apache.datacommons.prepbuddy.qualityanalyzers.{DataType, MOBILE_NUMBE
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
 
-object SampleTest extends FunctionalTestRunner {
+object FunctionalTests extends FunctionalTest {
 
     test("should infer the value type to be mobile number at the specified column") {
         val testableRDD: RDD[String] = sc.textFile(datasetPath)
