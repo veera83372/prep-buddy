@@ -158,4 +158,19 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         int valueAtReadsLong = pivotTable.valueAt("reads", "long");
         assertEquals(0, valueAtReadsLong);
     }
+
+    @Test
+    public void shouldExecuteASeriesOfTransformsOnADataset() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+
+        JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).trim().isEmpty();
+            }
+        });
+        List<String> expectedList = Arrays.asList("X,Y,,*", "XX,YY,ZZ,");
+        assertEquals(expectedList, marked.collect());
+    }
 }
