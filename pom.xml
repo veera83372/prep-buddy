@@ -85,6 +85,7 @@
                 <version>2.19.1</version>
                 <configuration>
                     <testSourceDirectory>/src/test/scala/</testSourceDirectory>
+                    <testSourceDirectory>/src/test/functionaltest/</testSourceDirectory>
                 </configuration>
             </plugin>
 
@@ -213,7 +214,43 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>add-functional-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/functionaltest</source>
+                            </sources>
+                        </configuration>
+                    </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>functional-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>spark.master</key>
+                            <value>local</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <mainClass>org.apache.datacommons.prepbuddy.functional.tests.specs.FunctionalTests</mainClass>
+                    <classpathScope>test</classpathScope>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
