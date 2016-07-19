@@ -44,5 +44,5 @@ class FunctionalTest extends App {
 
     def shutDown(): Unit = sc.stop()
 
-    protected def sc: SparkContext = new SparkContext(sparkConf)
+    protected val sc: SparkContext = new SparkContext(sparkConf)
 }
