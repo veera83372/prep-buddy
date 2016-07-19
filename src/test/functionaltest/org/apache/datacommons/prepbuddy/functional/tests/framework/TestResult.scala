@@ -1,4 +1,4 @@
-package framework
+package org.apache.datacommons.prepbuddy.functional.tests.framework
 
 class TestResult(testName: String) {
     private var message: String = null
@@ -22,9 +22,9 @@ class TestResult(testName: String) {
             "\t\t" + error.getStackTrace.mkString("\r\n\t\t")
     }
 
-    def getOutcome: String = message
-
     def getCause: String = cause.getMessage
+
+    def getOutcome: String = message
 
     def isFailed: Boolean = !passed
 }
