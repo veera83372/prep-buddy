@@ -228,7 +228,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
-    def duplicatesAt(columnIndex: Int): TransformableRDD = {
+    def duplicatesAt(columnIndex: Int): RDD[String] = {
         validateColumnIndex(columnIndex)
         val specifiedColumnValues: RDD[String] = map(fileType.valueAt(_, columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).duplicates()

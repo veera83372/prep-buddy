@@ -5,13 +5,13 @@ import org.apache.datacommons.prepbuddy.api.java.types.FileType;
 import org.apache.datacommons.prepbuddy.utils.PivotTable;
 import org.apache.datacommons.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JavaTransformableRDDTest extends JavaSparkTestCase {
 
@@ -160,7 +160,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
     }
 
     @Test
-    public void shouldExecuteASeriesOfTransformsOnADataset() {
+    public void shouldMarkRowThatSatisfyTheMarkerPredicate() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
 
@@ -172,5 +172,90 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         });
         List<String> expectedList = Arrays.asList("X,Y,,*", "XX,YY,ZZ,");
         assertEquals(expectedList, marked.collect());
+    }
+
+    @Test
+    public void shouldMapOnMarkedRow() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+
+        JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).trim().isEmpty();
+            }
+        });
+        JavaRDD<String> mappedByFlagRdd = marked.mapByFlag("*", 3, new Function<String, String>() {
+            @Override
+            public String call(String oneRow) throws Exception {
+                return oneRow + ",Mapped";
+            }
+        });
+        List<String> expectedList = Arrays.asList("X,Y,,*,Mapped", "XX,YY,ZZ,");
+        assertEquals(expectedList, mappedByFlagRdd.collect());
+    }
+
+    @Test
+    public void shouldDropTheGivenColumnIndexFromDataset() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+
+        JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).trim().isEmpty();
+            }
+        });
+        JavaTransformableRDD droppedOneColumnRdd = marked.drop(3);
+        List<String> expectedList = Arrays.asList("X,Y,", "XX,YY,ZZ");
+        assertEquals(expectedList, droppedOneColumnRdd.collect());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDuplicatesInTheGivenColumn() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "Cory,Male,India,12343",
+                "John,Male,Japan,122343",
+                "Adam,Male,India,1233243",
+                "Smith,Male,Singapore,12342"
+        ));
+
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+        List<String> duplicatesAtCol2 = initialRDD.duplicatesAt(2).collect();
+
+        assertEquals(2, duplicatesAtCol2.size());
+
+        assertTrue(duplicatesAtCol2.contains("India"));
+        assertTrue(duplicatesAtCol2.contains("USA"));
+
+        assertFalse(duplicatesAtCol2.contains("Singapore"));
+        assertFalse(duplicatesAtCol2.contains("Japan"));
+    }
+
+    @Test
+    public void shouldMergeAllTheColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD() {
+        JavaRDD<String> initialSpelledNumbers = javaSparkContext.parallelize(Arrays.asList(
+                "One,Two,Three",
+                "Four,Five,Six",
+                "Seven,Eight,Nine",
+                "Ten,Eleven,Twelve"
+        ));
+        JavaTransformableRDD spelledNumbers = new JavaTransformableRDD(initialSpelledNumbers);
+        JavaRDD<String> initialNumericData = javaSparkContext.parallelize(Arrays.asList(
+                "1\t2\t3",
+                "4\t5\t6",
+                "7\t8\t9",
+                "10\t11\t12"
+        ));
+        JavaTransformableRDD numericData = new JavaTransformableRDD(initialNumericData, FileType.TSV);
+
+        List<String> result = spelledNumbers.addColumnsFrom(numericData).collect();
+
+        assertTrue(result.contains("One,Two,Three,1,2,3"));
+        assertTrue(result.contains("Four,Five,Six,4,5,6"));
+        assertTrue(result.contains("Seven,Eight,Nine,7,8,9"));
+        assertTrue(result.contains("Ten,Eleven,Twelve,10,11,12"));
     }
 }
