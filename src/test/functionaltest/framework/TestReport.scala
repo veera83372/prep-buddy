@@ -16,4 +16,6 @@ class TestReport {
         println("-> " + passedCount + " Test Passed and " + failedCount + " Test has been Failed.")
         println("=====================================================================================================")
     }
+
+    def hasFailingTest: Boolean = results.exists(_.isFailed)
 }

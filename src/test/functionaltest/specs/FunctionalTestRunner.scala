@@ -1,6 +1,6 @@
 package specs
 
-import framework.{DuplicateTestNameException, TestReport, TestResult}
+import framework.{AssertionFailedException, DuplicateTestNameException, TestReport, TestResult}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ListBuffer
@@ -42,5 +42,8 @@ class FunctionalTestRunner extends App {
     def printReport() {
         testReport.show()
         shutDown()
+        if (testReport.hasFailingTest) {
+            throw new AssertionFailedException("Test is failing because of assertion failure")
+        }
     }
 }
