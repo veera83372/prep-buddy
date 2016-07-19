@@ -107,4 +107,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     }
 
     def drop(columnIndex: Int): JavaTransformableRDD = new JavaTransformableRDD(tRDD.drop(columnIndex), fileType)
+
+    def duplicatesAt(columnIndex: Int): JavaRDD[String] = {
+        tRDD.duplicatesAt(columnIndex).toJavaRDD()
+    }
 }

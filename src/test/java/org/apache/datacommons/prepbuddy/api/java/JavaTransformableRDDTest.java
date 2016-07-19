@@ -11,8 +11,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JavaTransformableRDDTest extends JavaSparkTestCase {
 
@@ -210,5 +209,28 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD droppedOneColumnRdd = marked.drop(3);
         List<String> expectedList = Arrays.asList("X,Y,", "XX,YY,ZZ");
         assertEquals(expectedList, droppedOneColumnRdd.collect());
+    }
+
+    @Test
+    public void shouldBeAbleToDetectDuplicatesInTheGivenColumn() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "Cory,Male,India,12343",
+                "John,Male,Japan,122343",
+                "Adam,Male,India,1233243",
+                "Smith,Male,Singapore,12342"
+        ));
+
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+        List<String> duplicatesAtCol2 = initialRDD.duplicatesAt(2).collect();
+
+        assertEquals(2, duplicatesAtCol2.size());
+
+        assertTrue(duplicatesAtCol2.contains("India"));
+        assertTrue(duplicatesAtCol2.contains("USA"));
+
+        assertFalse(duplicatesAtCol2.contains("Singapore"));
+        assertFalse(duplicatesAtCol2.contains("Japan"));
     }
 }
