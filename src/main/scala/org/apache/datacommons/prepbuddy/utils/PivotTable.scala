@@ -2,7 +2,7 @@ package org.apache.datacommons.prepbuddy.utils
 
 import scala.collection.mutable
 
-class PivotTable[T](defaultValue: T) {
+class PivotTable[T](defaultValue: T) extends Serializable {
 
     private var lookUpTable: mutable.Map[String, mutable.Map[String, T]] = {
         new mutable.HashMap[String, mutable.Map[String, T]]()

@@ -25,10 +25,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.removeRows(rowPurger.evaluate), fileType)
     }
 
-    implicit def asScalaList(ls: List[Integer]): List[Int] = ls.map(x => x: Int)
-
     def deduplicate(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
-        new JavaTransformableRDD(tRDD.deduplicate(primaryKeyColumns.asScala.toList), fileType)
+        new JavaTransformableRDD(tRDD.deduplicate(asScalaIntList(primaryKeyColumns.asScala.toList)), fileType)
     }
 
     def deduplicate: JavaTransformableRDD = new JavaTransformableRDD(tRDD.deduplicate().toJavaRDD(), fileType)
@@ -57,7 +55,11 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def listFacets(columnIndex: Int): TextFacets = tRDD.listFacets(columnIndex)
 
-    def listFacets(columnIndexes: util.List[Integer]): TextFacets = tRDD.listFacets(columnIndexes.asScala.toList)
+    def listFacets(columnIndexes: util.List[Integer]): TextFacets = {
+        tRDD.listFacets(asScalaIntList(columnIndexes.asScala.toList))
+    }
+
+    private def asScalaIntList(ls: List[Integer]): List[Int] = ls.map(x => x: Int)
 
     def normalize(columnIndex: Int, normalizationStrategy: NormalizationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
@@ -71,24 +73,31 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def numberOfColumns: Int = tRDD.numberOfColumns()
 
     def pivotByCount(pivotalColumn: Int, independentColumnIndex: util.List[Integer]): PivotTable[Integer] = {
-        tRDD.pivotByCount(pivotalColumn, independentColumnIndex.asScala.toList)
+        tRDD.pivotByCount(pivotalColumn, asScalaIntList(independentColumnIndex.asScala.toList))
+    }
+
+    def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
+        mergeColumns(columnIndexes = columnIndexes, separator = " ", retainColumn = false)
     }
 
     def mergeColumns(columnIndexes: util.List[Integer], separator: String, retainColumn: Boolean = false):
     JavaTransformableRDD = {
-        new JavaTransformableRDD(tRDD.mergeColumns(columnIndexes.asScala.toList, separator, retainColumn), fileType)
+        val toScalaList: List[Int] = asScalaIntList(columnIndexes.asScala.toList)
+        new JavaTransformableRDD(tRDD.mergeColumns(toScalaList, separator, retainColumn), fileType)
     }
-
-    def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = mergeColumns(columnIndexes, " ", false)
 
     def splitByFieldLength(columnIndex: Int, fieldLengths: util.List[Integer], retainColumn: Boolean):
     JavaTransformableRDD = {
-        val toScalaList: List[Int] = fieldLengths.asScala.toList
+        val toScalaList: List[Int] = asScalaIntList(fieldLengths.asScala.toList)
         val splitRDD: JavaRDD[String] = tRDD.splitByFieldLength(columnIndex, toScalaList, retainColumn)
         new JavaTransformableRDD(splitRDD, fileType)
     }
 
     def splitByDelimiter(columnIndex: Int, delimiter: String, retainColumn: Boolean): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn), fileType)
+    }
+
+    def flag(symbol: String, markerPredicate: MarkerPredicate): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.flag(symbol, markerPredicate.evaluate), fileType)
     }
 }

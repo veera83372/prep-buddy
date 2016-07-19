@@ -77,7 +77,7 @@ class ImputationTest extends SparkTestCase {
         val initialDataSet: RDD[String] = sparkContext.parallelize(dataset)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
 
-        val naiveBayesSubstitution: NaiveBayesSubstitution = new NaiveBayesSubstitution(0, 1, 2, 3)
+        val naiveBayesSubstitution: NaiveBayesSubstitution = new NaiveBayesSubstitution(Array(0, 1, 2, 3))
         naiveBayesSubstitution.prepareSubstitute(initialRDD, 4)
 
         var rowRecord: Array[String] = "sunny,cool,high,false".split(",")
