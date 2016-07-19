@@ -57,6 +57,4 @@ class FunctionalTest extends App {
             throw new AssertionFailedException("Test is failing because of assertion failure")
         }
     }
-
-    def shutDown(): Unit = sc.stop()
 }
