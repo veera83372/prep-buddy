@@ -1,14 +1,13 @@
-package specs
+package org.apache.datacommons.prepbuddy.functional.tests.framework
 
 import java.io.{File, FileReader}
 import java.util.Properties
 
-import framework.{AssertionFailedException, DuplicateTestNameException, TestReport, TestResult}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ListBuffer
 
-class FunctionalTestRunner extends App {
+class FunctionalTest extends App {
     private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
     protected val sc: SparkContext = new SparkContext(sparkConf)
     protected val datasetPath = getDatasetPath
@@ -16,7 +15,7 @@ class FunctionalTestRunner extends App {
     private var testNames: ListBuffer[String] = ListBuffer.empty
     private val testReport = new TestReport
 
-    def getDatasetPath: String = {
+    private def getDatasetPath: String = {
         val configFile: File = new File("testConfig.properties")
         val reader: FileReader = new FileReader(configFile)
         val props: Properties = new Properties()

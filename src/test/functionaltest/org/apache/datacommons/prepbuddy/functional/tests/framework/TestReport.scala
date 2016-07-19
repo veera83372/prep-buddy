@@ -1,4 +1,4 @@
-package framework
+package org.apache.datacommons.prepbuddy.functional.tests.framework
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

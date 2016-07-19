@@ -1,5 +1,6 @@
-package specs
+package org.apache.datacommons.prepbuddy.functional.tests.specs
 
+import org.apache.datacommons.prepbuddy.functional.tests.framework.FunctionalTest
 import org.apache.datacommons.prepbuddy.qualityanalyzers.{DataType, MOBILE_NUMBER}
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
