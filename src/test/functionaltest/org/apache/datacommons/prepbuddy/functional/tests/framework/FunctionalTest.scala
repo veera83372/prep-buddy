@@ -1,13 +1,29 @@
 package org.apache.datacommons.prepbuddy.functional.tests.framework
 
+import java.io.{File, FileReader}
+import java.util.Properties
+
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ListBuffer
 
 class FunctionalTest extends App {
     private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
-    private val testReport = new TestReport
+    protected val sc: SparkContext = new SparkContext(sparkConf)
+    protected val datasetPath = getDatasetPath
+
     private var testNames: ListBuffer[String] = ListBuffer.empty
+    private val testReport = new TestReport
+
+    private def getDatasetPath: String = {
+        val configFile: File = new File("testConfig.properties")
+        val reader: FileReader = new FileReader(configFile)
+        val props: Properties = new Properties()
+        props.load(reader)
+        props.getProperty("testDataSet")
+    }
+
+    def shutDown(): Unit = sc.stop()
 
     def test(testName: String)(testFunction: => Unit) {
         validateTestEnvironment(testName)
@@ -43,6 +59,4 @@ class FunctionalTest extends App {
     }
 
     def shutDown(): Unit = sc.stop()
-
-    protected val sc: SparkContext = new SparkContext(sparkConf)
 }
