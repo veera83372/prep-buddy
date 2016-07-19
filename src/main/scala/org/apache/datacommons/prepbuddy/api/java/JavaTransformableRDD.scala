@@ -74,12 +74,14 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         tRDD.pivotByCount(pivotalColumn, independentColumnIndex.asScala.toList)
     }
 
+    def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
+        mergeColumns(columnIndexes = columnIndexes, separator = " ", retainColumn = false)
+    }
+
     def mergeColumns(columnIndexes: util.List[Integer], separator: String, retainColumn: Boolean = false):
     JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.mergeColumns(columnIndexes.asScala.toList, separator, retainColumn), fileType)
     }
-
-    def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = mergeColumns(columnIndexes, " ", false)
 
     def splitByFieldLength(columnIndex: Int, fieldLengths: util.List[Integer], retainColumn: Boolean):
     JavaTransformableRDD = {
