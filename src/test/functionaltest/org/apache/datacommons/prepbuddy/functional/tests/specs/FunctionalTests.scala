@@ -20,14 +20,14 @@ object FunctionalTests extends FunctionalTest {
         val callRecords: TransformableRDD = new TransformableRDD(testableRDD)
 
         val deduplicateRDD: TransformableRDD = callRecords.deduplicate(0 :: Nil)
-        assert(deduplicateRDD.count() == 27)
+        assert(deduplicateRDD.count() == 28)
     }
 
     test("should fail because of wrong assertion value") {
         val testableRDD: RDD[String] = sc.textFile("data/calls.csv")
         val callRecords: TransformableRDD = new TransformableRDD(testableRDD)
 
-        assert(1 == callRecords.count)
+        assert(1 != callRecords.count)
     }
 
     printReport()
