@@ -4,6 +4,7 @@ import org.apache.datacommons.prepbuddy.clusterers.Cluster
 
 
 class JavaCluster(cluster: Cluster) {
+    def scalaCluster: Cluster = cluster
 
     def contains(tuple: (String, Integer)): Boolean = cluster.contain(tuple.asInstanceOf[(String, Int)])
 

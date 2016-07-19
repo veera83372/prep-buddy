@@ -9,6 +9,8 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.smoothers.SmoothingMethod
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.PivotTable
+
+//import org.apache.spark.api.java.JavaSparkContext._
 import org.apache.spark.api.java.function.Function
 import org.apache.spark.api.java.{JavaDoubleRDD, JavaRDD}
 
@@ -112,5 +114,9 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def addColumnsFrom(other: JavaTransformableRDD): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.addColumnsFrom(other.tRDD), fileType)
+    }
+
+    def replaceValues(cluster: JavaCluster, newValue: String, columnIndex: Int): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.replaceValues(cluster.scalaCluster, newValue, columnIndex), fileType)
     }
 }

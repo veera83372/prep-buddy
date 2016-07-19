@@ -2,6 +2,7 @@ package org.apache.datacommons.prepbuddy.api.java;
 
 import org.apache.datacommons.prepbuddy.api.JavaSparkTestCase;
 import org.apache.datacommons.prepbuddy.api.java.types.FileType;
+import org.apache.datacommons.prepbuddy.clusterers.SimpleFingerprintAlgorithm;
 import org.apache.datacommons.prepbuddy.utils.PivotTable;
 import org.apache.datacommons.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
@@ -257,5 +258,19 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         assertTrue(result.contains("Four,Five,Six,4,5,6"));
         assertTrue(result.contains("Seven,Eight,Nine,7,8,9"));
         assertTrue(result.contains("Ten,Eleven,Twelve,10,11,12"));
+    }
+
+    @Test
+    public void shouldChangeValueOfFieldOfMatchesClusters() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+        JavaClusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());
+
+        List<JavaCluster> clustersWithSizeGreaterThanOne = clusters.getClustersWithSizeGreaterThan(1);
+        JavaTransformableRDD afterMergeCluster = initialRDD.replaceValues(clustersWithSizeGreaterThanOne.get(0), "Finger print", 0);
+
+        List<String> listOfValues = afterMergeCluster.collect();
+
+        assertTrue(listOfValues.contains("Finger print"));
     }
 }
