@@ -5,6 +5,7 @@ import org.apache.datacommons.prepbuddy.api.java.types.FileType;
 import org.apache.datacommons.prepbuddy.utils.PivotTable;
 import org.apache.datacommons.prepbuddy.utils.RowRecord;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -160,7 +161,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
     }
 
     @Test
-    public void shouldExecuteASeriesOfTransformsOnADataset() {
+    public void shouldMarkRowThatSatisfyTheMarkerPredicate() {
         JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
 
@@ -172,5 +173,42 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         });
         List<String> expectedList = Arrays.asList("X,Y,,*", "XX,YY,ZZ,");
         assertEquals(expectedList, marked.collect());
+    }
+
+    @Test
+    public void shouldMapOnMarkedRow() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+
+        JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).trim().isEmpty();
+            }
+        });
+        JavaRDD<String> mappedByFlagRdd = marked.mapByFlag("*", 3, new Function<String, String>() {
+            @Override
+            public String call(String oneRow) throws Exception {
+                return oneRow + ",Mapped";
+            }
+        });
+        List<String> expectedList = Arrays.asList("X,Y,,*,Mapped", "XX,YY,ZZ,");
+        assertEquals(expectedList, mappedByFlagRdd.collect());
+    }
+
+    @Test
+    public void shouldDropTheGivenColumnIndexFromDataset() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList("X,Y,", "XX,YY,ZZ"));
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);
+
+        JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
+            @Override
+            public boolean evaluate(RowRecord row) {
+                return row.valueAt(2).trim().isEmpty();
+            }
+        });
+        JavaTransformableRDD droppedOneColumnRdd = marked.drop(3);
+        List<String> expectedList = Arrays.asList("X,Y,", "XX,YY,ZZ");
+        assertEquals(expectedList, droppedOneColumnRdd.collect());
     }
 }
