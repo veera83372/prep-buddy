@@ -233,4 +233,29 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         assertFalse(duplicatesAtCol2.contains("Singapore"));
         assertFalse(duplicatesAtCol2.contains("Japan"));
     }
+
+    @Test
+    public void shouldMergeAllTheColumnsOfGivenTransformableRDDToTheCurrentTransformableRDD() {
+        JavaRDD<String> initialSpelledNumbers = javaSparkContext.parallelize(Arrays.asList(
+                "One,Two,Three",
+                "Four,Five,Six",
+                "Seven,Eight,Nine",
+                "Ten,Eleven,Twelve"
+        ));
+        JavaTransformableRDD spelledNumbers = new JavaTransformableRDD(initialSpelledNumbers);
+        JavaRDD<String> initialNumericData = javaSparkContext.parallelize(Arrays.asList(
+                "1\t2\t3",
+                "4\t5\t6",
+                "7\t8\t9",
+                "10\t11\t12"
+        ));
+        JavaTransformableRDD numericData = new JavaTransformableRDD(initialNumericData, FileType.TSV);
+
+        List<String> result = spelledNumbers.addColumnsFrom(numericData).collect();
+
+        assertTrue(result.contains("One,Two,Three,1,2,3"));
+        assertTrue(result.contains("Four,Five,Six,4,5,6"));
+        assertTrue(result.contains("Seven,Eight,Nine,7,8,9"));
+        assertTrue(result.contains("Ten,Eleven,Twelve,10,11,12"));
+    }
 }

@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 
 class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends JavaRDD[String](rdd.rdd) {
 
-    private val tRDD: TransformableRDD = new TransformableRDD(rdd.rdd)
+    private val tRDD: TransformableRDD = new TransformableRDD(rdd.rdd, fileType)
 
     def this(rdd: JavaRDD[String]) {
         this(rdd, CSV)
@@ -108,7 +108,9 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
 
     def drop(columnIndex: Int): JavaTransformableRDD = new JavaTransformableRDD(tRDD.drop(columnIndex), fileType)
 
-    def duplicatesAt(columnIndex: Int): JavaRDD[String] = {
-        tRDD.duplicatesAt(columnIndex).toJavaRDD()
+    def duplicatesAt(columnIndex: Int): JavaRDD[String] = tRDD.duplicatesAt(columnIndex).toJavaRDD()
+
+    def addColumnsFrom(other: JavaTransformableRDD): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.addColumnsFrom(other.tRDD), fileType)
     }
 }
