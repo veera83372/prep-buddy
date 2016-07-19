@@ -5,7 +5,6 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.collection.mutable.ListBuffer
 
 class FunctionalTest extends App {
-    protected val sc: SparkContext = new SparkContext(sparkConf)
     private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
     private val testReport = new TestReport
     private var testNames: ListBuffer[String] = ListBuffer.empty
@@ -44,4 +43,6 @@ class FunctionalTest extends App {
     }
 
     def shutDown(): Unit = sc.stop()
+
+    protected def sc: SparkContext = new SparkContext(sparkConf)
 }
