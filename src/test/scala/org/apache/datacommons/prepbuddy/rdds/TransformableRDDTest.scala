@@ -280,4 +280,5 @@ class TransformableRDDTest extends SparkTestCase {
         assert(result.contains("Seven,Eight,Nine,7,8,9"))
         assert(result.contains("Ten,Eleven,Twelve,10,11,12"))
     }
+
 }
