@@ -22,7 +22,8 @@ class TransformableRDD(RDD):
             self.spark_context = rdd.ctx
             java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
                     jvm.BytesToString())
-            self._transformable_rdd = jvm.TransformableRDD(java_rdd, self.__file_type)
+            self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd,
+                    self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm

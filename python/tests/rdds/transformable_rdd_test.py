@@ -3,6 +3,7 @@ from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramF
 from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
+import tests
 
 
 class UnitTestsForTransformableRDD(PySparkTestCase):
@@ -147,7 +148,7 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
             "Four,Five,Six",
             "Seven,Eight,Nine",
             "Ten,Eleven,Twelve"
-        ]);
+        ])
         spelled_numbers = TransformableRDD(initial_spelled_numbers, "csv")
         initial_numeric_data = self.sc.parallelize([
             "1\t2\t3",
