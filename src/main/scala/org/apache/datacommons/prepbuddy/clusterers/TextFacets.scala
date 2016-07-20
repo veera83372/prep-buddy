@@ -1,40 +1,35 @@
 package org.apache.datacommons.prepbuddy.clusterers
 
+import org.apache.datacommons.prepbuddy.utils.Range
 import org.apache.spark.rdd.RDD
+
+import scala.collection.mutable.ListBuffer
 
 class TextFacets(facets: RDD[(String, Int)]) {
     private val tuples: Array[(String, Int)] = facets.collect()
 
     def getFacetsBetween(lowerBound: Int, upperBound: Int): Array[(String, Int)] = {
-        tuples.filter((tuple) => isInRange(tuple._2, lowerBound, upperBound))
+        tuples.filter(tuple => new Range(lowerBound, upperBound).contains(tuple._2))
     }
 
-    private def isInRange(currentTupleValue: Integer, minimum: Int, maximum: Int): Boolean = {
-        currentTupleValue >= minimum && currentTupleValue <= maximum
-    }
+    def lowest: Array[(String, Int)] = getPeakListFor(_ < _)
 
-    def lowest: Array[(String, Int)] = {
-        getPeakListFor((currentTuple, peakTuple) => currentTuple < peakTuple)
-    }
-
-    def highest: Array[(String, Int)] = {
-        getPeakListFor((currentTuple, peakTuple) => currentTuple > peakTuple)
-    }
+    def highest: Array[(String, Int)] = getPeakListFor(_ > _)
 
     private def getPeakListFor(compareFunction: (Int, Int) => Boolean): Array[(String, Int)] = {
         val option: Option[(String, Int)] = tuples.find(!_._1.isEmpty)
         var peakTuple = option.head
-        var facetsCount: Array[(String, Int)] = Array(peakTuple)
-        tuples.foreach((tuple) => {
-            if (compareFunction(tuple._2, peakTuple._2) && !tuple._1.trim.isEmpty) {
+        var facetsCount: ListBuffer[(String, Int)] = ListBuffer(peakTuple)
+        tuples.view.filter(!_._1.trim.isEmpty).foreach((tuple) => {
+            if (compareFunction(tuple._2, peakTuple._2)) {
                 peakTuple = tuple
-                facetsCount = Array(peakTuple)
+                facetsCount = ListBuffer(peakTuple)
             }
-            if ((tuple._2 == peakTuple._2) && !(tuple == peakTuple) && !tuple._1.trim.isEmpty) {
-                facetsCount = facetsCount.:+(tuple)
+            if ((tuple._2 == peakTuple._2) && (tuple != peakTuple)) {
+                facetsCount += tuple
             }
         })
-        facetsCount
+        facetsCount.toArray
     }
 
     def count: Long = facets.count
