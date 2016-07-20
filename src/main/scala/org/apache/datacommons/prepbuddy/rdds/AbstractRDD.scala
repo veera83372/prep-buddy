@@ -6,6 +6,7 @@ import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
+import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
@@ -17,9 +18,9 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
         validateColumnIndex(columnsToBeSelected.toList)
         val selectedColumnValues: RDD[String] = map((record) => {
-            val recordAsArray: Array[String] = fileType.parse(record)
-            val resultValues: Array[String] = columnsToBeSelected.map(recordAsArray(_))
-            fileType.join(resultValues)
+            val rowRecord: RowRecord = fileType.parse(record)
+            val resultValues: Array[String] = columnsToBeSelected.map(rowRecord.valueAt)
+            fileType.join(new RowRecord(resultValues))
         })
         new TransformableRDD(selectedColumnValues, fileType)
     }
@@ -54,10 +55,10 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
         val filtered: RDD[String] = filter(record => {
-            val value: String = fileType.valueAt(record, columnIndex)
+            val value: String = fileType.parse(record).valueAt(columnIndex)
             NumberUtils.isNumber(value)
         })
-        filtered.map(record => parseDouble(fileType.valueAt(record, columnIndex)))
+        filtered.map(record => parseDouble(fileType.parse(record).valueAt(columnIndex)))
     }
 
     protected def validateNumericColumn(columnIndex: Int): Unit = {
@@ -66,7 +67,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         }
     }
 
-    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.valueAt(_, columnIndex))
+    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).valueAt(columnIndex))
 
     def inferType(columnIndex: Int): DataType = {
         validateColumnIndex(columnIndex)
