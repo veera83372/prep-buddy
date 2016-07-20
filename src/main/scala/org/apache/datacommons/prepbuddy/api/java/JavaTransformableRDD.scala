@@ -129,4 +129,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def unique(columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.unique(columnIndex).toJavaRDD(), fileType)
     }
+
+    def multiplyColumns(firstColumn: Int, secondColumn: Int): JavaDoubleRDD = {
+        new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
+    }
 }

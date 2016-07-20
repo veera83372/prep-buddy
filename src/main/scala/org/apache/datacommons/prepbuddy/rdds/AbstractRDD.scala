@@ -24,7 +24,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         new TransformableRDD(selectedColumnValues, fileType)
     }
 
-    def isNumericColumn(columnIndex: Int): Boolean = {
+    private def isNumericColumn(columnIndex: Int): Boolean = {
         val records: Array[String] = select(columnIndex).takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
         val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
         baseType.equals(NUMERIC)
