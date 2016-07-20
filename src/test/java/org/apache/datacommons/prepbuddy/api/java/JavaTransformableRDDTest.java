@@ -273,4 +273,21 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
 
         assertTrue(listOfValues.contains("Finger print"));
     }
+
+    @Test
+    public void shouldDeduplicateAPerticularColumn() {
+        List<String> records = Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "Cory,Male,India,12343",
+                "John,Male,Japan,122343",
+                "Adam,Male,India,1233243",
+                "Smith,Male,Singapore,12342"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(records);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+        JavaTransformableRDD uniqueRdd = transformableRDD.unique(2);
+        List<String> listOfRecords = uniqueRdd.collect();
+        assertEquals(4, listOfRecords.size());
+    }
 }

@@ -119,4 +119,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def replaceValues(cluster: JavaCluster, newValue: String, columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.replaceValues(cluster.scalaCluster, newValue, columnIndex), fileType)
     }
+
+    def unique(columnIndex: Int): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.unique(columnIndex).toJavaRDD(), fileType)
+    }
 }
