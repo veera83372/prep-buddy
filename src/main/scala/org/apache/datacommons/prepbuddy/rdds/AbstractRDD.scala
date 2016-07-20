@@ -15,12 +15,12 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     protected val columnLength = getNumberOfColumns
 
     def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
-        val columnsToBeSelected: Array[Int] = columnIndexes.+:(columnIndex).toArray
+        val columnsToBeSelected: List[Int] = columnIndexes.+:(columnIndex).toList
         validateColumnIndex(columnsToBeSelected.toList)
         val selectedColumnValues: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val resultValues: Array[String] = columnsToBeSelected.map(rowRecord.valueAt)
-            fileType.join(new RowRecord(resultValues))
+            val resultValues: RowRecord = rowRecord.select(columnsToBeSelected)
+            fileType.join(resultValues)
         })
         new TransformableRDD(selectedColumnValues, fileType)
     }
@@ -55,10 +55,10 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
         val filtered: RDD[String] = filter(record => {
-            val value: String = fileType.parse(record).valueAt(columnIndex)
+            val value: String = fileType.parse(record).select(columnIndex)
             NumberUtils.isNumber(value)
         })
-        filtered.map(record => parseDouble(fileType.parse(record).valueAt(columnIndex)))
+        filtered.map(record => parseDouble(fileType.parse(record).select(columnIndex)))
     }
 
     protected def validateNumericColumn(columnIndex: Int): Unit = {
@@ -67,7 +67,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         }
     }
 
-    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).valueAt(columnIndex))
+    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
 
     def inferType(columnIndex: Int): DataType = {
         validateColumnIndex(columnIndex)

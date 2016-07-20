@@ -38,7 +38,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD purged = initialRDD.removeRows(new RowPurger() {
             @Override
             public Boolean evaluate(RowRecord record) {
-                return record.valueAt(1).equals("YY");
+                return record.select(1).equals("YY");
             }
         });
         assertEquals(2, purged.count());
@@ -169,7 +169,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
             @Override
             public boolean evaluate(RowRecord row) {
-                return row.valueAt(2).trim().isEmpty();
+                return row.select(2).trim().isEmpty();
             }
         });
         List<String> expectedList = Arrays.asList("X,Y,,*", "XX,YY,ZZ,");
@@ -184,7 +184,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
             @Override
             public boolean evaluate(RowRecord row) {
-                return row.valueAt(2).trim().isEmpty();
+                return row.select(2).trim().isEmpty();
             }
         });
         JavaRDD<String> mappedByFlagRdd = marked.mapByFlag("*", 3, new Function<String, String>() {
@@ -205,7 +205,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         JavaTransformableRDD marked = initialRDD.flag("*", new MarkerPredicate() {
             @Override
             public boolean evaluate(RowRecord row) {
-                return row.valueAt(2).trim().isEmpty();
+                return row.select(2).trim().isEmpty();
             }
         });
         JavaTransformableRDD droppedOneColumnRdd = marked.drop(3);

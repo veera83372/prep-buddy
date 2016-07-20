@@ -1,6 +1,5 @@
 package org.apache.datacommons.prepbuddy.rdds
 
-import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
 import org.apache.datacommons.prepbuddy.imputations.ImputationStrategy
 import org.apache.datacommons.prepbuddy.normalizers.NormalizationStrategy
@@ -18,12 +17,10 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
-        val cleanRDD: TransformableRDD = removeRows((rowRecord) => isNotNumber(rowRecord.valueAt(columnIndex)))
+        val cleanRDD: TransformableRDD = removeRows(!_.isNumberAt(columnIndex))
         val columnDataset: RDD[String] = cleanRDD.select(columnIndex)
         smoothingMethod.smooth(columnDataset)
     }
-
-    private def isNotNumber(value: String): Boolean = !NumberUtils.isNumber(value)
 
     def removeRows(predicate: (RowRecord) => Boolean): TransformableRDD = {
         val filteredRDD = filter((record: String) => {
@@ -36,7 +33,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def replaceValues(cluster: Cluster, newValue: String, columnIndex: Int): TransformableRDD = {
         val mapped: RDD[String] = map((row) => {
             var rowRecord: RowRecord = fileType.parse(row)
-            val value: String = rowRecord.valueAt(columnIndex)
+            val value: String = rowRecord.select(columnIndex)
             if (cluster.containsValue(value)) rowRecord = rowRecord.replace(columnIndex, newValue)
             fileType.join(rowRecord)
         })
@@ -46,7 +43,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def mapByFlag(symbol: String, symbolColumnIndex: Int, mapFunction: (String) => String): TransformableRDD = {
         val mappedRDD: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val symbolColumn: String = rowRecord.valueAt(symbolColumnIndex)
+            val symbolColumn: String = rowRecord.select(symbolColumnIndex)
             if (symbolColumn.equals(symbol)) mapFunction(record) else record
         })
         new TransformableRDD(mappedRDD, fileType)
@@ -75,7 +72,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def listFacets(columnIndex: Int): TextFacets = {
         validateColumnIndex(columnIndex)
-        val columnValuePair: RDD[(String, Int)] = map(record => (fileType.parse(record).valueAt(columnIndex), 1))
+        val columnValuePair: RDD[(String, Int)] = map(record => (fileType.parse(record).select(columnIndex), 1))
         val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
         new TextFacets(facets)
     }
@@ -83,13 +80,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def multiplyColumns(firstColumn: Int, secondColumn: Int): RDD[Double] = {
         validateColumnIndex(firstColumn :: secondColumn :: Nil)
         val rddOfNumbers: TransformableRDD = removeRows((record) => {
-            val firstColumnValue: String = record.valueAt(firstColumn)
-            val secondColumnValue: String = record.valueAt(secondColumn)
-            isNotNumber(secondColumnValue) || isNotNumber(firstColumnValue)
+            !record.isNumberAt(firstColumn) || !record.isNumberAt(secondColumn)
         })
         rddOfNumbers.map((row) => {
-            val firstColumnValue: String = fileType.parse(row).valueAt(firstColumn)
-            val secondColumnValue: String = fileType.parse(row).valueAt(secondColumn)
+            val firstColumnValue: String = fileType.parse(row).select(firstColumn)
+            val secondColumnValue: String = fileType.parse(row).select(secondColumn)
             firstColumnValue.toDouble * secondColumnValue.toDouble
         })
     }
@@ -112,7 +107,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(columnIndexes)
         val columnValuePair: RDD[(String, Int)] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val joinedValue: String = columnIndexes.map(rowRecord.valueAt).mkString("\n")
+            val joinedValue: String = rowRecord.select(columnIndexes).mkString("\n")
             (joinedValue, 1)
         })
         val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
@@ -123,8 +118,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(column)
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val splitValue: Array[String] = splitStringByLength(rowRecord.valueAt(column), fieldLengths)
-            arrangeRecords(rowRecord, column :: Nil, splitValue, retainColumn)
+            val splitValue: Array[String] = splitStringByLength(rowRecord.select(column), fieldLengths)
+            val result: RowRecord = arrangeRecords(rowRecord, column :: Nil, splitValue, retainColumn)
+            fileType.join(result)
         })
         new TransformableRDD(transformed, fileType)
     }
@@ -141,12 +137,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         result
     }
 
-    private def arrangeRecords(values: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
-        var arrangedRecord = values
-        if (!retainColumn) {
-            arrangedRecord = values.valuesNotAt(cols)
-        }
-        fileType.join(arrangedRecord.appendColumns(result))
+    private def arrangeRecords(rowRecord: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
+        if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
 
     def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean): TransformableRDD = {
@@ -159,8 +151,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(col)
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val splitValue: Array[String] = rowRecord.valueAt(col).split(delimiter, maxSplit)
-            arrangeRecords(rowRecord, List(col), splitValue, retainCol)
+            val splitValue: Array[String] = rowRecord.select(col).split(delimiter, maxSplit)
+            val result: RowRecord = arrangeRecords(rowRecord, List(col), splitValue, retainCol)
+            fileType.join(result)
         })
         new TransformableRDD(transformed, fileType)
     }
@@ -169,8 +162,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(columns)
         val transformedRDD: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val mergedValue: String = columns.map(rowRecord.valueAt).mkString(separator)
-            arrangeRecords(rowRecord, columns, Array(mergedValue), retainColumns)
+            val mergedValue: String = rowRecord.select(columns).mkString(separator)
+            val result: RowRecord = arrangeRecords(rowRecord, columns, Array(mergedValue), retainColumns)
+            fileType.join(result)
         })
         new TransformableRDD(transformedRDD, fileType)
     }
@@ -180,9 +174,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         normalizer.prepare(this, columnIndex)
         val rdd: RDD[String] = map((record) => {
             var columns: RowRecord = fileType.parse(record)
-            val normalizedColumn = normalizer.normalize(columns.valueAt(columnIndex))
-            columns = columns.replace(columnIndex, normalizedColumn)
-            fileType.join(columns)
+            val normalizedColumn = normalizer.normalize(columns.select(columnIndex))
+            val normalizedRecord: RowRecord = columns.replace(columnIndex, normalizedColumn)
+            fileType.join(normalizedRecord)
         })
         new TransformableRDD(rdd, fileType)
     }
@@ -194,9 +188,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val value: String = rowRecord.valueAt(columnIndex)
+            val value: String = rowRecord.select(columnIndex)
             var replacementValue: String = value
-            if (value.equals(null) || value.trim.isEmpty || missingHints.contains(value)) {
+            if (value == null || value.isEmpty || missingHints.contains(value)) {
                 replacementValue = strategy.handleMissingData(rowRecord)
             }
 
@@ -219,7 +213,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def duplicatesAt(columnIndex: Int): RDD[String] = {
         validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.parse(_).valueAt(columnIndex))
+        val specifiedColumnValues: RDD[String] = map(fileType.parse(_).select(columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).duplicates()
     }
 
@@ -255,7 +249,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def unique(columnIndex: Int): TransformableRDD = {
         validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.parse(_).valueAt(columnIndex))
+        val specifiedColumnValues: RDD[String] = map(fileType.parse(_).select(columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
