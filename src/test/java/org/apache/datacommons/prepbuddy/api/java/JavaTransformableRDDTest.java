@@ -5,6 +5,7 @@ import org.apache.datacommons.prepbuddy.api.java.types.FileType;
 import org.apache.datacommons.prepbuddy.clusterers.SimpleFingerprintAlgorithm;
 import org.apache.datacommons.prepbuddy.utils.PivotTable;
 import org.apache.datacommons.prepbuddy.utils.RowRecord;
+import org.apache.spark.api.java.JavaDoubleRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
@@ -272,5 +273,34 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         List<String> listOfValues = afterMergeCluster.collect();
 
         assertTrue(listOfValues.contains("Finger print"));
+    }
+
+    @Test
+    public void shouldDeduplicateAParticularColumn() {
+        List<String> records = Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "Cory,Male,India,12343",
+                "John,Male,Japan,122343",
+                "Adam,Male,India,1233243",
+                "Smith,Male,Singapore,12342"
+        );
+        JavaRDD<String> dataset = javaSparkContext.parallelize(records);
+        JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
+        JavaTransformableRDD uniqueRdd = transformableRDD.unique(2);
+        List<String> listOfRecords = uniqueRdd.collect();
+        assertEquals(4, listOfRecords.size());
+    }
+
+    @Test
+    public void shouldMultiplyGivenTwoColumnsIfBothAreNumeric() {
+        List<String> records = Arrays.asList("1,2", "3,2", "4,2", "5,2", "6,2");
+        JavaRDD<String> dataset = javaSparkContext.parallelize(records);
+        JavaTransformableRDD rdd = new JavaTransformableRDD(dataset, FileType.CSV);
+        JavaDoubleRDD multiplied = rdd.multiplyColumns(0, 1);
+        List<Double> actualList = multiplied.collect();
+
+        List<Double> expected = Arrays.asList(2.0, 6.0, 8.0, 10.0, 12.0);
+        assertEquals(expected, actualList);
     }
 }
