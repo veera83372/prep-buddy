@@ -1,13 +1,13 @@
 package org.apache.datacommons.prepbuddy.types
 
+import org.apache.datacommons.prepbuddy.utils.RowRecord
+
 class FileType(delimiter: String) extends Serializable {
     def appendDelimiter(row: String): String = row + delimiter
 
-    def join(values: Array[String]): String = values.mkString(delimiter)
+    def join(record: RowRecord): String = record.join(delimiter)
 
-    def parse(record: String): Array[String] = record.split(delimiter, -1).map(_.trim)
-
-    def valueAt(record: String, index: Int): String = parse(record)(index)
+    def parse(record: String): RowRecord = new RowRecord(record.split(delimiter, -1).map(_.trim))
 }
 
 object CSV extends FileType(",")

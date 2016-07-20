@@ -18,7 +18,7 @@ object SmootherMain {
 
         val csvInput: RDD[String] = sc.textFile(filePath, 1)
         val movingAverage: SimpleMovingAverageMethod = new SimpleMovingAverageMethod(3)
-        val smooth: Array[Double] = movingAverage.smooth(csvInput.map(CSV.valueAt(_, 3))).collect()
+        val smooth: Array[Double] = movingAverage.smooth(csvInput.map(CSV.parse(_).valueAt(3))).collect()
         println("Smoother Count" + smooth.length)
 
         println("=========================================================")
