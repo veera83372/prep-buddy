@@ -1,14 +1,15 @@
 from py4j.java_gateway import java_import
 from py4j.protocol import Py4JJavaError
-from py_prep_buddy import py2java_int_array
+from pyspark import RDD, StorageLevel
+from pyspark.mllib.common import _java2py
+
+from py_prep_buddy import py2java_int_array, py2java_int_list
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
 from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.utils.pivot_table import PivotTable
-from pyspark import RDD, StorageLevel
-from pyspark.mllib.common import _java2py
 
 
 class TransformableRDD(RDD):
@@ -23,11 +24,12 @@ class TransformableRDD(RDD):
             java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
                     jvm.BytesToString())
             self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd,
-                    self.__file_type)
+                                                               self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm
             java_import(jvm, ClassNames.STRING_TO_BYTES)
+            self.spark_context = sc
             self.__set_file_type(jvm, file_type)
             self._transformable_rdd = t_rdd
             rdd = t_rdd.map(jvm.StringToBytes())
@@ -99,16 +101,17 @@ class TransformableRDD(RDD):
         :param column_indexes: Sequence of column indexes
         :return: TextFacets
         """
-        array = py2java_int_array(self.spark_context, column_indexes)
+        array = py2java_int_list(self.spark_context, column_indexes)
         return TextFacets(self._transformable_rdd.listFacets(array))
 
-    def select(self, column_index):
+    def select(self, column_index, *column_indexes):
         """
         Returns RDD of given column
         :param column_index: index of the column
         :return: RDD
         """
-        java_rdd = self._transformable_rdd.select(column_index)
+        java_array = py2java_int_array(self.spark_context, column_indexes)
+        java_rdd = self._transformable_rdd.select(column_index, java_array)
         return _java2py(self.spark_context, java_rdd)
 
     def normalize(self, column_index, normalizer_strategy):
@@ -224,7 +227,7 @@ class TransformableRDD(RDD):
         :param independent_column_indexes: Independent column indexes
         :return: PivotTable
         """
-        column_indexes = py2java_int_array(self.spark_context, independent_column_indexes)
+        column_indexes = py2java_int_list(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(pivotal_column, column_indexes))
 
     def map(self, function, preserves_partitioning=False):
