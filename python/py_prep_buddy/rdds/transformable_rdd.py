@@ -21,10 +21,8 @@ class TransformableRDD(RDD):
 
             self.__set_file_type(jvm, file_type)
             self.spark_context = rdd.ctx
-            java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
-                    jvm.BytesToString())
-            self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd,
-                                                               self.__file_type)
+            java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(jvm.BytesToString())
+            self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd, self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm
@@ -233,8 +231,8 @@ class TransformableRDD(RDD):
         column_indexes = py2java_int_list(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(pivotal_column, column_indexes))
 
-    def map(self, function, preserves_partitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).map(function, preserves_partitioning), self.__file_type)
+    def map(self, function, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)
 
     def filter(self, f):
         return TransformableRDD(super(TransformableRDD, self).filter(f), self.__file_type)
