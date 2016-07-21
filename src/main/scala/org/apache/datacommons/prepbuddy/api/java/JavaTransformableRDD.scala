@@ -133,4 +133,8 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def multiplyColumns(firstColumn: Int, secondColumn: Int): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
     }
+
+    def toDoubleRDD(columnIndex :Int): JavaDoubleRDD ={
+        new JavaDoubleRDD(tRDD.toDoubleRDD(columnIndex))
+    }
 }

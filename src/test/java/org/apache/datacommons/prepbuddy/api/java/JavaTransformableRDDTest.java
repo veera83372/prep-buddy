@@ -303,4 +303,16 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         List<Double> expected = Arrays.asList(2.0, 6.0, 8.0, 10.0, 12.0);
         assertEquals(expected, actualList);
     }
+
+    @Test
+    public void shouldBeAbleToGetAJavaDoubleRDDFromATransformableRDDOfSpecifiedIndex() {
+        List<String> records = Arrays.asList("1,2", "3,2", "4,2", "5,2", "6,2");
+        JavaRDD<String> dataset = javaSparkContext.parallelize(records);
+        JavaTransformableRDD rdd = new JavaTransformableRDD(dataset, FileType.CSV);
+        JavaDoubleRDD javaDoubleRDD = rdd.toDoubleRDD(0);
+        List<Double> actualList = javaDoubleRDD.collect();
+
+        List<Double> expected = Arrays.asList(1.0, 3.0, 4.0, 5.0, 6.0);
+        assertEquals(expected, actualList);
+    }
 }
