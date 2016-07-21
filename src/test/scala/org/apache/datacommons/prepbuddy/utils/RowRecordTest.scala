@@ -99,14 +99,12 @@ class RowRecordTest extends SparkTestCase {
     test("should return fingerprint by considering the given columns") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
 
-        println(rowRecord.fingerprintBy(List.empty))
         assert(3088996759045414165L == rowRecord.fingerprintBy(List(0, 1)))
     }
 
     test("should return fingerprint by considering all the columns when passed empty list") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
 
-        println(rowRecord.fingerprintBy(List.empty))
         assert(-7382504379390136226L == rowRecord.fingerprintBy(List.empty))
     }
 }
