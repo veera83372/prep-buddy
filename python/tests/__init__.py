@@ -22,7 +22,7 @@ fi
 os.system(CHECK_SPARK_HOME)
 
 # Dynamically load project root dir and jars.
-project_root = os.getcwd() + "/../../.."
+project_root = os.getcwd() + "/.."
 jars = run_cmd("ls %s/target/prep-buddy-0.3.0.jar" % project_root)
 
 # Set environment variables.

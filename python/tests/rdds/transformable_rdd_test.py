@@ -3,7 +3,6 @@ from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramF
 from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
-import tests
 
 
 class UnitTestsForTransformableRDD(PySparkTestCase):
