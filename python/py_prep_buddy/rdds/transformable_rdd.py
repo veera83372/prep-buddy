@@ -3,7 +3,7 @@ from py4j.protocol import Py4JJavaError
 from pyspark import RDD, StorageLevel
 from pyspark.mllib.common import _java2py
 
-from py_prep_buddy import py2java_int_array, py2java_int_list
+from py_prep_buddy import py2java_int_list
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
@@ -110,9 +110,12 @@ class TransformableRDD(RDD):
         :param column_index: index of the column
         :return: RDD
         """
-        java_array = py2java_int_array(self.spark_context, column_indexes)
-        java_rdd = self._transformable_rdd.select(column_index, java_array)
-        return _java2py(self.spark_context, java_rdd)
+        if column_indexes.__len__() == 0:
+            return self._transformable_rdd.select(column_index)
+        java_array = py2java_int_list(self.spark_context, column_indexes)
+        java_array.add(0, column_index)
+        java_rdd = self._transformable_rdd.select(java_array)
+        return TransformableRDD(None, self.__file_type, java_rdd, sc=self.spark_context)
 
     def normalize(self, column_index, normalizer_strategy):
         """
