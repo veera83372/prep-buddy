@@ -3,7 +3,7 @@ class Cluster(object):
         self.__cluster = cluster
 
     def __contains__(self, item):
-        return self.__cluster.containValue(item)
+        return self.__cluster.containsValue(item)
 
     def size(self):
         return self.__cluster.size()

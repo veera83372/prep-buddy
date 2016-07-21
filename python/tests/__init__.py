@@ -12,6 +12,7 @@ def run_cmd(cmd):
         logging.error("The output of the command was [%s]" % err.output)
         raise
 
+
 CHECK_SPARK_HOME = """
 if [ -z "$SPARK_HOME" ]; then
    echo "Error: SPARK_HOME is not set, can't run tests."

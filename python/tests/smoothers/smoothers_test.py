@@ -3,6 +3,7 @@ from py_prep_buddy.smoothers.smoothing_algorithms import SimpleMovingAverage, We
 from utils.python_test_case import PySparkTestCase
 import tests
 
+
 class SmoothersTest(PySparkTestCase):
     def test_should_smooth_data_by_Simple_Moving_Average(self):
         initial_dataset = self.sc.parallelize(

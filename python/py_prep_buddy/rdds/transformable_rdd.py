@@ -130,7 +130,8 @@ class TransformableRDD(RDD):
         :return: RDD
         """
         method = smoothing_method.get_smoothing_method(self.spark_context)
-        return _java2py(self.spark_context, self._transformable_rdd.smooth(column_index, method))
+        rdd = self._transformable_rdd.smooth(column_index, method)
+        return _java2py(self.spark_context, rdd.rdd())
 
     def merge_columns(self, merge_plan):
         """
@@ -163,10 +164,10 @@ class TransformableRDD(RDD):
         """
         if column_indexes is None:
             return TransformableRDD(None, self.__file_type,
-                                    self._transformable_rdd.getDuplicates(),
+                                    self._transformable_rdd.duplicates(),
                                     sc=self.spark_context)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.getDuplicates(column_indexes),
+                                self._transformable_rdd.duplicates(column_indexes),
                                 sc=self.spark_context)
 
     def drop_column(self, column_index):
@@ -176,7 +177,7 @@ class TransformableRDD(RDD):
         :return:
         """
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.dropColumn(column_index),
+                                self._transformable_rdd.drop(column_index),
                                 sc=self.spark_context)
 
     def replace_values(self, one_cluster, new_value, column_index):

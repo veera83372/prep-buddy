@@ -36,16 +36,16 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         self.assertTrue(imputed_rdd.collect().__contains__("Soa,45"))
 
     def test_transformableRDD_can_impute_the_missing_values_by_MeanSubstitution(self):
-        rdd = self.sc.parallelize(["Ram,10", "Joe,45", "Jill,45", "Soa,"])
+        rdd = self.sc.parallelize(["Ram,9", "Joe,45", "Jill,45", "Soa,"])
         transformable_rdd = TransformableRDD(rdd, 'csv')
         imputed_rdd = transformable_rdd.impute(1, MeanSubstitution())
-        self.assertTrue(imputed_rdd.collect().__contains__("Soa,25.0"))
+        self.assertTrue(imputed_rdd.collect().__contains__("Soa,33.0"))
 
     def test_transformableRDD_can_impute_the_missing_values_by_ApproxMeanSubstitution(self):
-        rdd = self.sc.parallelize(["Ram,10", "Joe,45", "Jill,45", "Soa,"])
+        rdd = self.sc.parallelize(["Ram,9", "Joe,45", "Jill,45", "Soa,"])
         transformable_rdd = TransformableRDD(rdd, 'csv')
         imputed_rdd = transformable_rdd.impute(1, ApproxMeanSubstitution())
-        self.assertTrue(imputed_rdd.collect().__contains__("Soa,25.0"))
+        self.assertTrue(imputed_rdd.collect().__contains__("Soa,33.0"))
 
     def test_transformableRDD_can_impute_the_missing_values_by_UnivariateLinearRegressionSubstitution(self):
         rdd = self.sc.parallelize(["60,3.1", "61,3.6", "62,3.8", "63,4", "65,4.1", "64,"])
@@ -213,5 +213,3 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
         transformable_rdd = TransformableRDD(initial_dataset, "csv")
         self.assertRaises(ApplicationException, transformable_rdd.list_facets_of, 4)
-        select = transformable_rdd.select(1)
-        print select.count()

@@ -1,8 +1,8 @@
 class Package(object):
     PREP_BUDDY = "org.apache.datacommons.prepbuddy"
-    IMPUTATION = PREP_BUDDY + ".cleansers.imputation"
+    IMPUTATION = PREP_BUDDY + ".imputations"
     DEDUPE = PREP_BUDDY + ".cleansers.dedupe"
-    CLUSTER = PREP_BUDDY + ".cluster"
+    CLUSTER = PREP_BUDDY + ".clusterers"
     NORMALIZERS = PREP_BUDDY + ".normalizers"
     CONNECTOR = PREP_BUDDY + ".python.connector"
     APIJAVA = PREP_BUDDY + ".api.java"
