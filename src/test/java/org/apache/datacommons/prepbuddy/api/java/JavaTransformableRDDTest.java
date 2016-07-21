@@ -112,7 +112,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
 
-        JavaRDD<String> selectedFeatures = initialRDD.select(0, 1);
+        JavaRDD<String> selectedFeatures = initialRDD.select(Arrays.asList(0, 1));
         List<String> expected = Arrays.asList("Smith,Male", "John,Male", "John,Male", "Smith,Male");
         assertEquals(expected, selectedFeatures.collect());
     }

@@ -114,7 +114,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
 
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
-        val selectedColumns: TransformableRDD = transformableRDD.select(0, 2)
+        val selectedColumns: TransformableRDD = transformableRDD.select(List(0, 2))
 
         assert(selectedColumns.collect sameElements Array("A,Male", "B,Female", "C,Male", "D,Male", "E,Female"))
     }

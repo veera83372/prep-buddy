@@ -68,9 +68,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizationStrategy).toJavaRDD(), fileType)
     }
 
-    @annotation.varargs
-    def select(columnIndex: Int, columnIndexes: Int*): JavaRDD[String] = {
-        tRDD.select(columnIndex, columnIndexes: _*).toJavaRDD()
+    def select(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
+        val scalaList: List[Int] = asScalaIntList(columnIndexes.asScala.toList)
+        new JavaTransformableRDD(tRDD.select(scalaList).toJavaRDD(), fileType)
+    }
+
+    def select(columnIndex: Int): JavaRDD[String] = {
+        tRDD.select(columnIndex).toJavaRDD()
     }
 
     def numberOfColumns: Int = tRDD.numberOfColumns()
@@ -134,7 +138,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
     }
 
-    def toDoubleRDD(columnIndex :Int): JavaDoubleRDD ={
+    def toDoubleRDD(columnIndex: Int): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.toDoubleRDD(columnIndex))
     }
 }

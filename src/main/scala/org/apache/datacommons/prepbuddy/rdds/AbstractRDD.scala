@@ -7,23 +7,28 @@ import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorM
 import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
 import org.apache.datacommons.prepbuddy.utils.RowRecord
+import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
+import org.apache.spark.{Partition, TaskContext}
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
     val DEFAULT_SAMPLE_SIZE: Int = 1000
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
     protected val columnLength = getNumberOfColumns
 
-    def select(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
-        val columnsToBeSelected: List[Int] = columnIndexes.+:(columnIndex).toList
-        validateColumnIndex(columnsToBeSelected.toList)
+    def toRDD: RDD[String] = parent
+
+    def select(columnIndexes: List[Int]): TransformableRDD = {
+        validateColumnIndex(columnIndexes)
         val selectedColumnValues: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val resultValues: RowRecord = rowRecord.select(columnsToBeSelected)
+            val resultValues: RowRecord = rowRecord.select(columnIndexes)
             fileType.join(resultValues)
         })
         new TransformableRDD(selectedColumnValues, fileType)
     }
+
+    def select(columnIndex: Int): RDD[String] = select(List(columnIndex)).toRDD
 
     private def isNumericColumn(columnIndex: Int): Boolean = {
         val records: Array[String] = select(columnIndex).takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
@@ -75,4 +80,11 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(columnSamples)
         typeAnalyzer.getType
     }
+
+    @DeveloperApi
+    override def compute(split: Partition, context: TaskContext): Iterator[String] = {
+        parent.compute(split, context)
+    }
+
+    override protected def getPartitions: Array[Partition] = parent.partitions
 }
