@@ -2,6 +2,9 @@ package org.apache.datacommons.prepbuddy.types
 
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
+/**
+  * File formats that are supported by TransformableRDD
+  */
 class FileType(delimiter: String) extends Serializable {
     def appendDelimiter(row: String): String = row + delimiter
 
