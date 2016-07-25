@@ -16,4 +16,3 @@ class NGramFingerprintAlgorithm(object):
     def get_algorithm(self, spark_context):
         java_import(spark_context._jvm, ClassNames.N_GRAM_FINGERPRINT)
         return spark_context._jvm.NGramFingerprintAlgorithm(self.__n_gram)
-
