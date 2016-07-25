@@ -1,8 +1,5 @@
 from py4j.java_gateway import java_import
 from py4j.protocol import Py4JJavaError
-from pyspark import RDD, StorageLevel
-from pyspark.mllib.common import _java2py
-
 from py_prep_buddy import py2java_int_list
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.cluster.clusters import Clusters
@@ -10,6 +7,8 @@ from py_prep_buddy.cluster.text_facets import TextFacets
 from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.utils.pivot_table import PivotTable
+from pyspark import RDD, StorageLevel
+from pyspark.mllib.common import _java2py
 
 
 class TransformableRDD(RDD):
@@ -137,15 +136,17 @@ class TransformableRDD(RDD):
         rdd = self._transformable_rdd.smooth(column_index, method)
         return _java2py(self.spark_context, rdd.rdd())
 
-    def merge_columns(self, merge_plan):
+    def merge_columns(self, list_of_columns, separator=" ", retain_columns=False):
         """
-        Returns a new TransformableRDD containing the merged column using @merge_plan
-        :param merge_plan:
+        Returns a new TransformableRDD containing the merged column of given indexes with the @separator
+        :param list_of_columns:
+        :param separator:
+        :param retain_columns:
         :return: TransformableRDD
         """
-        plan = merge_plan.get_plan(self.spark_context)
+        int_list = py2java_int_list(self.spark_context, list_of_columns)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.mergeColumns(plan),
+                                self._transformable_rdd.mergeColumns(int_list, separator, retain_columns),
                                 sc=self.spark_context)
 
     def split_column(self, split_plan):

@@ -1,5 +1,4 @@
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
-from py_prep_buddy.transformers.split_plan import SplitPlan
 from utils.python_test_case import PySparkTestCase
 
 
@@ -7,7 +6,7 @@ class SplitPlanTest(PySparkTestCase):
     def test_should_split_given_column_indexes(self):
         initial_dataset = self.sc.parallelize(["FirstName LastName MiddleName,850"])
         initial_rdd = TransformableRDD(initial_dataset, "csv")
-        plan = SplitPlan(0, " ", False)
+
         splited_column_rdd = initial_rdd.split_column(plan)
         self.assertEquals("FirstName,LastName,MiddleName,850", splited_column_rdd.first())
 

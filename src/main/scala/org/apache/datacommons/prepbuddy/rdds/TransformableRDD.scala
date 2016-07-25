@@ -139,18 +139,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
 
-    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean): TransformableRDD = {
-        splitByDelimiter(column, delimiter, -1, retainColumn)
-    }
-
-    def splitByDelimiter(column: Int, delimiter: String): TransformableRDD = splitByDelimiter(column, delimiter, -1)
-
-    def splitByDelimiter(col: Int, delimiter: String, maxSplit: Int, retainCol: Boolean = false): TransformableRDD = {
-        validateColumnIndex(col)
+    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean = false, maxSplit: Int= -1):
+    TransformableRDD = {
+        validateColumnIndex(column)
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val splitValue: Array[String] = rowRecord.select(col).split(delimiter, maxSplit)
-            val result: RowRecord = arrangeRecords(rowRecord, List(col), splitValue, retainCol)
+            val splitValue: Array[String] = rowRecord.select(column).split(delimiter, maxSplit)
+            val result: RowRecord = arrangeRecords(rowRecord, List(column), splitValue, retainColumn)
             fileType.join(result)
         })
         new TransformableRDD(transformed, fileType)

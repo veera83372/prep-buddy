@@ -101,7 +101,7 @@ class MergeSplitTest extends SparkTestCase {
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
 
-        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", retainColumn = true).collect()
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", retainColumn=true).collect()
 
         assert(result.length == 4)
         assert(result.contains("John,Male,21,+91-4382313832,Canada,+91,4382313832"))
@@ -135,7 +135,7 @@ class MergeSplitTest extends SparkTestCase {
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, TSV)
 
-        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", 2).collect()
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", maxSplit = 2).collect()
 
         assert(result.length == 4)
         assert(result.contains("John\tMale\t21\tCanada\t+91\t4382-313832"))
