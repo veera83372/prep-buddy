@@ -182,6 +182,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TextFacets(facets)
     }
 
+    /**
+      * Returns a TransformableRDD by splitting the @column
+      *
+      * @param column Column index
+      * @param fieldLengths
+      * @param retainColumn
+      * @return
+      */
     def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
         validateColumnIndex(column)
         val transformed: RDD[String] = map((record) => {
@@ -232,11 +240,18 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformedRDD, fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
+      *
+      * @param columnIndex Column Index
+      * @param normalizer  Normalization Strategy
+      * @return TransformableRDD
+      */
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): TransformableRDD = {
         validateColumnIndex(columnIndex)
         normalizer.prepare(this, columnIndex)
         val rdd: RDD[String] = map((record) => {
-            var columns: RowRecord = fileType.parse(record)
+            val columns: RowRecord = fileType.parse(record)
             val normalizedColumn = normalizer.normalize(columns.select(columnIndex))
             val normalizedRecord: RowRecord = columns.replace(columnIndex, normalizedColumn)
             fileType.join(normalizedRecord)
@@ -244,8 +259,23 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(rdd, fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+      *
+      * @param column   Column index
+      * @param strategy Imputation strategy
+      * @return TransformableRDD
+      */
     def impute(column: Int, strategy: ImputationStrategy): TransformableRDD = impute(column, strategy, List.empty)
 
+    /**
+      * Returns a new TransformableRDD by imputing missing values and @missingHints of the @columnIndex using the @strategy
+      *
+      * @param columnIndex  Column Index
+      * @param strategy     Imputation Strategy
+      * @param missingHints List of Strings that may mean empty
+      * @return TransformableRDD
+      */
     def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
         validateColumnIndex(columnIndex)
         strategy.prepareSubstitute(this, columnIndex)
@@ -263,6 +293,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD by dropping the @column
+      *
+      * @param columnIndex The column that will be dropped.
+      * @return TransformableRDD
+      */
     def drop(columnIndex: Int, columnIndexes: Int*): TransformableRDD = {
         val columnsToBeDroped: List[Int] = columnIndexes.+:(columnIndex).toList
         validateColumnIndex(columnsToBeDroped)
