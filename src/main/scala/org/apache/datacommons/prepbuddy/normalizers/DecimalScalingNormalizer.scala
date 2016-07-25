@@ -3,6 +3,9 @@ package org.apache.datacommons.prepbuddy.normalizers
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
 
+/**
+  * A normalizer strategy which normalizes the data by multiplying it to 10 ^ -i.
+  */
 class DecimalScalingNormalizer extends NormalizationStrategy {
 
     private var length = 0

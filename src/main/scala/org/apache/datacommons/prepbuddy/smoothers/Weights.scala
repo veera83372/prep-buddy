@@ -2,6 +2,9 @@ package org.apache.datacommons.prepbuddy.smoothers
 
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 
+/**
+  * Contains weights in sequence for the weighted sliding window.
+  */
 class Weights(limit: Int) extends Serializable {
     private var weights: List[Double] = List()
 

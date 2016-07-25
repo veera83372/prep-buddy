@@ -1,6 +1,7 @@
 from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 
+
 class ClusterTest(PySparkTestCase):
     def test_should_give_highest_of_facets(self):
         initial_dataset = self.sc.parallelize(["X,Y", "A,B", "X,Z", "A,Q", "A,E"])

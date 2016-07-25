@@ -2,6 +2,9 @@ package org.apache.datacommons.prepbuddy.normalizers
 
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 
+/**
+  * A normalizer which scales the data within the specified range.
+  */
 class MinMaxNormalizer(minRange: Int = 0, maxRange: Int = 1) extends NormalizationStrategy {
 
     private var maxValue: Double = 0

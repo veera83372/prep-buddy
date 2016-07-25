@@ -3,7 +3,7 @@ from py4j.protocol import Py4JJavaError
 from pyspark import RDD, StorageLevel
 from pyspark.mllib.common import _java2py
 
-from py_prep_buddy import py2java_int_array, py2java_int_list
+from py_prep_buddy import py2java_int_list
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.cluster.clusters import Clusters
 from py_prep_buddy.cluster.text_facets import TextFacets
@@ -21,10 +21,8 @@ class TransformableRDD(RDD):
 
             self.__set_file_type(jvm, file_type)
             self.spark_context = rdd.ctx
-            java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(
-                    jvm.BytesToString())
-            self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd,
-                                                               self.__file_type)
+            java_rdd = rdd._reserialize(BuddySerializer())._jrdd.map(jvm.BytesToString())
+            self._transformable_rdd = jvm.JavaTransformableRDD(java_rdd, self.__file_type)
             RDD.__init__(self, rdd._jrdd, rdd.ctx)
         else:
             jvm = sc._jvm
@@ -63,7 +61,7 @@ class TransformableRDD(RDD):
     def impute(self, column_index, imputation_strategy):
         """
         Returns a new TransformableRDD by imputing missing values of the @column_index using the @imputation_strategy
-        :param column_index: index of the column on which we want to impute
+        :param column_index: index of the column on which imputation will be performed
         :param imputation_strategy: strategy for impute the missing value
         :return: TransformableRDD
         """
@@ -106,13 +104,17 @@ class TransformableRDD(RDD):
 
     def select(self, column_index, *column_indexes):
         """
-        Returns RDD of given column
-        :param column_index: index of the column
-        :return: RDD
+        Returns RDD of given column and TransformableRDD for multiple columns.
+        :param column_index: index of the one column
+        :param column_indexes: indexes of the multiple columns
+        :return: RDD,TransformableRDD
         """
-        java_array = py2java_int_array(self.spark_context, column_indexes)
-        java_rdd = self._transformable_rdd.select(column_index, java_array)
-        return _java2py(self.spark_context, java_rdd)
+        if column_indexes.__len__() == 0:
+            return self._transformable_rdd.select(column_index)
+        java_array = py2java_int_list(self.spark_context, column_indexes)
+        java_array.add(0, column_index)
+        java_rdd = self._transformable_rdd.select(java_array)
+        return TransformableRDD(None, self.__file_type, java_rdd, sc=self.spark_context)
 
     def normalize(self, column_index, normalizer_strategy):
         """
@@ -136,26 +138,41 @@ class TransformableRDD(RDD):
         rdd = self._transformable_rdd.smooth(column_index, method)
         return _java2py(self.spark_context, rdd.rdd())
 
-    def merge_columns(self, merge_plan):
+    def merge_columns(self, list_of_columns, separator=" ", retain_columns=False):
         """
-        Returns a new TransformableRDD containing the merged column using @merge_plan
-        :param merge_plan:
+        Returns a new TransformableRDD containing the merged column of given indexes with the @separator
+        :param list_of_columns:
+        :param separator:
+        :param retain_columns:
         :return: TransformableRDD
         """
-        plan = merge_plan.get_plan(self.spark_context)
+        int_list = py2java_int_list(self.spark_context, list_of_columns)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.mergeColumns(plan),
+                                self._transformable_rdd.mergeColumns(int_list, separator, retain_columns),
                                 sc=self.spark_context)
 
-    def split_column(self, split_plan):
+    def split_by_delimiter(self, column_index, delimiter, retain_column=False):
         """
-        Returns a new TransformableRDD containing split columns using @split_plan
-        :param split_plan: Plan specifying how to split the column
+        Returns a new TransformableRDD containing split columns by specified @delimiter on the given index
+        :param column_index: index of the column on which operation will be performed
+        :param delimiter:the delimiter string reference by which split will be performed
+        :param retain_column:preserves the column if true
         :return: TransformableRDD
         """
-        plan = split_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.splitColumn(plan),
+                                self._transformable_rdd.splitByDelimiter(column_index, delimiter, retain_column),
+                                sc=self.spark_context)
+
+    def split_by_field_length(self, column_index, field_lengths, retain_column=False):
+        """
+        Returns a new TransformableRDD containing split columns using @split_plan
+        :param column_index:index of the column on which operation will be performed
+        :param field_lengths:Sequence of lengths of the resultant column used for splitting the element on @column_index
+        :param retain_column:preserves the column if true
+        :return: TransformableRDD
+        """
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.splitByFieldLength(column_index, field_lengths, retain_column),
                                 sc=self.spark_context)
 
     def get_duplicates(self, column_indexes=None):
@@ -209,8 +226,8 @@ class TransformableRDD(RDD):
     def to_double_rdd(self, column_index):
         """
         Returns a RDD by converting values to double of given column index
-        :param column_index:
-        :return:
+        :param column_index:One column index in TransformableRDD
+        :return:RDD
         """
         rdd = self._transformable_rdd.toDoubleRDD(column_index).rdd()
         return _java2py(self.spark_context, rdd)
@@ -230,8 +247,8 @@ class TransformableRDD(RDD):
         column_indexes = py2java_int_list(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(pivotal_column, column_indexes))
 
-    def map(self, function, preserves_partitioning=False):
-        return TransformableRDD(super(TransformableRDD, self).map(function, preserves_partitioning), self.__file_type)
+    def map(self, function, preservesPartitioning=False):
+        return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)
 
     def filter(self, f):
         return TransformableRDD(super(TransformableRDD, self).filter(f), self.__file_type)

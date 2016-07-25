@@ -5,6 +5,9 @@ import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ListBuffer
 
+/**
+  * TextFacets is a collection of unique strings and the number of times the string appears in a column
+  */
 class TextFacets(facets: RDD[(String, Int)]) {
     private val tuples: Array[(String, Int)] = facets.collect()
 

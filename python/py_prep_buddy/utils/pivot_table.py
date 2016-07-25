@@ -1,4 +1,3 @@
-
 class PivotTable(object):
     def __init__(self, java_pivot_table):
         self.__table = java_pivot_table

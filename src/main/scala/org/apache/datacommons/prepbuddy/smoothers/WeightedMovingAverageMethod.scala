@@ -3,6 +3,11 @@ package org.apache.datacommons.prepbuddy.smoothers
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.spark.rdd.RDD
 
+/**
+  * A smoothing method which smooths data based on Weighted Moving Average method that is any
+  * average that has multiplying factors to give different weights to data at
+  * different positions in the sampleColumnValues window.
+  */
 class WeightedMovingAverageMethod(windowSize: Int, weights: Weights) extends SmoothingMethod {
     if (windowSize != weights.size) {
         throw new ApplicationException(ErrorMessages.WINDOW_SIZE_AND_WEIGHTS_SIZE_NOT_MATCHING)

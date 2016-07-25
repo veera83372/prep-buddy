@@ -4,6 +4,9 @@ import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
+/**
+  * An imputation strategy that imputes the column value by the mode of specified column
+  */
 class ModeSubstitution() extends ImputationStrategy {
     private var mode: (String, Int) = null
 
