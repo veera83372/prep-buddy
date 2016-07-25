@@ -2,6 +2,10 @@ package org.apache.datacommons.prepbuddy.normalizers
 
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 
+/**
+  * A normalizer technique which normalizes data by their standard score.
+  * Formula for Z Score Normalization : (X - Mean) / Standard Deviation.
+  */
 class ZScoreNormalizer extends NormalizationStrategy {
 
     private var standardDeviation: Double = 0
