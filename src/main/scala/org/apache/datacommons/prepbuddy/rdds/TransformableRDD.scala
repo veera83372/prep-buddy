@@ -316,8 +316,19 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(specifiedColumnValues, fileType).duplicates()
     }
 
+    /**
+      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering all the columns as primary key.
+      *
+      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      */
     def duplicates(): TransformableRDD = duplicates(List.empty)
 
+    /**
+      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering the given columns as primary key.
+      *
+      * @param primaryKeyColumns A list of integers specifying the columns that will be combined to create the primary key
+      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      */
     def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
@@ -329,8 +340,19 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
+    /**
+      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering all the columns as primary key.
+      *
+      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      */
     def deduplicate(): TransformableRDD = deduplicate(List.empty)
 
+    /**
+      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering the given columns as primary key.
+      *
+      * @param primaryKeyColumns A list of integers specifying the columns that will be combined to create the primary key
+      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      */
     def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
         val fingerprintedRDD: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
