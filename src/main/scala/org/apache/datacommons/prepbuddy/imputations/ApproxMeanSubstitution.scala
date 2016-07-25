@@ -3,6 +3,10 @@ package org.apache.datacommons.prepbuddy.imputations
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
+/**
+  * An imputation strategy that imputes the missing column value by
+  * approx mean of the specified column.
+  */
 class ApproxMeanSubstitution() extends ImputationStrategy {
     private var approxMean: Double = 0
 

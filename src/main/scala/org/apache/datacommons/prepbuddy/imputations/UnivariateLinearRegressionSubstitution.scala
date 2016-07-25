@@ -4,6 +4,12 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 
+/**
+  * An imputation strategy that is based on Linear Regression which is an approach
+  * for modeling the relationship between a scalar dependent variable y and an explanatory
+  * variable x.
+  * This strategy imputes the value of y by : slope * x + intercept
+  */
 class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends ImputationStrategy {
     private var slope: Double = 0
     private var intercept: Double = 0

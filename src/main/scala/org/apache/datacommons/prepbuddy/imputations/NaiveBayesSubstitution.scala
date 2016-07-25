@@ -4,7 +4,11 @@ import org.apache.datacommons.prepbuddy.clusterers.TextFacets
 import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Probability, RowRecord}
 
-
+/**
+  * An imputation strategy that is based on Naive Bayes Algorithm which
+  * is the probabilistic classifier. This implementation is only
+  * for imputing the categorical values.
+  */
 class NaiveBayesSubstitution(independentColumnIndexes: Array[Int]) extends ImputationStrategy {
     private var probs: PivotTable[Probability] = null
     private var permissibleValues: Array[String] = null
