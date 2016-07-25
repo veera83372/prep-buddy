@@ -2,6 +2,10 @@ package org.apache.datacommons.prepbuddy.clusterers
 
 import scala.collection.mutable
 
+/**
+  * This algorithm generates a key using N Gram Fingerprint Algorithm for
+  * every cardinal value (facet) in column and add them to the Cluster.
+  */
 class NGramFingerprintAlgorithm(nGram: Int) extends FingerprintAlgorithm {
     def getClusters(tuples: Array[(String, Int)]): Clusters = super.getClusters(tuples, generateNGramFingerprint)
 

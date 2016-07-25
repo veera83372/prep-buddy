@@ -2,6 +2,9 @@ package org.apache.datacommons.prepbuddy.clusterers
 
 import scala.collection.mutable.ListBuffer
 
+/**
+  * Cluster contains groups of values by their specified key
+  */
 class Cluster(key: String) extends Serializable {
 
     private val tuples: ListBuffer[(String, Int)] = ListBuffer.empty
