@@ -10,4 +10,3 @@ class Cluster(object):
 
     def get_cluster(self):
         return self.__cluster
-

@@ -61,7 +61,7 @@ class TransformableRDD(RDD):
     def impute(self, column_index, imputation_strategy):
         """
         Returns a new TransformableRDD by imputing missing values of the @column_index using the @imputation_strategy
-        :param column_index: index of the column on which we want to impute
+        :param column_index: index of the column on which imputation will be performed
         :param imputation_strategy: strategy for impute the missing value
         :return: TransformableRDD
         """
@@ -104,9 +104,10 @@ class TransformableRDD(RDD):
 
     def select(self, column_index, *column_indexes):
         """
-        Returns RDD of given column
-        :param column_index: index of the column
-        :return: RDD
+        Returns RDD of given column and TransformableRDD for multiple columns.
+        :param column_index: index of the one column
+        :param column_indexes: indexes of the multiple columns
+        :return: RDD,TransformableRDD
         """
         if column_indexes.__len__() == 0:
             return self._transformable_rdd.select(column_index)
@@ -152,26 +153,26 @@ class TransformableRDD(RDD):
 
     def split_by_delimiter(self, column_index, delimiter, retain_column=False):
         """
-        Returns a new TransformableRDD containing split columns using @split_plan
-        :param retain_column:
-        :param delimiter:
-        :param column_index:
+        Returns a new TransformableRDD containing split columns by specified @delimiter on the given index
+        :param column_index: index of the column on which operation will be performed
+        :param delimiter:the delimiter string reference by which split will be performed
+        :param retain_column:preserves the column if true
         :return: TransformableRDD
         """
         return TransformableRDD(None, self.__file_type,
                                 self._transformable_rdd.splitByDelimiter(column_index, delimiter, retain_column),
                                 sc=self.spark_context)
 
-    def split_by_field_length(self, column_index, delimiter, retain_column):
+    def split_by_field_length(self, column_index, field_lengths, retain_column=False):
         """
         Returns a new TransformableRDD containing split columns using @split_plan
-        :param retain_column:
-        :param delimiter:
-        :param column_index:
+        :param column_index:index of the column on which operation will be performed
+        :param field_lengths:Sequence of lengths of the resultant column used for splitting the element on @column_index
+        :param retain_column:preserves the column if true
         :return: TransformableRDD
         """
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.splitByFieldLength(column_index, delimiter, retain_column),
+                                self._transformable_rdd.splitByFieldLength(column_index, field_lengths, retain_column),
                                 sc=self.spark_context)
 
     def get_duplicates(self, column_indexes=None):
@@ -225,8 +226,8 @@ class TransformableRDD(RDD):
     def to_double_rdd(self, column_index):
         """
         Returns a RDD by converting values to double of given column index
-        :param column_index:
-        :return:
+        :param column_index:One column index in TransformableRDD
+        :return:RDD
         """
         rdd = self._transformable_rdd.toDoubleRDD(column_index).rdd()
         return _java2py(self.spark_context, rdd)
