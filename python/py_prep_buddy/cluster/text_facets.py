@@ -14,5 +14,5 @@ class TextFacets(object):
     def cardinal_values(self):
         return self.__facet.cardinalValues()
 
-    def getFacetsBetween(self, lower_bound, upper_bound):
+    def get_facets_between(self, lower_bound, upper_bound):
         return self.__facet.getFacetsBetween(lower_bound, upper_bound)
