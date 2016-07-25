@@ -1,5 +1,8 @@
 from py4j.java_gateway import java_import
 from py4j.protocol import Py4JJavaError
+from pyspark import RDD, StorageLevel
+from pyspark.mllib.common import _java2py
+
 from py_prep_buddy import py2java_int_list
 from py_prep_buddy.class_names import ClassNames
 from py_prep_buddy.cluster.clusters import Clusters
@@ -7,8 +10,6 @@ from py_prep_buddy.cluster.text_facets import TextFacets
 from py_prep_buddy.exceptions.application_exception import ApplicationException
 from py_prep_buddy.serializer import BuddySerializer
 from py_prep_buddy.utils.pivot_table import PivotTable
-from pyspark import RDD, StorageLevel
-from pyspark.mllib.common import _java2py
 
 
 class TransformableRDD(RDD):
@@ -149,15 +150,28 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.mergeColumns(int_list, separator, retain_columns),
                                 sc=self.spark_context)
 
-    def split_column(self, split_plan):
+    def split_by_delimiter(self, column_index, delimiter, retain_column=False):
         """
         Returns a new TransformableRDD containing split columns using @split_plan
-        :param split_plan: Plan specifying how to split the column
+        :param retain_column:
+        :param delimiter:
+        :param column_index:
         :return: TransformableRDD
         """
-        plan = split_plan.get_plan(self.spark_context)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.splitColumn(plan),
+                                self._transformable_rdd.splitByDelimiter(column_index, delimiter, retain_column),
+                                sc=self.spark_context)
+
+    def split_by_field_length(self, column_index, delimiter, retain_column):
+        """
+        Returns a new TransformableRDD containing split columns using @split_plan
+        :param retain_column:
+        :param delimiter:
+        :param column_index:
+        :return: TransformableRDD
+        """
+        return TransformableRDD(None, self.__file_type,
+                                self._transformable_rdd.splitByFieldLength(column_index, delimiter, retain_column),
                                 sc=self.spark_context)
 
     def get_duplicates(self, column_indexes=None):
