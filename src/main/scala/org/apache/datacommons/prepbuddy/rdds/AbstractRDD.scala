@@ -16,8 +16,19 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
     protected val columnLength = getNumberOfColumns
 
+    /**
+      * Returns RDD
+      *
+      * @return RDD[String]
+      */
     def toRDD: RDD[String] = parent
 
+    /**
+      * Returns a new TransformableRDD containing values of @columnIndexes
+      *
+      * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
+      * @return TransformableRDD
+      */
     def select(columnIndexes: List[Int]): TransformableRDD = {
         validateColumnIndex(columnIndexes)
         val selectedColumnValues: RDD[String] = map((record) => {
@@ -28,6 +39,12 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         new TransformableRDD(selectedColumnValues, fileType)
     }
 
+    /**
+      * Returns a RDD of given column
+      *
+      * @param columnIndex Column index
+      * @return RDD[String]
+      */
     def select(columnIndex: Int): RDD[String] = select(List(columnIndex)).toRDD
 
     private def isNumericColumn(columnIndex: Int): Boolean = {
@@ -56,6 +73,12 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         }
     }
 
+    /**
+      * Returns a double RDD of given column index
+      *
+      * @param columnIndex Column index
+      * @return RDD[Double]
+      */
     def toDoubleRDD(columnIndex: Int): RDD[Double] = {
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
@@ -72,8 +95,20 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         }
     }
 
+    /**
+      * Returns a List of some elements of @columnIndex
+      *
+      * @param columnIndex
+      * @return List[String]
+      */
     def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
 
+    /**
+      * Returns infred DataType of @columnIndex
+      *
+      * @param columnIndex
+      * @return DataType
+      */
     def inferType(columnIndex: Int): DataType = {
         validateColumnIndex(columnIndex)
         val columnSamples: List[String] = sampleColumnValues(columnIndex)
