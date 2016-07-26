@@ -4,6 +4,9 @@ from pyspark.serializers import FramedSerializer
 
 
 class BuddySerializer(FramedSerializer):
+    """
+    A serializer to which is used to serialize and deserialize the RDD.
+    """
     def dumps(self, obj):  # Serializer
         stream = BytesIO()
         key_bytes = str(obj).encode('utf-8')

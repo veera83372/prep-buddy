@@ -1,4 +1,4 @@
-from py_prep_buddy.package import Package
+from pyprepbuddy.package import Package
 
 
 class ClassNames(object):

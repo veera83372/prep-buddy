@@ -197,25 +197,31 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       */
     def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
         validateColumnIndex(column)
+
+        def splitString(value: String): Array[String] = {
+            var result = Array.empty[String]
+            var startingIndex = 0
+            for (length <- fieldLengths) {
+                val endingIndex: Int = startingIndex + length
+                val splitValue: String = {
+                    if (startingIndex <= value.length && endingIndex > value.length) {
+                        value.substring(startingIndex)
+                    }
+                    else if (endingIndex <= value.length) value.substring(startingIndex, endingIndex) else ""
+                }
+                result = result.:+(splitValue)
+                startingIndex += length
+            }
+            result
+        }
+
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val splitValue: Array[String] = splitStringByLength(rowRecord.select(column), fieldLengths)
+            val splitValue: Array[String] = splitString(rowRecord.select(column))
             val result: RowRecord = arrangeRecords(rowRecord, column :: Nil, splitValue, retainColumn)
             fileType.join(result)
         })
         new TransformableRDD(transformed, fileType)
-    }
-
-    private def splitStringByLength(value: String, lengths: List[Int]): Array[String] = {
-        var result = Array.empty[String]
-        var startingIndex = 0
-        lengths.foreach((length) => {
-            val endingIndex: Int = startingIndex + length
-            val splitValue: String = value.substring(startingIndex, endingIndex)
-            result = result.:+(splitValue)
-            startingIndex = startingIndex + length
-        })
-        result
     }
 
     private def arrangeRecords(rowRecord: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
