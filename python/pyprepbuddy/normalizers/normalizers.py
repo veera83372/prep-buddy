@@ -1,6 +1,6 @@
 from py4j.java_gateway import java_import
 
-from py_prep_buddy.class_names import ClassNames
+from pyprepbuddy.class_names import ClassNames
 
 
 class MinMaxNormalizer(object):
@@ -14,7 +14,7 @@ class MinMaxNormalizer(object):
         self.min_range = min_range
         self.max_range = max_range
 
-    def __get_normalizer(self, spark_context):
+    def _get_normalizer(self, spark_context):
         java_import(spark_context._jvm, ClassNames.MIN_MAX_NORMALIZER)
         return spark_context._jvm.MinMaxNormalizer(self.min_range, self.max_range)
 
@@ -25,7 +25,7 @@ class ZScoreNormalizer(object):
     Formula for Z Score Normalization : (X - Mean) / Standard Deviation.
     """
 
-    def __get_normalizer(self, spark_context):
+    def _get_normalizer(self, spark_context):
         java_import(spark_context._jvm, ClassNames.Z_SCORE_NORMALIZER)
         return spark_context._jvm.ZScoreNormalizer()
 
@@ -36,6 +36,6 @@ class DecimalScalingNormalizer(object):
     where i is the length of the number.
     """
 
-    def __get_normalizer(self, spark_context):
+    def _get_normalizer(self, spark_context):
         java_import(spark_context._jvm, ClassNames.DECIMAL_SCALING_NORMALIZER)
         return spark_context._jvm.DecimalScalingNormalizer()

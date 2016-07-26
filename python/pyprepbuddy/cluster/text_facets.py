@@ -1,4 +1,7 @@
 class TextFacets(object):
+    """
+    TextFacets is a collection of unique strings and the number of times the string appears in a column
+    """
     def __init__(self, facet):
         self.__facet = facet
 

@@ -4,7 +4,7 @@ import org.apache.spark.rdd.RDD
 
 /**
   * A smoothing method which smooths data based on Simple Moving Average which is the unweighted mean of
-  * the previous n data. this method ensure that variations in the mean are aligned
+  * the previous n data. This method ensure that variations in the mean are aligned
   * with the variations in the data rather than being shifted in time.
   */
 class SimpleMovingAverageMethod(windowSize: Int) extends SmoothingMethod {

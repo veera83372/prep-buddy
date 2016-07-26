@@ -1,6 +1,7 @@
 from py4j.java_gateway import java_import
-from py_prep_buddy import py2java_int_array
-from py_prep_buddy.class_names import ClassNames
+
+from pyprepbuddy import py2java_int_array
+from pyprepbuddy.class_names import ClassNames
 
 
 class ModeSubstitution(object):
@@ -8,7 +9,8 @@ class ModeSubstitution(object):
     ModeSubstitution is a simplest imputation strategy used for filling missing values
     in a data set.It imputes the missing values by most occurring values in data set.
     """
-    def __get_strategy(self, sc):
+
+    def _get_strategy(self, sc):
         java_import(sc._jvm, ClassNames.MODE_SUBSTITUTION)
         return sc._jvm.ModeSubstitution()
 
@@ -19,7 +21,8 @@ class MeanSubstitution(object):
     It imputes the missing values by mean of the values in data set.
     This implementation is only for imputing numeric columns.
     """
-    def __get_strategy(self, sc):
+
+    def _get_strategy(self, sc):
         java_import(sc._jvm, ClassNames.MEAN_SUBSTITUTION)
         return sc._jvm.MeanSubstitution()
 
@@ -30,7 +33,8 @@ class ApproxMeanSubstitution(object):
     This implementation is only for imputing numeric columns.
     Recommended when imputing on large data set.
     """
-    def __get_strategy(self, sc):
+
+    def _get_strategy(self, sc):
         java_import(sc._jvm, ClassNames.APPROX_MEAN_SUBSTITUTION)
         return sc._jvm.ApproxMeanSubstitution()
 
@@ -46,7 +50,7 @@ class UnivariateLinearRegressionSubstitution(object):
     def __init__(self, column_index):
         self._column_index = column_index
 
-    def __get_strategy(self, sc):
+    def _get_strategy(self, sc):
         java_import(sc._jvm, ClassNames.UNIVARIATE_SUBSTITUTION)
         return sc._jvm.UnivariateLinearRegressionSubstitution(self._column_index)
 
@@ -59,7 +63,7 @@ class NaiveBayesSubstitution(object):
     def __init__(self, *column_index):
         self._column_index = column_index
 
-    def __get_strategy(self, sc):
+    def _get_strategy(self, sc):
         java_import(sc._jvm, ClassNames.NAIVE_BAYES_SUBSTITUTION)
         independent_column_indexes = py2java_int_array(sc, self._column_index)
         return sc._jvm.NaiveBayesSubstitution(independent_column_indexes)
