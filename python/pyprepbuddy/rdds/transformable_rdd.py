@@ -3,13 +3,13 @@ from py4j.protocol import Py4JJavaError
 from pyspark import RDD, StorageLevel
 from pyspark.mllib.common import _java2py
 
-from py_prep_buddy import py2java_int_list
-from py_prep_buddy.class_names import ClassNames
-from py_prep_buddy.cluster.clusters import Clusters
-from py_prep_buddy.cluster.text_facets import TextFacets
-from py_prep_buddy.exceptions.application_exception import ApplicationException
-from py_prep_buddy.serializer import BuddySerializer
-from py_prep_buddy.utils.pivot_table import PivotTable
+from pyprepbuddy import py2java_int_list
+from pyprepbuddy.class_names import ClassNames
+from pyprepbuddy.cluster.clusters import Clusters
+from pyprepbuddy.cluster.text_facets import TextFacets
+from pyprepbuddy.exceptions.application_exception import ApplicationException
+from pyprepbuddy.serializer import BuddySerializer
+from pyprepbuddy.utils.pivot_table import PivotTable
 
 
 class TransformableRDD(RDD):
@@ -70,7 +70,7 @@ class TransformableRDD(RDD):
         :param imputation_strategy: strategy for impute the missing value
         :return: TransformableRDD
         """
-        strategy_apply = imputation_strategy.__get_strategy(self.spark_context)
+        strategy_apply = imputation_strategy._get_strategy(self.spark_context)
         return TransformableRDD(None,
                                 self.__file_type,
                                 self._transformable_rdd.impute(column_index, strategy_apply),
@@ -83,7 +83,7 @@ class TransformableRDD(RDD):
         :param clustering_algorithm: Algorithm to be used to form clusters
         :return: Clusters
         """
-        algorithm = clustering_algorithm.get_algorithm(self.spark_context)
+        algorithm = clustering_algorithm._get_algorithm(self.spark_context)
         return Clusters(self._transformable_rdd.clusters(column_index, algorithm))
 
     def list_facets_of(self, column_index):
@@ -128,7 +128,7 @@ class TransformableRDD(RDD):
         :param normalizer_strategy: normalization strategy by which you want to normalize
         :return: TransformableRDD
         """
-        normalizer = normalizer_strategy.__get_normalizer(self.spark_context)
+        normalizer = normalizer_strategy._get_normalizer(self.spark_context)
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.normalize(column_index, normalizer),
                                 sc=self.spark_context)
 
@@ -139,7 +139,7 @@ class TransformableRDD(RDD):
         :param smoothing_method: smoothing method by which you want to smooth data
         :return: RDD
         """
-        method = smoothing_method.get_smoothing_method(self.spark_context)
+        method = smoothing_method._get_smoothing_method(self.spark_context)
         rdd = self._transformable_rdd.smooth(column_index, method)
         return _java2py(self.spark_context, rdd.rdd())
 

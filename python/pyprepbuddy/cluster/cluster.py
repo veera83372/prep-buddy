@@ -1,4 +1,7 @@
 class Cluster(object):
+    """
+    Cluster contains groups of values by their specified key
+    """
     def __init__(self, cluster):
         self.__cluster = cluster
 

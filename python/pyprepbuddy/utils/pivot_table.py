@@ -1,4 +1,7 @@
 class PivotTable(object):
+    """
+    Represents a table of organized and summarized selected columns and rows of data.
+    """
     def __init__(self, java_pivot_table):
         self.__table = java_pivot_table
 

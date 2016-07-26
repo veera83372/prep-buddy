@@ -1,7 +1,5 @@
-from py_prep_buddy.cleansers.imputation import *
-from py_prep_buddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
-from py_prep_buddy.exceptions.application_exception import ApplicationException
-from py_prep_buddy.rdds.transformable_rdd import TransformableRDD
+from pyprepbuddy.cleansers.imputation import *
+from pyprepbuddy.rdds.transformable_rdd import TransformableRDD
 from utils.python_test_case import PySparkTestCase
 
 
@@ -66,30 +64,6 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         imputed_rdd = transformable_rdd.impute(4, NaiveBayesSubstitution(0, 1, 2, 3))
         self.assertTrue(imputed_rdd.collect().__contains__("Drew,Yes,Blue,Long,Female"))
 
-    def test_clusters_should_give_clusters_of_given_column_index(self):
-        rdd = self.sc.parallelize(["CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"])
-        transformable_rdd = TransformableRDD(rdd, 'csv')
-        clusters = transformable_rdd.clusters(0, SimpleFingerprint())
-        list_of_clusters = clusters.get_all_clusters()
-        one_cluster = list_of_clusters[0]
-        self.assertTrue(one_cluster.__contains__("CLUSTER Of Finger print"))
-        self.assertFalse(one_cluster.__contains__("finger print for cluster"))
-
-    def test_clusters_should_give_clusters_By_n_gram_fingerprint(self):
-        rdd = self.sc.parallelize(["CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster"])
-        transformable_rdd = TransformableRDD(rdd, 'csv')
-        clusters = transformable_rdd.clusters(0, NGramFingerprintAlgorithm(1))
-        list_of_clusters = clusters.get_all_clusters()
-        one_cluster = list_of_clusters[0]
-        self.assertTrue(one_cluster.__contains__("CLUSTER Of Finger print"))
-        self.assertTrue(one_cluster.__contains__("finger print for cluster"))
-
-    def test_list_facets_should_give_facets(self):
-        initial_dataset = self.sc.parallelize(["X,Y", "A,B", "X,Z", "A,Q", "A,E"])
-        transformable_rdd = TransformableRDD(initial_dataset)
-        text_facets = transformable_rdd.list_facets_of(0)
-        self.assertEquals(2, text_facets.count())
-
     def test_get_duplicates_should_give_duplicates_of_rdd(self):
         rdd = self.sc.parallelize(["Ram,23", "Ram,23", "Jill,45", "Soa,"])
         transformable_rdd = TransformableRDD(rdd, 'csv')
@@ -102,26 +76,11 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         duplicates = transformable_rdd.get_duplicates([0])
         self.assertEqual("Ram,23", duplicates.first())
 
-    def test_list_facets_should_give_facets_of_given_column_indexes(self):
-        rdd = self.sc.parallelize(["Ram,23,Male", "Ram,23,Male", "Jill,45,Female", "Soa,,Female,"])
-        transformable_rdd = TransformableRDD(rdd, 'csv')
-        duplicates = transformable_rdd.list_facets([0, 1, 2])
-        highest = duplicates.highest()
-        self.assertEqual("Ram\n23\nMale", highest[0]._1())
-
     def test_drop_column_should_drop_the_given_column(self):
         rdd = self.sc.parallelize(["Ram,23,Male", "Ram,23,Male", "Jill,45,Female", "Soa,,Female,"])
         transformable_rdd = TransformableRDD(rdd, 'csv')
         dropped = transformable_rdd.drop_column(1)
         self.assertEqual("Ram,Male", dropped.first())
-
-    def test_replace_values_should_replace_cluster_values_with_given_text(self):
-        initial_dataset = self.sc.parallelize(["XA,Y", "A,B", "AX,Z", "A,Q", "A,E"])
-        transformable_rdd = TransformableRDD(initial_dataset)
-        clusters = transformable_rdd.clusters(0, NGramFingerprintAlgorithm(1))
-        one_cluster = clusters.get_all_clusters()[0]
-        values = transformable_rdd.replace_values(one_cluster, "Hello", 0).collect()
-        self.assertTrue(values.__contains__("Hello,B"))
 
     def test_multiply_column_should_multiply_two_given_column(self):
         initial_dataset = self.sc.parallelize(["1,1", "1,2", "1,3"])
@@ -208,7 +167,3 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         collected = rdd_filter.collect()
         self.assertEqual(1, collected.__len__())
 
-    def test_exception(self):
-        initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
-        transformable_rdd = TransformableRDD(initial_dataset, "csv")
-        self.assertRaises(ApplicationException, transformable_rdd.list_facets_of, 4)

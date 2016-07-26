@@ -4,7 +4,7 @@ package org.apache.datacommons.prepbuddy.clusterers
 import scala.collection.mutable.ListBuffer
 
 /**
-  * Clusters contains all cluster of a column.
+  * Clusters is a collection of cluster of a column.
   */
 class Clusters {
     private val clusters: ListBuffer[Cluster] = ListBuffer.empty
