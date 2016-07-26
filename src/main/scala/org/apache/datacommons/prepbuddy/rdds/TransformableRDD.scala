@@ -94,6 +94,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(flagged, fileType)
     }
 
+    /**
+      * Returns number of column in this rdd
+      *
+      * @return int
+      */
     def numberOfColumns(): Int = columnLength
 
     /**
