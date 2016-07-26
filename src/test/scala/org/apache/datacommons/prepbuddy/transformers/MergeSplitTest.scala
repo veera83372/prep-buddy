@@ -74,6 +74,23 @@ class MergeSplitTest extends SparkTestCase {
         assert(result.contains("Smith,Male,30,UK,+01,5314343462"))
     }
 
+    test("should not throw exception while splitting column by lengths when total lengths exceed the string") {
+        val data = Array(
+            "John,Male,21,+914382313832,Canada",
+            "Smith, Male, 30,+015314343462, UK",
+            "Larry, Male, 23,+009815432975, USA",
+            "Fiona, Female,18,+891015709854,USA"
+        )
+        val dataset: RDD[String] = sparkContext.parallelize(data)
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
+
+        val result: Array[String] = transformableRDD.splitByFieldLength(3, List(3, 8, 4, 5)).collect()
+
+        assert(result.length == 4)
+        assert(result.contains("John,Male,21,Canada,+91,43823138,32,"))
+        assert(result.contains("Smith,Male,30,UK,+01,53143434,62,"))
+    }
+
     test("should split the specified column value according to the given lengths by keeping original columns") {
         val data = Array(
             "John,Male,21,+914382313832,Canada",
@@ -101,7 +118,7 @@ class MergeSplitTest extends SparkTestCase {
         val dataset: RDD[String] = sparkContext.parallelize(data)
         val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CSV)
 
-        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", retainColumn=true).collect()
+        val result: Array[String] = transformableRDD.splitByDelimiter(3, "-", retainColumn = true).collect()
 
         assert(result.length == 4)
         assert(result.contains("John,Male,21,+91-4382313832,Canada,+91,4382313832"))
