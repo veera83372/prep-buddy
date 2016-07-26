@@ -272,7 +272,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * Returns a new JavaTransformableRDD by dropping the @columnIndex
       *
       * @param columnIndex The column that will be dropped.
-      * @return TransformableRDD
+      * @return JavaTransformableRDD
       */
     def drop(columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.drop(columnIndex).toJavaRDD(), fileType)
@@ -311,6 +311,12 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(replacedRDD, fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD containing the unique elements in the specified column
+      *
+      * @param columnIndex Column Index
+      * @return RDD[String]
+      */
     def unique(columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.unique(columnIndex).toJavaRDD(), fileType)
     }
