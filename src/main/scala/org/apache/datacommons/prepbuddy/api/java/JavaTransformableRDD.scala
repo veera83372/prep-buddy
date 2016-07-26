@@ -150,15 +150,32 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizer).toJavaRDD(), fileType)
     }
 
+    /**
+      * Returns a new JavaTransformableRDD containing values of @columnIndexes
+      *
+      * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
+      * @return JavaTransformableRDD
+      */
     def select(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
         val scalaList: List[Int] = asScalaIntList(columnIndexes.asScala.toList)
         new JavaTransformableRDD(tRDD.select(scalaList).toJavaRDD(), fileType)
     }
 
+    /**
+      * Returns a JavaRDD of given column
+      *
+      * @param columnIndex Column index
+      * @return JavaRDD[String]
+      */
     def select(columnIndex: Int): JavaRDD[String] = {
         tRDD.select(columnIndex).toJavaRDD()
     }
 
+    /**
+      * Returns number of column in this rdd
+      *
+      * @return Int
+      */
     def numberOfColumns: Int = tRDD.numberOfColumns()
 
     /**
@@ -264,6 +281,12 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
     }
 
+    /**
+      * Returns a JavaDoubleRdd of given column index
+      *
+      * @param columnIndex Column index
+      * @return JavaDoubleRDD
+      */
     def toDoubleRDD(columnIndex: Int): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.toDoubleRDD(columnIndex))
     }
