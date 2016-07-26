@@ -4,6 +4,9 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 
 /**
   * A normalizer which scales the data within the specified range.
+  * Default range is (0,1)
+  * A' = (A - min(A)) / (max(A) - min(A)) * (D-C) + C
+  * where (C,D) is the range and A is the value.
   */
 class MinMaxNormalizer(minRange: Int = 0, maxRange: Int = 1) extends NormalizationStrategy {
 

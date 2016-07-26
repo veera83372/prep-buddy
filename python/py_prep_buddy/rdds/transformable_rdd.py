@@ -128,7 +128,7 @@ class TransformableRDD(RDD):
         :param normalizer_strategy: normalization strategy by which you want to normalize
         :return: TransformableRDD
         """
-        normalizer = normalizer_strategy.get_normalizer(self.spark_context)
+        normalizer = normalizer_strategy.__get_normalizer(self.spark_context)
         return TransformableRDD(None, self.__file_type, self._transformable_rdd.normalize(column_index, normalizer),
                                 sc=self.spark_context)
 
