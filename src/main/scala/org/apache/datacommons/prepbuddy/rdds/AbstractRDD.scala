@@ -6,7 +6,6 @@ import org.apache.commons.lang.math.NumberUtils
 import org.apache.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMERIC, TypeAnalyzer}
 import org.apache.datacommons.prepbuddy.types.{CSV, FileType}
-import org.apache.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
@@ -24,28 +23,12 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     def toRDD: RDD[String] = parent
 
     /**
-      * Returns a new TransformableRDD containing values of @columnIndexes
-      *
-      * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
-      * @return TransformableRDD
-      */
-    def select(columnIndexes: List[Int]): TransformableRDD = {
-        validateColumnIndex(columnIndexes)
-        val selectedColumnValues: RDD[String] = map((record) => {
-            val rowRecord: RowRecord = fileType.parse(record)
-            val resultValues: RowRecord = rowRecord.select(columnIndexes)
-            fileType.join(resultValues)
-        })
-        new TransformableRDD(selectedColumnValues, fileType)
-    }
-
-    /**
       * Returns a RDD of given column
       *
       * @param columnIndex Column index
       * @return RDD[String]
       */
-    def select(columnIndex: Int): RDD[String] = select(List(columnIndex)).toRDD
+    def select(columnIndex: Int): RDD[String] = map(fileType.parse(_).select(columnIndex))
 
     private def isNumericColumn(columnIndex: Int): Boolean = {
         val records: Array[String] = select(columnIndex).takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
@@ -104,9 +87,9 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
 
     /**
-      * Returns infred DataType of @columnIndex
+      * Returns inferred DataType of @columnIndex
       *
-      * @param columnIndex
+      * @param columnIndex Column Index on which type will be infered
       * @return DataType
       */
     def inferType(columnIndex: Int): DataType = {

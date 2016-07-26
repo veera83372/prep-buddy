@@ -435,4 +435,20 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
         new TransformableRDD(recordsWithAddedColumns, fileType)
     }
+
+    /**
+      * Returns a new TransformableRDD containing values of @columnIndexes
+      *
+      * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
+      * @return TransformableRDD
+      */
+    def select(columnIndexes: List[Int]): TransformableRDD = {
+        validateColumnIndex(columnIndexes)
+        val selectedColumnValues: RDD[String] = map((record) => {
+            val rowRecord: RowRecord = fileType.parse(record)
+            val resultValues: RowRecord = rowRecord.select(columnIndexes)
+            fileType.join(resultValues)
+        })
+        new TransformableRDD(selectedColumnValues, fileType)
+    }
 }
