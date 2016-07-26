@@ -9,6 +9,7 @@ import org.apache.spark.rdd.RDD
   * for modeling the relationship between a scalar dependent variable y and an explanatory
   * variable x.
   * This strategy imputes the value of y by : slope * x + intercept
+  * This implementation is only for imputing numeric columns.
   */
 class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends ImputationStrategy {
     private var slope: Double = 0

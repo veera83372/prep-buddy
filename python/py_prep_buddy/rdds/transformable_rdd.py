@@ -13,6 +13,11 @@ from py_prep_buddy.utils.pivot_table import PivotTable
 
 
 class TransformableRDD(RDD):
+    """
+    A Transformable Resilient Distributed Dataset is extended from RDD, the basic abstraction in Spark.
+    It represents an immutable, partitioned collection of elements that can be operated on in parallel.
+    It provides a bunch of higher level functionality over on RDD.
+    """
     def __init__(self, rdd, file_type='CSV', t_rdd=None, sc=None):
         if rdd is not None:
             jvm = rdd.ctx._jvm
@@ -65,7 +70,7 @@ class TransformableRDD(RDD):
         :param imputation_strategy: strategy for impute the missing value
         :return: TransformableRDD
         """
-        strategy_apply = imputation_strategy.get_strategy(self.spark_context)
+        strategy_apply = imputation_strategy.__get_strategy(self.spark_context)
         return TransformableRDD(None,
                                 self.__file_type,
                                 self._transformable_rdd.impute(column_index, strategy_apply),
@@ -73,7 +78,7 @@ class TransformableRDD(RDD):
 
     def clusters(self, column_index, clustering_algorithm):
         """
-        Returns Clusters that has all cluster of text of @columnIndex according to @clustering_algorithm
+        Returns Clusters that has all cluster of text of @column_index according to @clustering_algorithm
         :param column_index: index of the column
         :param clustering_algorithm: Algorithm to be used to form clusters
         :return: Clusters
@@ -95,8 +100,8 @@ class TransformableRDD(RDD):
 
     def list_facets(self, column_indexes):
         """
-        Returns a new TextFacet containing the facets of @columnIndexes
-        :param column_indexes: Sequence of column indexes
+        Returns a new TextFacet containing the facets of @column_indexes
+        :param column_indexes: Sequence of column index
         :return: TextFacets
         """
         array = py2java_int_list(self.spark_context, column_indexes)
@@ -106,8 +111,8 @@ class TransformableRDD(RDD):
         """
         Returns RDD of given column and TransformableRDD for multiple columns.
         :param column_index: index of the one column
-        :param column_indexes: indexes of the multiple columns
-        :return: RDD,TransformableRDD
+        :param column_indexes: Sequence of column index
+        :returns: RDD,TransformableRDD
         """
         if column_indexes.__len__() == 0:
             return self._transformable_rdd.select(column_index)
@@ -129,7 +134,7 @@ class TransformableRDD(RDD):
 
     def smooth(self, column_index, smoothing_method):
         """
-        Returns a new RDD containing smoothed values of @columnIndex using @smoothing_method
+        Returns a new RDD containing smoothed values of @column_index using @smoothing_method
         :param column_index: Index of the column
         :param smoothing_method: smoothing method by which you want to smooth data
         :return: RDD
@@ -141,9 +146,9 @@ class TransformableRDD(RDD):
     def merge_columns(self, list_of_columns, separator=" ", retain_columns=False):
         """
         Returns a new TransformableRDD containing the merged column of given indexes with the @separator
-        :param list_of_columns:
-        :param separator:
-        :param retain_columns:
+        :param list_of_columns:Sequence of column index
+        :param separator:the delimiter string reference by which merging will be performed
+        :param retain_columns:preserves the column if true
         :return: TransformableRDD
         """
         int_list = py2java_int_list(self.spark_context, list_of_columns)
@@ -193,7 +198,7 @@ class TransformableRDD(RDD):
     def drop_column(self, column_index):
         """
         Returns a new TransformableRDD by dropping the column at given index
-        :param column_index: Index of the column
+        :param column_index: Index of the column which will be dropped.
         :return:
         """
         return TransformableRDD(None, self.__file_type,
@@ -205,7 +210,7 @@ class TransformableRDD(RDD):
         Returns a new TransformableRDD by replacing the @cluster's text with specified @new_value
         :param one_cluster: Cluster of similar values to be replaced
         :param new_value: Value that will be used to replace all the cluster value
-        :param column_index: Column index
+        :param column_index: Index of the column which will be replaced.
         :return: TransformableRDD
         """
         cluster = one_cluster.get_cluster()

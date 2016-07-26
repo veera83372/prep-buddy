@@ -4,8 +4,9 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
 /**
-  * An imputation strategy that imputes the missing column value by
-  * approx mean of the specified column.
+  * An imputation strategy that imputes the missing values by an approx mean of the values in data set.
+  * This implementation is only for imputing numeric columns.
+  * Recommended when imputing on large data set.
   */
 class ApproxMeanSubstitution() extends ImputationStrategy {
     private var approxMean: Double = 0
