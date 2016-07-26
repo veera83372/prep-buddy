@@ -107,8 +107,12 @@ class DuplicationTest extends SparkTestCase {
         )
         val initialDataset: RDD[String] = sparkContext.parallelize(records)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
-        val deduplicatesAtCol2: Array[String] = initialRDD.unique(2).collect()
+        val uniqueValuesAtCol2: Array[String] = initialRDD.unique(2).collect()
 
-        assertEquals(4, deduplicatesAtCol2.length)
+        assertEquals(4, uniqueValuesAtCol2.length)
+        assert(uniqueValuesAtCol2.contains("USA"))
+        assert(uniqueValuesAtCol2.contains("India"))
+        assert(uniqueValuesAtCol2.contains("Japan"))
+        assert(uniqueValuesAtCol2.contains("Singapore"))
     }
 }

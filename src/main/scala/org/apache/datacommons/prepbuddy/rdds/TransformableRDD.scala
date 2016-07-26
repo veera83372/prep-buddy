@@ -17,7 +17,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       *
       * @param columnIndex     Column Index
       * @param smoothingMethod Method that will be used for smoothing of the data
-      * @return JavaRDD<Double>
+      * @return RDD<Double>
       */
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): RDD[Double] = {
         validateColumnIndex(columnIndex)
@@ -183,12 +183,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a TransformableRDD by splitting the @column
+      * Returns a TransformableRDD by splitting the @column according to the specified lengths
       *
-      * @param column Column index
-      * @param fieldLengths
-      * @param retainColumn
-      * @return
+      * @param column       Column index of the value to be split
+      * @param fieldLengths List of integers specifying the number of character each split value will contains
+      * @param retainColumn false when you want to remove the column value at @column in the result TransformableRDD
+      * @return TransformableRDD
       */
     def splitByFieldLength(column: Int, fieldLengths: List[Int], retainColumn: Boolean = false): TransformableRDD = {
         validateColumnIndex(column)
@@ -217,7 +217,16 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
 
-    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean = false, maxSplit: Int= -1):
+    /**
+      * Returns a new TransformableRDD by splitting the @column by the delimiter provided
+      *
+      * @param column       Column index of the value to be split
+      * @param delimiter    delimiter or regEx that will be used to split the value @column
+      * @param retainColumn false when you want to remove the column value at @column in the result TransformableRDD
+      * @param maxSplit     Maximum number of split to be added to the result TransformableRDD
+      * @return TransformableRDD
+      */
+    def splitByDelimiter(column: Int, delimiter: String, retainColumn: Boolean = false, maxSplit: Int = -1):
     TransformableRDD = {
         validateColumnIndex(column)
         val transformed: RDD[String] = map((record) => {
@@ -229,6 +238,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD by mergeing 2 or more columns together
+      *
+      * @param columns       List of columns to be merged
+      * @param separator     Separator to be used to separate the merge value
+      * @param retainColumns false when you want to remove the column value at @column in the result TransformableRDD
+      * @return TransformableRDD
+      */
     def mergeColumns(columns: List[Int], separator: String = " ", retainColumns: Boolean = false): TransformableRDD = {
         validateColumnIndex(columns)
         val transformedRDD: RDD[String] = map((record) => {
@@ -294,7 +311,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a new TransformableRDD by dropping the @column
+      * Returns a new TransformableRDD by dropping the @columnIndex
       *
       * @param columnIndex The column that will be dropped.
       * @return TransformableRDD
@@ -310,6 +327,12 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+    /**
+      * Returns a new RDD containing the duplicate values at the specified column
+      *
+      * @param columnIndex Column where to look for duplicates
+      * @return RDD
+      */
     def duplicatesAt(columnIndex: Int): RDD[String] = {
         validateColumnIndex(columnIndex)
         val specifiedColumnValues: RDD[String] = map(fileType.parse(_).select(columnIndex))
@@ -317,7 +340,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering all the columns as primary key.
+      * Returns a new TransformableRDD containing duplicate records of this TransformableRDD by considering all the columns as primary key.
       *
       * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
       */
@@ -368,12 +391,26 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
     }
 
-    def unique(columnIndex: Int): TransformableRDD = {
+    /**
+      * Returns a new TransformableRDD containing the unique elements in the specified column
+      *
+      * @param columnIndex Column Index
+      * @return RDD<String>
+      */
+    def unique(columnIndex: Int): RDD[String] = {
         validateColumnIndex(columnIndex)
         val specifiedColumnValues: RDD[String] = map(fileType.parse(_).select(columnIndex))
         new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
     }
 
+    /**
+      * Zips the other TransformableRDD with this TransformableRDD and
+      * returns a new TransformableRDD with current file format.
+      * Both the TransformableRDD must have same number of records
+      *
+      * @param otherRDD Other TransformableRDD from where the columns will be added to this TransformableRDD
+      * @return TransformableRDD
+      */
     def addColumnsFrom(otherRDD: TransformableRDD): TransformableRDD = {
         val otherRDDInCurrentFileFormat = {
             if (this.getFileType != otherRDD.getFileType) {
