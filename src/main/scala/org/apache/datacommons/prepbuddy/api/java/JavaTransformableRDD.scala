@@ -173,10 +173,10 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     }
 
     def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
-        mergeColumns(columnIndexes = columnIndexes, separator = " ", retainColumn = false)
+        mergeColumns(columnIndexes = columnIndexes, " ", retainColumn = false)
     }
 
-    def mergeColumns(columnIndexes: util.List[Integer], separator: String, retainColumn: Boolean = false):
+    def mergeColumns(columnIndexes: util.List[Integer], separator: String = " ", retainColumn: Boolean = false):
     JavaTransformableRDD = {
         val toScalaList: List[Int] = asScalaIntList(columnIndexes.asScala.toList)
         val mergedRDD: JavaRDD[String] = tRDD.mergeColumns(toScalaList, separator, retainColumn).toJavaRDD()
@@ -195,15 +195,37 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(rdd, fileType)
     }
 
+    /**
+      * Returns a new JavaTransformableRDD that contains records flagged by @symbol
+      * based on the evaluation of @markerPredicate
+      *
+      * @param symbol          Symbol that will be used to flag
+      * @param markerPredicate A matchInDictionary which will determine whether to flag a row or not
+      * @return JavaTransformableRDD
+      */
     def flag(symbol: String, markerPredicate: MarkerPredicate): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.flag(symbol, markerPredicate.evaluate).toJavaRDD(), fileType)
     }
 
-    def mapByFlag(symbol: String, columnIndex: Int, function: Function[String, String]): JavaTransformableRDD = {
-        val mappedRDD: JavaRDD[String] = tRDD.mapByFlag(symbol, columnIndex, function.call).toJavaRDD()
+    /**
+      * Returns a new JavaTransformableRDD by applying the function on all rows marked as @flag
+      *
+      * @param symbol            Symbol that has been used for flagging.
+      * @param symbolColumnIndex Symbol column index
+      * @param function          map function
+      * @return JavaTransformableRDD
+      */
+    def mapByFlag(symbol: String, symbolColumnIndex: Int, function: Function[String, String]): JavaTransformableRDD = {
+        val mappedRDD: JavaRDD[String] = tRDD.mapByFlag(symbol, symbolColumnIndex, function.call).toJavaRDD()
         new JavaTransformableRDD(mappedRDD, fileType)
     }
 
+    /**
+      * Returns a new JavaTransformableRDD by dropping the @columnIndex
+      *
+      * @param columnIndex The column that will be dropped.
+      * @return TransformableRDD
+      */
     def drop(columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.drop(columnIndex).toJavaRDD(), fileType)
     }
@@ -214,6 +236,14 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.addColumnsFrom(other.tRDD).toJavaRDD(), fileType)
     }
 
+    /**
+      * Returns a new JavaTransformableRDD by replacing the @cluster's text with specified @newValue
+      *
+      * @param cluster     Cluster of similar values to be replaced
+      * @param newValue    Value that will be used to replace all the cluster value
+      * @param columnIndex Column index
+      * @return JavaTransformableRDD
+      */
     def replaceValues(cluster: JavaCluster, newValue: String, columnIndex: Int): JavaTransformableRDD = {
         val replacedRDD: JavaRDD[String] = tRDD.replaceValues(cluster.scalaCluster, newValue, columnIndex).toJavaRDD()
         new JavaTransformableRDD(replacedRDD, fileType)
@@ -223,6 +253,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(tRDD.unique(columnIndex).toJavaRDD(), fileType)
     }
 
+    /**
+      * Returns a JavaDoubleRDD which is a product of the values in @firstColumn and @secondColumn
+      *
+      * @param firstColumn  First Column Index
+      * @param secondColumn Second Column Index
+      * @return JavaDoubleRDD
+      */
     def multiplyColumns(firstColumn: Int, secondColumn: Int): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
     }
