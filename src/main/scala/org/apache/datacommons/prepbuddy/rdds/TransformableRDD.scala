@@ -200,17 +200,13 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
         def splitString(value: String): Array[String] = {
             var result = Array.empty[String]
-            var startingIndex = 0
+            var columnValue = value
             for (length <- fieldLengths) {
-                val endingIndex: Int = startingIndex + length
                 val splitValue: String = {
-                    if (startingIndex <= value.length && endingIndex > value.length) {
-                        value.substring(startingIndex)
-                    }
-                    else if (endingIndex <= value.length) value.substring(startingIndex, endingIndex) else ""
-                }
+                    if (columnValue.length >= length) columnValue.take(length) else columnValue
+                }.mkString
                 result = result.:+(splitValue)
-                startingIndex += length
+                columnValue = columnValue.drop(length)
             }
             result
         }
