@@ -5,7 +5,8 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.datacommons.prepbuddy.utils.RowRecord
 
 /**
-  * An imputation strategy that imputes the column value by the mode of specified column
+  * ModeSubstitution is a simplest imputation strategy used for filling missing values
+  * in a data set.It imputes the missing values by most occurring values in data set.
   */
 class ModeSubstitution() extends ImputationStrategy {
     private var mode: (String, Int) = null

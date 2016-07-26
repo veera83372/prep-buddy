@@ -245,7 +245,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a new TransformableRDD by mergeing 2 or more columns together
+      * Returns a new TransformableRDD by merging 2 or more columns together
       *
       * @param columns       List of columns to be merged
       * @param separator     Separator to be used to separate the merge value
