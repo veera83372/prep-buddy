@@ -26,6 +26,6 @@ project_root = os.getcwd() + "/.."
 jars = run_cmd("ls %s/target/prep-buddy-0.3.0.jar" % project_root)
 
 # Set environment variables.
-os.environ["PYSPARK_SUBMIT_ARGS"] = ("--jars %s --driver-class-path %s pyspark-shell") % (jars, jars)
+os.environ["PYSPARK_SUBMIT_ARGS"] = "--jars %s --driver-class-path %s pyspark-shell" % (jars, jars)
 
 # os.environ["SPARK_CONF_DIR"] = "%s/test/resources/conf" % os.getcwd()

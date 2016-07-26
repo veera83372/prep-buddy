@@ -1,7 +1,7 @@
+from utils.python_test_case import PySparkTestCase
 from pyprepbuddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
 from pyprepbuddy.exceptions.application_exception import ApplicationException
 from pyprepbuddy.rdds.transformable_rdd import TransformableRDD
-from utils.python_test_case import PySparkTestCase
 
 
 class ClusterTest(PySparkTestCase):

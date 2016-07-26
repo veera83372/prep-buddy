@@ -1,6 +1,6 @@
+from utils.python_test_case import PySparkTestCase
 from pyprepbuddy.rdds.transformable_rdd import TransformableRDD
 from pyprepbuddy.smoothers.smoothing_algorithms import SimpleMovingAverage, Weights, WeightedMovingAverage
-from utils.python_test_case import PySparkTestCase
 
 
 class SmoothersTest(PySparkTestCase):
