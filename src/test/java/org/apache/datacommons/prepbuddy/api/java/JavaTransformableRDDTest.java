@@ -287,7 +287,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
         );
         JavaRDD<String> dataset = javaSparkContext.parallelize(records);
         JavaTransformableRDD transformableRDD = new JavaTransformableRDD(dataset, FileType.CSV);
-        JavaTransformableRDD uniqueRdd = transformableRDD.unique(2);
+        JavaRDD<String> uniqueRdd = transformableRDD.unique(2);
         List<String> listOfRecords = uniqueRdd.collect();
         assertEquals(4, listOfRecords.size());
     }
