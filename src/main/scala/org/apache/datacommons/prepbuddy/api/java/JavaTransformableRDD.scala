@@ -312,14 +312,12 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     }
 
     /**
-      * Returns a new TransformableRDD containing the unique elements in the specified column
+      * Returns a new JavaRDD containing the unique elements in the specified column
       *
       * @param columnIndex Column Index
-      * @return RDD[String]
+      * @return JavaRDD[String]
       */
-    def unique(columnIndex: Int): JavaTransformableRDD = {
-        new JavaTransformableRDD(tRDD.unique(columnIndex).toJavaRDD(), fileType)
-    }
+    def unique(columnIndex: Int): JavaRDD[String] = tRDD.unique(columnIndex).toJavaRDD()
 
     /**
       * Returns a JavaDoubleRDD which is a product of the values in @firstColumn and @secondColumn
