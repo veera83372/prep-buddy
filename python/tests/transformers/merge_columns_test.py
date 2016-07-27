@@ -15,6 +15,3 @@ class MergeColumnsTest(PySparkTestCase):
 
         joined_column_with_defaults = initial_rdd.merge_columns([3, 1, 0])
         self.assertEquals("732,MiddleName LastName FirstName", joined_column_with_defaults.first())
-
-    def test_failing_test(self):
-        self.assertEquals(1, 2)
