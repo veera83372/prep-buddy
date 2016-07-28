@@ -10,8 +10,8 @@ class PivotTable[T](defaultValue: T) extends Serializable {
         new mutable.HashMap[String, mutable.Map[String, T]]()
     }
 
-    def transform(transformedFunction: (Any) => Any, defValue: Any): Any = {
-        val table = new PivotTable[Any](defValue)
+    def transform[U](transformedFunction: (T) => U, defValue: U): PivotTable[U] = {
+        val table = new PivotTable[U](defValue)
         for (rowTuple <- lookUpTable; columnTuple <- rowTuple._2)
             table.addEntry(rowTuple._1, columnTuple._1, transformedFunction(columnTuple._2))
         table

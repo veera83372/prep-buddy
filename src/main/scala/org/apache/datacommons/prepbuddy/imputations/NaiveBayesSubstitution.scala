@@ -26,7 +26,7 @@ class NaiveBayesSubstitution(independentColumnIndexes: Array[Int]) extends Imput
         probs = frequencyTable.transform((eachValue) => {
             val oneProbability: Double = eachValue.toString.toDouble / totalRows
             new Probability(oneProbability)
-        }, new Probability(0)).asInstanceOf[PivotTable[Probability]]
+        }, new Probability(0))
 
         rowKeys.foreach((each) => {
             val probability: Probability = new Probability(each._2.toString.toDouble / totalRows)
