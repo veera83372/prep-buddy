@@ -7,8 +7,8 @@ install:
    - mvn test -B
    - chmod 755 ./setup-project
    - ./setup-project
-   - mvn jar:jar
 script:
+   - mvn jar:jar
    - chmod 755 ./build-project
    - ./build-project
 notifications:
