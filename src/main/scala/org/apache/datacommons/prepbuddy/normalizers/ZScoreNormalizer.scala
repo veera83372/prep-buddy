@@ -19,6 +19,7 @@ class ZScoreNormalizer extends NormalizationStrategy {
     }
 
     override def normalize(rawValue: String): String = {
+        //TODO: Find way to calculate standard deviation such that sum up will be zero
         String.valueOf((rawValue.toDouble - mean) / standardDeviation)
     }
 }
