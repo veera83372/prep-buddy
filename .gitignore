@@ -16,3 +16,7 @@ lib/
 build/
 data/*.json
 *.pyc
+build
+*.egg
+*.egg-info/
+dist/

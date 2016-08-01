@@ -180,5 +180,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.xml.bind:jaxb-api:2.2.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.10:2.2.1" level="project" />
     <orderEntry type="library" name="Python 2.7.5 (/usr/bin/python) interpreter library" level="application" />
+    <orderEntry type="library" name="scala-sdk-2.10.4" level="application" />
   </component>
 </module>
