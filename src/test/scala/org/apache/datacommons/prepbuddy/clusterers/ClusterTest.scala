@@ -6,7 +6,7 @@ import org.apache.datacommons.prepbuddy.rdds.TransformableRDD
 import org.apache.spark.rdd.RDD
 
 class ClusterTest extends SparkTestCase {
-    test("should Give Cluster Of Similar Column Values") {
+    test("should Give Cluster of text which are identified similar by clustering algorithm") {
         val dataSet = Array(
             "CLUSTER Of Finger print",
             "finger print of\tcluster",
@@ -26,7 +26,7 @@ class ClusterTest extends SparkTestCase {
         assert(!listOfCluster.head.contain(("finger print for cluster", 1)))
     }
 
-    test("cluster By NGramFingerPrint Should Give Clusters By NGramMethod") {
+    test("should Give Cluster of text which are identified similar by NGram algorithm") {
         val dataSet = Array("CLUSTER Of Finger print", "finger print of cluster", "finger print for cluster")
         val initialDataset: RDD[String] = sparkContext.parallelize(dataSet)
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
