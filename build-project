@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 export SPARK_HOME=`pwd`"/spark-1.6.1-bin-hadoop1/"
 cd python
-sudo python setup.py install
 echo "Inside python working directory"
 echo "Running the python tests"
 sudo nosetests -v
