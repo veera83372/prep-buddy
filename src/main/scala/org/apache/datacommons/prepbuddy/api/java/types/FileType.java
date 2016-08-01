@@ -1,5 +1,6 @@
 package org.apache.datacommons.prepbuddy.api.java.types;
 
+
 import org.apache.datacommons.prepbuddy.types.CSV$;
 import org.apache.datacommons.prepbuddy.types.TSV$;
 

@@ -11,7 +11,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, TaskContext}
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
-    val DEFAULT_SAMPLE_SIZE: Int = 1000
+    private val DEFAULT_SAMPLE_SIZE: Int = 1000
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
     protected val columnLength = getNumberOfColumns
 

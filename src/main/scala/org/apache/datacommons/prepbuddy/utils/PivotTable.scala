@@ -2,10 +2,11 @@ package org.apache.datacommons.prepbuddy.utils
 
 import scala.collection.mutable
 
+/**
+  * Represents a table of organized and summarized selected columns and rows of data.
+  */
 class PivotTable[T](defaultValue: T) extends Serializable {
-    /**
-      *Represents a table of organized and summarized selected columns and rows of data.
-      */
+
     private var lookUpTable: mutable.Map[String, mutable.Map[String, T]] = {
         new mutable.HashMap[String, mutable.Map[String, T]]()
     }
