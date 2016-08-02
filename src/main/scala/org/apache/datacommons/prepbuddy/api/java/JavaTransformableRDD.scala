@@ -229,7 +229,6 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(splitRDD, fileType)
     }
 
-    //    TODO: Implement overload method for mex split functionality
     /**
       * Returns a new JavaTransformableRDD by splitting the @column by the delimiter provided
       *
@@ -243,6 +242,11 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(rdd, fileType)
     }
 
+    def splitByDelimiter(columnIndex: Int, delimiter: String, retainColumn: Boolean, maxSplit: Int):
+    JavaTransformableRDD = {
+        val rdd: JavaRDD[String] = tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn, maxSplit).toJavaRDD()
+        new JavaTransformableRDD(rdd, fileType)
+    }
     /**
       * Returns a new JavaTransformableRDD that contains records flagged by @symbol
       * based on the evaluation of @markerPredicate
