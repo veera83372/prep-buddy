@@ -20,6 +20,7 @@ class ClusterTest extends SparkTestCase {
         val listOfCluster: List[Cluster] = clusters.getAllClusters
 
         assert(2 == listOfCluster.size)
+
         assert(listOfCluster.head.contain(("CLUSTER Of Finger print", 1)))
         assert(listOfCluster.head.contain(("finger print of\tcluster", 2)))
 

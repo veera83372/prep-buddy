@@ -8,7 +8,7 @@ class SparkTestCase extends FunSuite with BeforeAndAfterEach {
     var sparkContext: SparkContext = null
 
     override def beforeEach() {
-        val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName).setMaster("local")
+        val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName).setMaster("local[2]")
         Logger.getLogger("org").setLevel(Level.OFF)
         Logger.getLogger("akka").setLevel(Level.OFF)
         sparkContext = new SparkContext(sparkConf)

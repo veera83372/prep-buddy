@@ -72,7 +72,10 @@ class FacetTests extends SparkTestCase {
         val textFaceted: TextFacets = transformableRDD.listFacets(0)
         val cardinalValues: Array[String] = textFaceted.cardinalValues
 
-        assert(cardinalValues sameElements Array("Q", "A", "X", "W"))
+        assert(cardinalValues.contains("Q"))
+        assert(cardinalValues.contains("A"))
+        assert(cardinalValues.contains("X"))
+        assert(cardinalValues.contains("W"))
     }
 
     test("highest() should ignore the empty string in list while faceting") {
