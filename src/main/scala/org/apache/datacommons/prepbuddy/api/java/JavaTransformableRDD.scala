@@ -242,11 +242,21 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         new JavaTransformableRDD(rdd, fileType)
     }
 
+    /**
+      * Returns a new JavaTransformableRDD by splitting the @column by the delimiter provided
+      *
+      * @param columnIndex  Column index of the value to be split
+      * @param delimiter    delimiter or regEx that will be used to split the value @column
+      * @param retainColumn false when you want to remove the column value at @column in the result JavaTransformableRDD
+      * @param maxSplit     Maximum number of split to be added to the result TransformableRDD
+      * @return JavaTransformableRDD
+      */
     def splitByDelimiter(columnIndex: Int, delimiter: String, retainColumn: Boolean, maxSplit: Int):
     JavaTransformableRDD = {
         val rdd: JavaRDD[String] = tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn, maxSplit).toJavaRDD()
         new JavaTransformableRDD(rdd, fileType)
     }
+
     /**
       * Returns a new JavaTransformableRDD that contains records flagged by @symbol
       * based on the evaluation of @markerPredicate

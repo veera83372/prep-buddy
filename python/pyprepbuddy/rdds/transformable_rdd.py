@@ -18,6 +18,7 @@ class TransformableRDD(RDD):
     It represents an immutable, partitioned collection of elements that can be operated on in parallel.
     It provides a bunch of higher level functionality over on RDD.
     """
+
     def __init__(self, rdd, file_type='CSV', t_rdd=None, sc=None):
         if rdd is not None:
             jvm = rdd.ctx._jvm
@@ -156,16 +157,18 @@ class TransformableRDD(RDD):
                                 self._transformable_rdd.mergeColumns(int_list, separator, retain_columns),
                                 sc=self.spark_context)
 
-    def split_by_delimiter(self, column_index, delimiter, retain_column=False):
+    def split_by_delimiter(self, column_index, delimiter, retain_column=False, max_split=-1):
         """
         Returns a new TransformableRDD containing split columns by specified @delimiter on the given index
+        :param max_split: Maximum number of split to be added to the result TransformableRDD
         :param column_index: index of the column on which operation will be performed
         :param delimiter:the delimiter string reference by which split will be performed
         :param retain_column:preserves the column if true
         :return: TransformableRDD
         """
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.splitByDelimiter(column_index, delimiter, retain_column),
+                                self._transformable_rdd.splitByDelimiter(column_index, delimiter, retain_column,
+                                                                         max_split),
                                 sc=self.spark_context)
 
     def split_by_field_length(self, column_index, field_lengths, retain_column=False):
