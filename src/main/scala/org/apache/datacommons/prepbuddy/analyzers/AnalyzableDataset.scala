@@ -5,6 +5,7 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Dataset, SparkSession}
 
 class AnalyzableDataset(spark: SparkSession, fileName: String, fileType: FileType) {
+    import spark.implicits._
     private val dataset: Dataset[String] = spark.read.text(fileName).as[String]
 
 
