@@ -167,3 +167,8 @@ class UnitTestsForTransformableRDD(PySparkTestCase):
         collected = rdd_filter.collect()
         self.assertEqual(1, collected.__len__())
 
+    def test_number_of_column_should_give_number_of_column_of_dataset(self):
+        initial_dataset = self.sc.parallelize(["1,2", "1,2", "1,3"])
+        transformable_rdd = TransformableRDD(initial_dataset, "csv")
+
+        self.assertEqual(2, transformable_rdd.number_of_columns())

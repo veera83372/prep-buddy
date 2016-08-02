@@ -255,6 +255,13 @@ class TransformableRDD(RDD):
         column_indexes = py2java_int_list(self.spark_context, independent_column_indexes)
         return PivotTable(self._transformable_rdd.pivotByCount(pivotal_column, column_indexes))
 
+    def number_of_columns(self):
+        """
+        Returns number of column in this rdd
+        :return:
+        """
+        return self._transformable_rdd.numberOfColumns()
+
     def map(self, function, preservesPartitioning=False):
         return TransformableRDD(super(TransformableRDD, self).map(function, preservesPartitioning), self.__file_type)
 
