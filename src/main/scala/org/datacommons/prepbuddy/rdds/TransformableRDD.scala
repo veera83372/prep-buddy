@@ -1,6 +1,5 @@
 package org.datacommons.prepbuddy.rdds
 
-import org.apache.datacommons.prepbuddy.rdds.AbstractRDD
 import org.apache.spark.rdd.RDD
 import org.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
 import org.datacommons.prepbuddy.imputations.ImputationStrategy

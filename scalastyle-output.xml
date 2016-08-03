@@ -2,36 +2,25 @@
 <checkstyle version="5.0">
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/api/java/JavaTransformableRDD.scala">
   <error line="39" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
-  <error line="61" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
+  <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/analyzers/ColumnProfile.scala">
-  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning"
-         message="Redundant braces after class definition"/>
+  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning" message="Redundant braces after class definition"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/rdds/TransformableRDD.scala">
-  <error line="295" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="349" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="356" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="358" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="385" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="392" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
-  <error line="394" source="org.scalastyle.file.FileLineLengthChecker" severity="warning"
-         message="File line length exceeds 120 characters"/>
+  <error line="294" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="348" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="355" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="357" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="384" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="391" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
+  <error line="393" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error source="org.scalastyle.file.NewLineAtEofChecker" severity="warning" message="File must end with newline character"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/analyzers/RowCompletenessRule.scala">
-  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning"
-         message="Redundant braces after class definition"/>
+  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning" message="Redundant braces after class definition"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/analyzers/ColumnRules.scala">
-  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning"
-         message="Redundant braces after class definition"/>
+  <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning" message="Redundant braces after class definition"/>
  </file>
 </checkstyle>

@@ -1,4 +1,4 @@
-package org.apache.datacommons.prepbuddy.rdds
+package org.datacommons.prepbuddy.rdds
 
 import java.lang.Double._
 
@@ -11,9 +11,10 @@ import org.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMER
 import org.datacommons.prepbuddy.types.{CSV, FileType}
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
-    protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
     protected val columnLength = getNumberOfColumns
     private val DEFAULT_SAMPLE_SIZE: Int = 1000
+    protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
+
 
     /**
       * Returns RDD
