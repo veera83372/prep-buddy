@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="5.0">
- <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/rdds/TransformableRDD.scala">
+ <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/rdds/TransformableRDD.scala">
   <error line="296" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error line="350" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error line="357" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
@@ -10,7 +10,7 @@
   <error line="383" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error source="org.scalastyle.file.NewLineAtEofChecker" severity="warning" message="File must end with newline character"/>
  </file>
- <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/apache/datacommons/prepbuddy/api/java/JavaTransformableRDD.scala">
+ <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/api/java/JavaTransformableRDD.scala">
   <error line="39" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
   <error line="59" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
  </file>
