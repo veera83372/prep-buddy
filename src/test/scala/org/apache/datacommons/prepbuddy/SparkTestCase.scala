@@ -5,7 +5,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 class SparkTestCase extends FunSuite with BeforeAndAfterEach {
-    var sparkContext: SparkContext = null
+    var sparkContext: SparkContext = _
 
     override def beforeEach() {
         val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName).setMaster("local[2]")
