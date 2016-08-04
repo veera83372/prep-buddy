@@ -36,5 +36,5 @@ def quiet_py4j():
 
 def add_jars():
     project_root = os.getcwd() + "/../../.."
-    jars = run_cmd("ls %s/target/prep-buddy-?.?.?.jar" % project_root)
-    os.environ["PYSPARK_SUBMIT_ARGS"] = ("--jars %s --driver-class-path %s pyspark-shell") % (jars, jars)
+    jars = ("%s/target/prep-buddy-0.5.0.jar" % project_root)
+    os.environ["PYSPARK_SUBMIT_ARGS"] = "--jars %s --driver-class-path %s pyspark-shell" % (jars, jars)
