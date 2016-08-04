@@ -1,4 +1,4 @@
-package org.datacommons.prepbuddy.analyzers.types
+package com.thoughtworks.datacommons.prepbuddy.analyzers.types
 
 import org.apache.spark.sql.types._
 import org.scalatest.FunSuite
