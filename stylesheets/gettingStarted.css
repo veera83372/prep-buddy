@@ -1,7 +1,7 @@
 .code {
 	font-size: 18px;
 	background-color: #E4E3DE;
-	padding: 3%;
+	/*padding: 3%;*/
 	overflow: hidden;
 }
 body {
@@ -40,4 +40,17 @@ body {
 .zero {
 	height: 0;
 	width: 0;
+}
+
+.codeButton {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 1px 1px 15px;
+    cursor: pointer;
 }

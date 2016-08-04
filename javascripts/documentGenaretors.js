@@ -19,7 +19,8 @@ var appendList = function(list, className) {
 	html = html.replace(/className/, className);
 	$('.documentation').append(html);
 }
-var codeMenu =  '<ul class="menu"> <li class="item dropbtn"><div class="scala">Scala</div></li> <li class="item dropbtn"> <div class="Java">Java</div></li> </ul>'
+// var codeMenu =  '<ul class="menu"> <li class="item dropbtn"><div class="scala">Scala</div></li> <li class="item dropbtn"> <div class="Java">Java</div></li> </ul>'
+var codeMenu =  '<div class="codeMenu"> <button class="scala codeButton"> Scala </button> <button class="java codeButton"> Java </button> </div>'
 var appendCode = function() {
 	var id = 0;
 	return function(scalaCode, javaCode){

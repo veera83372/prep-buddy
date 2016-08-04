@@ -323,7 +323,7 @@ var appendAll = function() {
 	appendCode(weightedOutput);		
 
 	$(".scala").click(showScalaCode)
-	$(".Java").click(showJavaCode)			
+	$(".java").click(showJavaCode)			
 }
 
 var showScalaCode = function() {
