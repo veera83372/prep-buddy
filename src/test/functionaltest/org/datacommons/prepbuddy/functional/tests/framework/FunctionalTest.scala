@@ -8,9 +8,9 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.collection.mutable.ListBuffer
 
 class FunctionalTest extends App {
+    private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
     protected val sc: SparkContext = new SparkContext(sparkConf)
     protected val datasetPath = getDatasetPath
-    private val sparkConf: SparkConf = new SparkConf().setAppName(getClass.getName)
     private val testReport = new TestReport
     private var testNames: ListBuffer[String] = ListBuffer.empty
 

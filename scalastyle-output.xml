@@ -8,34 +8,9 @@
   <error column="6" line="3" source="org.scalastyle.scalariform.EmptyClassChecker" severity="warning" message="Redundant braces after class definition"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/test/scala/org/datacommons/prepbuddy/analyzers/AnalyzableDatasetTest.scala">
-  <error column="0" line="13" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="20" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="28" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="35" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="37" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="39" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="43" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="50" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="57" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="60" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="63" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="67" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="71" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
-  <error column="0" line="74" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning"
-         message="Whitespace at end of line"/>
+  <error column="0" line="20" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning" message="Whitespace at end of line"/>
+  <error column="0" line="35" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning" message="Whitespace at end of line"/>
+  <error column="0" line="74" source="org.scalastyle.file.WhitespaceEndOfLineChecker" severity="warning" message="Whitespace at end of line"/>
  </file>
  <file name="/Users/abhishek/Projects/prep-buddy/src/main/scala/org/datacommons/prepbuddy/rdds/TransformableRDD.scala">
   <error line="294" source="org.scalastyle.file.FileLineLengthChecker" severity="warning" message="File line length exceeds 120 characters"/>
