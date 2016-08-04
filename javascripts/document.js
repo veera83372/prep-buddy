@@ -1,6 +1,13 @@
 
 var appendAll = function() {
-	
+	appendHeading("Deduplicate()", "h4");
+	var aboutDeduplicate = 'It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.';
+	appendParagraph(aboutDeduplicate);
+	var deduplicateCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+                'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+                'JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate();',
+                'deduplicatedRDD.saveAsTextFile("output");' ];
+    appendCode(deduplicateCode);            
 	var deduplicateExplanation = 'In the sample dataset given above, there are 2 records with repetition. So, after calling the deduplicate method, the deduplicatedRDD will hold the following values:'
 	appendParagraph(deduplicateExplanation);
 	
@@ -26,25 +33,6 @@ var appendAll = function() {
 	var duplicateOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
 						'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011'];
 	appendExample(duplicateOutput);
-	
-	// appendHeading('replace(int columnIndex, Replacemet...replacement) :', 'h4');
-	// var aboutReplace = 'The replace function is used when you want to replace a particular column value to a new value. You have to pass the column Index along with the one or more replacement.';
-	// appendParagraph(aboutReplace);
-	// appendHeading('Example:', 'h4');
-	// var replaceCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-	// 					'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
-	// 					'JavaTransformableRDD transformedRDD = initialRDD.replace(2, new Replacement("Missed", 0));',
-	// 					'transformedRDD.saveAsTextFile("output");'];
-	// appendCode(replaceCode)
-	// appendHeading('Output:', 'h4');
-	// var replaceOutput = ['07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
-	// 					'07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
-	// 					'07122915122,07220374233,0,0,Sun Oct 24 08:13:45 +0100 2010',
-	// 					'07166594208,07577423566,0,24,Thu Jan 27 14:23:39 +0000 2011',
-	// 					'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
-	// 					'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
-	// 					'07456622368,07331532487,0,24,Sat Sep 18 13:34:09 +0100 2010'];
-	// appendCode(replaceOutput);
 
 	// appendHeading('splitColumn(int columnIndex, ColumnSplitter columnSplitConfig)', 'h4');
 	// appendParagraph('It splits a particular column by a given configuration. There are two types of column splitting operation available');

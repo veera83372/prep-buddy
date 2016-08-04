@@ -119,16 +119,6 @@
 
         		</p>
         	</div>
-            <h4>Deduplicate</h4>
-            <p>It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.</p>
-
-            <h4>Example:</h4>
-            <div class="code">
-                JavaRDD<String> callDataset= sc.textFile("calls.csv");<br> 
-                JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);<br>
-                JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate();<br>
-                deduplicatedRDD.saveAsTextFile("output");<br>
-            </div>
 
         </section>
 
