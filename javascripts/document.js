@@ -3,11 +3,15 @@ var appendAll = function() {
 	appendHeading("Deduplicate()", "h4");
 	var aboutDeduplicate = 'It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.';
 	appendParagraph(aboutDeduplicate);
-	var deduplicateCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	var deduplicateJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
                 'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
                 'JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate();',
                 'deduplicatedRDD.saveAsTextFile("output");' ];
-    appendCode(deduplicateCode);            
+    var deduplicateScalaCode = ['callDataset: RDD[String] = sc.textFile("calls.csv")',
+                'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
+                'deduplicatedRDD: TransformableRDD = initialRDD.deduplicate()',
+                'deduplicatedRDD.saveAsTextFile("output")' ];            
+    appendCode(deduplicateScalaCode, deduplicateJavaCode);            
 	var deduplicateExplanation = 'In the sample dataset given above, there are 2 records with repetition. So, after calling the deduplicate method, the deduplicatedRDD will hold the following values:'
 	appendParagraph(deduplicateExplanation);
 	
@@ -23,11 +27,15 @@ var appendAll = function() {
 	appendParagraph(aboutDuplicates);
 
 	appendHeading('Example:', 'h4');
-	var duplicateCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	var duplicateJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
 						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'JavaTransformableRDD duplicates = initialRDD.duplicates();',
 						'duplicates.saveAsTextFile("output");']
-	appendCode(duplicateCode);					
+	var duplicateScalaCode = ['callDataset: RDD[String] = sc.textFile("calls.csv")',
+						'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
+						'duplicates: TransformableRDD = initialRDD.duplicates()',
+						'duplicates.saveAsTextFile("output")']					
+	appendCode(duplicateScalaCode, duplicateJavaCode);					
 	appendParagraph('It will produce the following result:');
 
 	var duplicateOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
@@ -42,28 +50,39 @@ var appendAll = function() {
 	appendHeading('listFacets(int columnIndex):','h4');
 	appendParagraph('In dataset we want to know the number of occurrences for each value of any field.');
 	appendParagraph('Let say we want facets on direction column. So we just need to pass the column index of direction field to listFacets. It returns a TextFacets object.');
-	var facetCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	var facetJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
 						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'TextFacets facets = initialRDD.listFacets(2);',
 						'System.out.println(facets.highest());']
-	appendCode(facetCode);
+	var facetScalaCode = ['callDataset: JavaRDD[String] = sc.textFile("calls.csv")',
+						'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
+						'facets: TextFacets = initialRDD.listFacets(2)',
+						'println(facets.highest())']
+	appendCode(facetScalaCode, facetJavaCode);
 	appendParagraph('Output of the above code is:');
 	appendExample(['(Missed, 4)']);
 
 	appendHeading('flag(String symbol, new MarkerPredicate):', 'h4');
 	appendParagraph('Flag is useful when we want mark rows as a favorite or important row.So that we can perform some operation on those rows');
 	appendParagraph('Let say we want to mark those row on sample dataset whose field "direction" is "Outgoing" by "#" symbol.  Here is the code for it:');
-	var flagCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	var flagJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
 					'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 					'JavaTransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Override',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public boolean evaluate(RowRecord row) {',
-						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String direction = row.get(2);',
+						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String direction = row.select(2);',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return direction.equals("Outgoing");',
 					'&nbsp;&nbsp;&nbsp;&nbsp;}',	
 					'});',	
 					'marked.saveAsTextFile("flagged-data");'];
-	appendCode(flagCode);
+	var flagScalaCode = ['callDataset JavaRDD[String] = sc.textFile("calls.csv")',
+					'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
+					'marked: TransformableRDD = initialRDD.flag("#", (rowRecord) => {',
+					'&nbsp;&nbsp;&nbsp;&nbsp; direction: String = row.select(2)',
+					'&nbsp;&nbsp;&nbsp;&nbsp; direction.equals("Outgoing")',
+					'});',	
+					'marked.saveAsTextFile("flagged-data");'];				
+	appendCode(flagScalaCode, flagJavaCode);
 	appendParagraph('It will save the file as "flagged-data" with the following records:');
 	var flagOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010,',
 						'07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010,',
@@ -77,12 +96,12 @@ var appendAll = function() {
 
 	appendHeading('mapByFlag(String symbol, int symbolColumnIndex, Function mapFunction) :', 'h4');
 	appendParagraph('We want map only on marked rows ');
-	var mapByFlagCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	var mapByFlagJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
 						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'JavaTransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
 							'&nbsp;&nbsp;&nbsp;&nbsp@Override',
 							'&nbsp;&nbsp;&nbsp;&nbsppublic boolean evaluate(RowRecord row) {',
-							'&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspString direction = row.get(2);',
+							'&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspString direction = row.select(2);',
 							'&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbspreturn direction.equals("Outgoing");',
 						'}',	
 						'});',
@@ -94,7 +113,16 @@ var appendAll = function() {
 						'});',
 						'mapped.saveAsTextFile("marked-data");'
 						];
-	appendCode(mapByFlagCode);
+	var mapByFlagScalaCode = ['callDataset: JavaRDD[String] = sc.textFile("calls.csv")',
+						'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
+						'marked: TransformableRDD = initialRDD.flag("#", (rowRecord) => {',
+						'&nbsp;&nbsp;&nbsp;&nbsp; direction: String = row.select(2)',
+						'&nbsp;&nbsp;&nbsp;&nbsp; direction.equals("Outgoing")',
+						'});',
+						'mapped: TransformableRDD = marked.mapByFlag("#", 5, (row) => "+" + row)',
+						'mapped.saveAsTextFile("marked-data")'
+						];						
+	appendCode(mapByFlagScalaCode, mapByFlagJavaCode);
 	appendParagraph('The above code will write file which will be look like:');
 	var mapByFlagOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010,',
 							'07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010,',
@@ -120,7 +148,7 @@ var appendAll = function() {
 						'});',
 						'purged.saveAsTextFile("output");'
 						];
-	appendCode(removeRowCode);
+	appendCode([], removeRowCode);
 	appendParagraph('In above code will write file which will be look like:');
 	var removeRowOutput = ['07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
 							'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
@@ -137,13 +165,13 @@ var appendAll = function() {
 							];
 	appendList(imputationList);
 	appendHeading('By Simple fingerprint algorithm:', 'h4');
-	appendCode(['Clusters clusters = transformedRDD.clusters(2 ,new SimpleFingerprintAlgorithm());']);
+	appendCode([], ['Clusters clusters = transformedRDD.clusters(2 ,new SimpleFingerprintAlgorithm());']);
 	appendHeading('By N-Gram Fingerprint algorithm :', 'h4');
 	appendParagraph('In this algorithm we pass the value of n which is the size of chars of the token.')
-	appendCode(['Clusters clusters = transformedRDD.clusters(2 ,new NGramFingerprintAlgorithm(2));']);
+	appendCode([], ['Clusters clusters = transformedRDD.clusters(2 ,new NGramFingerprintAlgorithm(2));']);
 	appendHeading('By Levenshtein distance algorithm:');
 	appendParagraph('This algorithm groups the item of field if distance between them is very less.  ');
-	appendCode(['Clusters clusters = transformedRDD.clusters(2 ,new LevenshteinDistance());']);
+	appendCode([], ['Clusters clusters = transformedRDD.clusters(2 ,new LevenshteinDistance());']);
 	
 	appendHeading('impute(int columnIndex,  ImputationStrategy strategy)', 'h4');
 	appendParagraph('It takes column index and a stategy ImputationStrategy. This method replaces the missing value with the value returned by the strategy.');
@@ -164,7 +192,7 @@ var appendAll = function() {
 							'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new MeanStrategy());',
 							'ImputedRDD.saveAsTextFile("output");'
 								];
-	appendCode(imputeByMeanCode);
+	appendCode([], imputeByMeanCode);
 	appendHeading('output:', 'h3');
 	var imputeByMeanOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
 							'07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
@@ -182,7 +210,7 @@ var appendAll = function() {
 									'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new ApproxMeanStrategy());',
 									'ImputedRDD.saveAsTextFile("output");'
 									];
-	appendCode(imputeByApproxMeanCode);
+	appendCode([], imputeByApproxMeanCode);
 	
 	appendHeading('output:', 'h4');
 	var imputeByApproxMeanOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
@@ -200,7 +228,7 @@ var appendAll = function() {
 							'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new ModeSubstitution());',
 							'ImputedRDD.saveAsTextFile("output");'
 							];
-	appendCode(imputeByModeCode);						
+	appendCode([], imputeByModeCode);						
 	appendHeading('output:', 'h3');
 	var imputeByModeOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
 								'07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
@@ -233,7 +261,7 @@ var appendAll = function() {
 							'JavaTransformableRDD imputedRDD = initialRDD.impute(4, new NaiveBayesSubstitution());',
 							'ImputedRDD.saveAsTextFile("output");'
 							];
-	appendCode(naiveBayesCode);
+	appendCode([], naiveBayesCode);
 	appendHeading('Output:', 'h3');
 	var naiveBayesOutput = ['Name,Over 170CM, Eye, Hair length, Sex',
 							'Drew,No,Blue,Short,Male', 
@@ -256,7 +284,7 @@ var appendAll = function() {
 						'DataType datatype = initialRDD.inferType(1);',
 						'System.out.println(datatype);'
 							];
-	appendCode(typeInferCode)
+	appendCode([], typeInferCode)
 	appendHeading('Output:', 'h3');
 	appendExample(['MOBILE_NUMBER']);						
 
@@ -280,7 +308,7 @@ var appendAll = function() {
 								'JavaRDD<Double> smoothed = initialRDD.smooth(0, new SompleMovingAverageMethod(3));',
 								'smoothed.saveAsTextFile("smoothed");'
 								];
-	appendCode(simpleSmoothingCode);
+	appendCode([], simpleSmoothingCode);
 	appendHeading('Output:', 'h3');
 	var simpleSmoothingOutput = ['5.0',
 								'4.666',
@@ -301,7 +329,7 @@ var appendAll = function() {
 						'JavaRDD<Double> smoothed = initialRDD.smooth(1, new WeightedMovingAverageMethod(3, weights));',
 						'smoothed.saveAsTextFile(“smoothed”);'
 						];
-	appendCode(weightedCode);
+	appendCode([], weightedCode);
 	appendHeading('Output:', 'h3');
 	var weightedOutput = ['5.162',
 						'5.998',

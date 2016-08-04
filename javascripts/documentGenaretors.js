@@ -20,22 +20,22 @@ var appendList = function(list, className) {
 	$('.documentation').append(html);
 }
 // var codeMenu =  '<ul class="menu"> <li class="item dropbtn"><div class="scala">Scala</div></li> <li class="item dropbtn"> <div class="Java">Java</div></li> </ul>'
-var codeMenu =  '<div class="codeMenu"> <button class="scala codeButton"> Scala </button> <button class="java codeButton"> Java </button> </div>'
+var codeDivWithButtons =  '<div class="codeMenu"> <button class="scala codeButton"> Scala </button> <button class="java codeButton"> Java </button> </div>'
 var appendCode = function() {
 	var id = 0;
 	return function(scalaCode, javaCode){
 		scalaCodeClass = "scalaCode" + id
 		javaCodeClass = "javaCode" + id
-		var html = '<div class="code">' + codeMenu + '<div class="ScalaDoc ' + scalaCodeClass + '"></div><div class="JavaDoc zero hidden ' + javaCodeClass + '"></div> </div>';
+		var html = '<div class="code">' + codeDivWithButtons + '<div class="ScalaDoc ' + scalaCodeClass + '"></div><div class="JavaDoc zero hidden ' + javaCodeClass + '"></div> </div>';
 		$('.documentation').append(html);
 		var scalaHtml = ""
-		var javaHtml = "sdkcbdc fhu kufd bifu gsoiuf vfj hf if hkufb ef kefi hbfo hbf s"
+		var javaHtml = ""
 		scalaCode.forEach(function(eachLine) {
 			scalaHtml += eachLine + '<br>';	
 		})
-		// javaCode.forEach(function(oneLine) {
-		// 	javaHtml += eachLine + '<br>'
-		// })
+		javaCode.forEach(function(oneLine) {
+			javaHtml += oneLine + '<br>'
+		})
 		$('.' + scalaCodeClass).append(scalaHtml)
 		$('.' + javaCodeClass).append(javaHtml)
 		id ++
