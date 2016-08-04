@@ -1,13 +1,16 @@
 package org.datacommons.prepbuddy.analyzers
 
-import org.apache.spark.sql.types.StructType
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.types.{StructField, StructType}
+import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.datacommons.prepbuddy.types.FileType
 
-class AnalyzableDataset(spark: SparkSession, fileName: String, fileType: FileType) {
-    import spark.implicits._
-    private val dataset: Dataset[String] = spark.read.text(fileName).as[String]
+class AnalyzableDataset(spark: SparkSession, fileName: String, fileType: FileType, header: Boolean = true) {
 
+    private val dataset: Dataset[Row] = spark.read
+        .format("com.databricks.spark.csv")
+        .option("header", header.toString)
+        .option("inferSchema", "true")
+        .load(fileName)
 
     def analyzeColumn(columnName: String, rules: ColumnRules): ColumnProfile = {
         new ColumnProfile()
@@ -17,10 +20,13 @@ class AnalyzableDataset(spark: SparkSession, fileName: String, fileType: FileTyp
         new RowCompletenessProfile()
     }
 
-    def analyzeSchemaCompliance(struct: StructType): SchemaComplianceProfile = {
+    def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {
+        val actualFields: Array[StructField] = dataset.schema.fields
+        val mismatchedFields: Array[(StructField, StructField)] = expectedSchema.fields
+            .zip(actualFields)
+            .filter(fieldPair => fieldPair._1 != fieldPair._2)
 
-        new SchemaComplianceProfile()
+        mismatchedFields.foreach(println)
+        new SchemaComplianceProfile(mismatchedFields)
     }
-
-
 }
