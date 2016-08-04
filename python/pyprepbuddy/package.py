@@ -1,5 +1,5 @@
 class Package(object):
-    PREP_BUDDY = "org.datacommons.prepbuddy"
+    PREP_BUDDY = "com.thoughtworks.datacommons.prepbuddy"
     IMPUTATION = PREP_BUDDY + ".imputations"
     CLUSTER = PREP_BUDDY + ".clusterers"
     NORMALIZERS = PREP_BUDDY + ".normalizers"
