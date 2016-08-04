@@ -1,17 +1,6 @@
-import logging
 import os
-import subprocess as sub
 
-
-def run_cmd(cmd):
-    try:
-        out = sub.check_output(cmd, shell=True, stderr=sub.STDOUT)
-        return out
-    except sub.CalledProcessError as err:
-        logging.error("The failed test setup command was [%s]." % err.cmd)
-        logging.error("The output of the command was [%s]" % err.output)
-        raise
-
+from utils.runCommand import run_cmd
 
 CHECK_SPARK_HOME = """
 if [ -z "$SPARK_HOME" ]; then
@@ -23,9 +12,8 @@ os.system(CHECK_SPARK_HOME)
 
 # Dynamically load project root dir and jars.
 project_root = os.getcwd() + "/.."
-jars = run_cmd("ls %s/target/prep-buddy-*.*.*.jar" % project_root)
+jars = run_cmd("ls %s/target/prep-buddy-?.?.?.jar" % project_root)
 
 # Set environment variables.
 os.environ["PYSPARK_SUBMIT_ARGS"] = "--jars %s --driver-class-path %s pyspark-shell" % (jars, jars)
 
-# os.environ["SPARK_CONF_DIR"] = "%s/test/resources/conf" % os.getcwd()
