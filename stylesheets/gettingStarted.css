@@ -29,3 +29,15 @@ body {
 .documentation {
 
 }
+
+.hidden {
+	visibility: hidden;
+}
+
+.doc {
+	display: block;
+}
+.zero {
+	height: 0;
+	width: 0;
+}

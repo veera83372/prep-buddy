@@ -1,5 +1,6 @@
 
 var appendAll = function() {
+	
 	var deduplicateExplanation = 'In the sample dataset given above, there are 2 records with repetition. So, after calling the deduplicate method, the deduplicatedRDD will hold the following values:'
 	appendParagraph(deduplicateExplanation);
 	
@@ -11,13 +12,13 @@ var appendAll = function() {
 	appendCode(deduplicateOutput);
 
 	appendHeading('duplicates()', 'h4');
-	var aboutDuplicates = 'It gives a new TransformableRDD with only the records which has a duplicate entry in the given rdd';
+	var aboutDuplicates = 'It gives a new JavaTransformableRDD with only the records which has a duplicate entry in the given rdd';
 	appendParagraph(aboutDuplicates);
 
 	appendHeading('Example:', 'h4');
 	var duplicateCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-						'TransformableRDD duplicates = initialRDD.duplicates();',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+						'JavaTransformableRDD duplicates = initialRDD.duplicates();',
 						'duplicates.saveAsTextFile("output");']
 	appendCode(duplicateCode);					
 	appendParagraph('It will produce the following result:');
@@ -26,24 +27,24 @@ var appendAll = function() {
 						'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011'];
 	appendCode(duplicateOutput);
 	
-	appendHeading('replace(int columnIndex, Replacemet...replacement) :', 'h4');
-	var aboutReplace = 'The replace function is used when you want to replace a particular column value to a new value. You have to pass the column Index along with the one or more replacement.';
-	appendParagraph(aboutReplace);
-	appendHeading('Example:', 'h4');
-	var replaceCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-						'TransformableRDD transformedRDD = initialRDD.replace(2, new Replacement("Missed", 0));',
-						'transformedRDD.saveAsTextFile("output");'];
-	appendCode(replaceCode)
-	appendHeading('Output:', 'h4');
-	var replaceOutput = ['07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
-						'07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
-						'07122915122,07220374233,0,0,Sun Oct 24 08:13:45 +0100 2010',
-						'07166594208,07577423566,0,24,Thu Jan 27 14:23:39 +0000 2011',
-						'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
-						'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
-						'07456622368,07331532487,0,24,Sat Sep 18 13:34:09 +0100 2010'];
-	appendCode(replaceOutput);
+	// appendHeading('replace(int columnIndex, Replacemet...replacement) :', 'h4');
+	// var aboutReplace = 'The replace function is used when you want to replace a particular column value to a new value. You have to pass the column Index along with the one or more replacement.';
+	// appendParagraph(aboutReplace);
+	// appendHeading('Example:', 'h4');
+	// var replaceCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
+	// 					'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+	// 					'JavaTransformableRDD transformedRDD = initialRDD.replace(2, new Replacement("Missed", 0));',
+	// 					'transformedRDD.saveAsTextFile("output");'];
+	// appendCode(replaceCode)
+	// appendHeading('Output:', 'h4');
+	// var replaceOutput = ['07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
+	// 					'07681546436,07289049655,0,11,Sat Sep 18 01:54:03 +0100 2010',
+	// 					'07122915122,07220374233,0,0,Sun Oct 24 08:13:45 +0100 2010',
+	// 					'07166594208,07577423566,0,24,Thu Jan 27 14:23:39 +0000 2011',
+	// 					'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
+	// 					'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
+	// 					'07456622368,07331532487,0,24,Sat Sep 18 13:34:09 +0100 2010'];
+	// appendCode(replaceOutput);
 
 	// appendHeading('splitColumn(int columnIndex, ColumnSplitter columnSplitConfig)', 'h4');
 	// appendParagraph('It splits a particular column by a given configuration. There are two types of column splitting operation available');
@@ -54,7 +55,7 @@ var appendAll = function() {
 	appendParagraph('In dataset we want to know the number of occurrences for each value of any field.');
 	appendParagraph('Let say we want facets on direction column. So we just need to pass the column index of direction field to listFacets. It returns a TextFacets object.');
 	var facetCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'TextFacets facets = initialRDD.listFacets(2);',
 						'System.out.println(facets.highest());']
 	appendCode(facetCode);
@@ -65,8 +66,8 @@ var appendAll = function() {
 	appendParagraph('Flag is useful when we want mark rows as a favorite or important row.So that we can perform some operation on those rows');
 	appendParagraph('Let say we want to mark those row on sample dataset whose field "direction" is "Outgoing" by "#" symbol.  Here is the code for it:');
 	var flagCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-					'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-					'TransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
+					'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+					'JavaTransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Override',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public boolean evaluate(RowRecord row) {',
 						'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String direction = row.get(2);',
@@ -89,15 +90,15 @@ var appendAll = function() {
 	appendHeading('mapByFlag(String symbol, int symbolColumnIndex, Function mapFunction) :', 'h4');
 	appendParagraph('We want map only on marked rows ');
 	var mapByFlagCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-						'TransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+						'JavaTransformableRDD marked = initialRDD.flag("#", new MarkerPredicate(){',
 							'&nbsp;&nbsp;&nbsp;&nbsp@Override',
 							'&nbsp;&nbsp;&nbsp;&nbsppublic boolean evaluate(RowRecord row) {',
 							'&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspString direction = row.get(2);',
 							'&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbspreturn direction.equals("Outgoing");',
 						'}',	
 						'});',
-						'TransformableRDD mapped = marked.mapByFlag("#", 5, new Function<String, String>(){',
+						'JavaTransformableRDD mapped = marked.mapByFlag("#", 5, new Function<String, String>(){',
 							'&nbsp;&nbsp;&nbsp;&nbsp@Override',
 							'&nbsp;&nbsp;&nbsp;&nbsppublic String call(String row) throws Exception {',
 								'&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbspReturn "+" + row;',
@@ -122,8 +123,8 @@ var appendAll = function() {
 	appendParagraph('Let say we want to remove those row whose field “direction” is Missed.Here is the code:');
 
 	var removeRowCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-						'TransformableRDD purged =  initialRDD.removeRows(new RowPurger.Predicate(){',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+						'JavaTransformableRDD purged =  initialRDD.removeRows(new RowPurger.Predicate(){',
 							'&nbsp;&nbsp;&nbsp;&nbsp@Override',
 							'&nbsp;&nbsp;&nbsp;&nbsppublic Boolean evaluate(RowRecord row) {',
 							'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspreturn row.get(2).equals("Missed");',
@@ -171,8 +172,8 @@ var appendAll = function() {
 	appendParagraph('In this sample data, we want to impute at duration field.');
 	appendHeading('Imputation by mean:', 'h3');
 	var imputeByMeanCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
-							'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-							'TransformableRDD imputedRDD = initialRDD.impute(3, new MeanStrategy());',
+							'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+							'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new MeanStrategy());',
 							'ImputedRDD.saveAsTextFile("output");'
 								];
 	appendCode(imputeByMeanCode);
@@ -189,8 +190,8 @@ var appendAll = function() {
 
 	appendHeading('Impute by approx mean :', 'h4');
 	var imputeByApproxMeanCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
-									'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-									'TransformableRDD imputedRDD = initialRDD.impute(3, new ApproxMeanStrategy());',
+									'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+									'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new ApproxMeanStrategy());',
 									'ImputedRDD.saveAsTextFile("output");'
 									];
 	appendCode(imputeByApproxMeanCode);
@@ -207,8 +208,8 @@ var appendAll = function() {
 	appendCode(imputeByApproxMeanOutput);									
 	appendHeading('Impute by mode:', 'h3');
 	var imputeByModeCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
-							'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-							'TransformableRDD imputedRDD = initialRDD.impute(3, new ModeSubstitution());',
+							'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+							'JavaTransformableRDD imputedRDD = initialRDD.impute(3, new ModeSubstitution());',
 							'ImputedRDD.saveAsTextFile("output");'
 							];
 	appendCode(imputeByModeCode);						
@@ -240,8 +241,8 @@ var appendAll = function() {
 	appendCode(naiveBayesDataset);
 	appendParagraph('We want to predict the missing value of sex field.');
 	var naiveBayesCode = ['JavaRDD<String> callDataset= sc.textFile("people.csv");',
-							'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
-							'TransformableRDD imputedRDD = initialRDD.impute(4, new NaiveBayesSubstitution());',
+							'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
+							'JavaTransformableRDD imputedRDD = initialRDD.impute(4, new NaiveBayesSubstitution());',
 							'ImputedRDD.saveAsTextFile("output");'
 							];
 	appendCode(naiveBayesCode);
@@ -263,7 +264,7 @@ var appendAll = function() {
 	appendParagraph('When you don’t know the type of a particular column you can infer the dataType of it.It has varitey of type which are  useful.');
 	appendHeading('Example:', 'h3');
 	var typeInferCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'DataType datatype = initialRDD.inferType(1);',
 						'System.out.println(datatype);'
 							];
@@ -287,7 +288,7 @@ var appendAll = function() {
 	appendHeading('Smoothing By Simple Moving Average:', 'h3');
 	appendParagraph('To smooth data by Simple Moving Average we need to specify the window size to the constructor');
 	var simpleSmoothingCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
-								'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+								'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 								'JavaRDD<Double> smoothed = initialRDD.smooth(0, new SompleMovingAverageMethod(3));',
 								'smoothed.saveAsTextFile(“smoothed”);'
 								];
@@ -304,7 +305,7 @@ var appendAll = function() {
 	appendParagraph('To smooth data by this method we need to pass  Weights to the constructor which contains the weight values according to the window position.');
 	appendParagraph('Note: Sum of the weights should be up to one.');
 	var weightedCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
-						'TransformableRDD initialRDD = new TransformableRDD(callDataset);',
+						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 						'Weights weights = new Weights(3);',
 						'weights.add(0.166);',
 						'weights.add(0.333);',
@@ -319,9 +320,20 @@ var appendAll = function() {
 						'5.329',
 						'6.999'
 							];
-	appendCode(weightedOutput);					
+	appendCode(weightedOutput);		
+
+	$(".scala").click(showScalaCode)
+	$(".Java").click(showJavaCode)			
 }
 
+var showScalaCode = function() {
+	$(".ScalaDoc").removeClass("zero hidden")
+	$(".JavaDoc").addClass("zero hidden")
+}
 
+var showJavaCode = function() {
+	$(".JavaDoc").removeClass("zero hidden")
+	$(".ScalaDoc").addClass("zero hidden")
+}
 
 $(document).ready(appendAll)

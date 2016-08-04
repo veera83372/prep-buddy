@@ -39,13 +39,13 @@
         	<p>Download the prep-buddy jar and add it to your project library.</p>
         	<p>You can start writing spark program with prep buddy by writing the following code</p>	
         	<div class="code">
-        		<p>TransformableRDD customRDD = new TransformableRDD(initialDataset);</p>
+        		<p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>
         	</div>
-        	<p>The TransformableRDD is extended from JavaRDD. So, you will have all the methods available in JavaRDD in TransformableRDD. You will also have the functions that are provided by prep-buddy.</p>
-        	<p>The initialDataset is a JavaRDD of string records. By default TransformableRDD treats the given JavaRDD as comma separated value (csv). You can also specify the record format as tab separated value (tsv) by providing FileType.TSV as the second parameter of the TransformableRDD constructor.</p>
+        	<p>The JavaTransformableRDD is extended from JavaRDD. So, you will have all the methods available in JavaRDD in JavaTransformableRDD. You will also have the functions that are provided by prep-buddy.</p>
+        	<p>The initialDataset is a JavaRDD of string records. By default JavaTransformableRDD treats the given JavaRDD as comma separated value (csv). You can also specify the record format as tab separated value (tsv) by providing FileType.TSV as the second parameter of the JavaTransformableRDD constructor.</p>
 
         	<h3>Functionalities: </h3>
-        	<p>The TransformableRDD holds all the functionality that could be done over a JavaRDD. It takes an JavaRDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
+        	<p>The JavaTransformableRDD holds all the functionality that could be done over a JavaRDD. It takes an JavaRDD object as constructor parameter. The following functionalities are available on JavaTransformableRDD.</p>
         	<p></p>
         	<h4 class="method">Imputation</h4>
         	<p>It is the process of replacing missing data with substituted values. The following imputation algorithms have been implemented:</p>
@@ -71,8 +71,6 @@
         	<h4 class="method">Duplicate:</h4>	
         	<p>It provides only the records which has duplicates entry in the given dataset</p>
 
-        	<h4 class="method">Replace:</h4>
-        	<p>Is the process of replacing given value with substituted value.</p>
 
         	<h4 class="method">Split Column:</h4>
         	<p>Is the process of split a field into multiple field.</p>
@@ -122,14 +120,14 @@
         		</p>
         	</div>
             <h4>Deduplicate</h4>
-            <p>It gives a new TransformableRDD with unique values by eliminating the duplicate records.</p>
+            <p>It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.</p>
 
             <h4>Example:</h4>
             <div class="code">
-                JavaRDD<String> callDataset= sc.textFile("calls.csv"); 
-                TransformableRDD initialRDD = new TransformableRDD(callDataset);
-                TransformableRDD deduplicatedRDD = initialRDD.deduplicate();
-                deduplicatedRDD.saveAsTextFile("output");
+                JavaRDD<String> callDataset= sc.textFile("calls.csv");<br> 
+                JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);<br>
+                JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate();<br>
+                deduplicatedRDD.saveAsTextFile("output");<br>
             </div>
 
         </section>
