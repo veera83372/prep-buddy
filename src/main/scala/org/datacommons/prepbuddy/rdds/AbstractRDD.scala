@@ -11,10 +11,9 @@ import org.datacommons.prepbuddy.qualityanalyzers.{BaseDataType, DataType, NUMER
 import org.datacommons.prepbuddy.types.{CSV, FileType}
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
-    protected val columnLength = getNumberOfColumns
     private val DEFAULT_SAMPLE_SIZE: Int = 1000
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
-
+    protected val columnLength = getNumberOfColumns
 
     /**
       * Returns RDD
@@ -59,19 +58,6 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       */
     def select(columnIndex: Int): RDD[String] = map(fileType.parse(_).select(columnIndex))
 
-    /**
-      * Returns inferred DataType of @columnIndex
-      *
-      * @param columnIndex Column Index on which type will be infered
-      * @return DataType
-      */
-    def inferType(columnIndex: Int): DataType = {
-        validateColumnIndex(columnIndex)
-        val columnSamples: List[String] = sampleColumnValues(columnIndex)
-        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(columnSamples)
-        typeAnalyzer.getType
-    }
-
     protected def validateColumnIndex(columnIndex: Int): Unit = validateColumnIndex(List(columnIndex))
 
     protected def validateColumnIndex(columnIndexes: List[Int]) {
@@ -83,6 +69,19 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
                 throw new ApplicationException(ErrorMessages.NEGATIVE_COLUMN_INDEX)
             }
         }
+    }
+
+    /**
+      * Returns inferred DataType of @columnIndex
+      *
+      * @param columnIndex Column Index on which type will be infered
+      * @return DataType
+      */
+    def inferType(columnIndex: Int): DataType = {
+        validateColumnIndex(columnIndex)
+        val columnSamples: List[String] = sampleColumnValues(columnIndex)
+        val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(columnSamples)
+        typeAnalyzer.getType
     }
 
     /**
