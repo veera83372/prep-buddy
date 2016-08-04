@@ -9,7 +9,7 @@ var appendAll = function() {
 							'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
 							'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
 							'07456622368,07331532487,Missed,24,Sat Sep 18 13:34:09 +0100 2010']
-	appendCode(deduplicateOutput);
+	appendExample(deduplicateOutput);
 
 	appendHeading('duplicates()', 'h4');
 	var aboutDuplicates = 'It gives a new JavaTransformableRDD with only the records which has a duplicate entry in the given rdd';
@@ -25,7 +25,7 @@ var appendAll = function() {
 
 	var duplicateOutput = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
 						'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011'];
-	appendCode(duplicateOutput);
+	appendExample(duplicateOutput);
 	
 	// appendHeading('replace(int columnIndex, Replacemet...replacement) :', 'h4');
 	// var aboutReplace = 'The replace function is used when you want to replace a particular column value to a new value. You have to pass the column Index along with the one or more replacement.';
@@ -60,7 +60,7 @@ var appendAll = function() {
 						'System.out.println(facets.highest());']
 	appendCode(facetCode);
 	appendParagraph('Output of the above code is:');
-	appendCode(['(Missed, 4)']);
+	appendExample(['(Missed, 4)']);
 
 	appendHeading('flag(String symbol, new MarkerPredicate):', 'h4');
 	appendParagraph('Flag is useful when we want mark rows as a favorite or important row.So that we can perform some operation on those rows');
@@ -85,7 +85,7 @@ var appendAll = function() {
 						'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010,',
 						'07456622368,07331532487,Missed,24,Sat Sep 18 13:34:09 +0100 2010,'
 						];
-	appendCode(flagOutput);
+	appendExample(flagOutput);
 
 	appendHeading('mapByFlag(String symbol, int symbolColumnIndex, Function mapFunction) :', 'h4');
 	appendParagraph('We want map only on marked rows ');
@@ -116,7 +116,7 @@ var appendAll = function() {
 							'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010,',
 							'07456622368,07331532487,Missed,24,Sat Sep 18 13:34:09 +0100 2010,'
 							];
-	appendCode(mapByFlagOutput);
+	appendExample(mapByFlagOutput);
 
 	appendHeading('removeRows(RowPurger.Predicate predicate):', 'h4');
 	appendParagraph('It is useful when we want to remove rows from dataset for a given condition.');
@@ -138,7 +138,7 @@ var appendAll = function() {
 							'07166594208,07577423566,Outgoing,24,Thu Jan 27 14:23:39 +0000 2011',
 							'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010'
 							];
-	appendCode(removeRowOutput);
+	appendExample(removeRowOutput);
 
 	appendHeading('clusters(int columnIndex, ClusteringAlgorithm algorithm)');
 	appendParagraph('In this method we have to pass the clustering algorithm by which we want to group the similar item in given column index.');
@@ -168,7 +168,7 @@ var appendAll = function() {
 				'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
 				'07456622368,07331532487, Missed,  ,Sat Sep 18 13:34:09 +0100 2010'
 					];
-	appendCode(imputationDataset);
+	appendExample(imputationDataset);
 	appendParagraph('In this sample data, we want to impute at duration field.');
 	appendHeading('Imputation by mean:', 'h3');
 	var imputeByMeanCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
@@ -186,7 +186,7 @@ var appendAll = function() {
 							'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
 							'07456622368,07331532487, Missed,<spam class="light">16.57</spam>,Sat Sep 18 13:34:09 +0100 2010'
 								];
-	appendCode(imputeByMeanOutput);
+	appendExample(imputeByMeanOutput);
 
 	appendHeading('Impute by approx mean :', 'h4');
 	var imputeByApproxMeanCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
@@ -205,7 +205,7 @@ var appendAll = function() {
 									'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
 									'07456622368,07331532487, Missed,<spam class="light">16.57</spam>,Sat Sep 18 13:34:09 +0100 2010'
 										];
-	appendCode(imputeByApproxMeanOutput);									
+	appendExample(imputeByApproxMeanOutput);									
 	appendHeading('Impute by mode:', 'h3');
 	var imputeByModeCode = ['JavaRDD<String> callDataset= sc.textFile("missingCalls.csv");',
 							'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
@@ -222,7 +222,7 @@ var appendAll = function() {
 								'07102745960,07720520621,Incoming,22,Tue Oct 12 14:16:16 +0100 2010',
 								'07456622368,07331532487, Missed,<spam class="light">24</spam>,Sat Sep 18 13:34:09 +0100 2010'
 								];
-	appendCode(imputeByModeOutput);	
+	appendExample(imputeByModeOutput);	
 
 	appendHeading('Impute by naive bayes classifier:', 'h3');
 	appendParagraph("This imputation is helpful when we want to predict the categorical field's missing value");
@@ -238,7 +238,7 @@ var appendAll = function() {
 								'Nina,Yes,Brown,Short,Female', 
 								'Sergio,Yes,Blue,Long,Male'
 								];
-	appendCode(naiveBayesDataset);
+	appendExample(naiveBayesDataset);
 	appendParagraph('We want to predict the missing value of sex field.');
 	var naiveBayesCode = ['JavaRDD<String> callDataset= sc.textFile("people.csv");',
 							'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
@@ -258,7 +258,7 @@ var appendAll = function() {
 							'Nina,Yes,Brown,Short,Female', 
 							'Sergio,Yes,Blue,Long,Male'
 								];
-	appendCode(naiveBayesOutput);
+	appendExample(naiveBayesOutput);
 
 	appendHeading('Type Inference:', 'h3');
 	appendParagraph('When you don’t know the type of a particular column you can infer the dataType of it.It has varitey of type which are  useful.');
@@ -270,7 +270,7 @@ var appendAll = function() {
 							];
 	appendCode(typeInferCode)
 	appendHeading('Output:', 'h3');
-	appendCode(['MOBILE_NUMBER']);						
+	appendExample(['MOBILE_NUMBER']);						
 
 	appendHeading('smooth(int columnIndex, SmoothingMethod smoothingMethod):', 'h3');
 	appendParagraph('Smoothing is very popular in data analysis by being able to extract more information from the dataset.');
@@ -284,13 +284,13 @@ var appendAll = function() {
 									'2006,7',
 									'2007,5'
 								];
-	appendCode(simpleSmoothingDataset);
+	appendExample(simpleSmoothingDataset);
 	appendHeading('Smoothing By Simple Moving Average:', 'h3');
 	appendParagraph('To smooth data by Simple Moving Average we need to specify the window size to the constructor');
 	var simpleSmoothingCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
 								'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
 								'JavaRDD<Double> smoothed = initialRDD.smooth(0, new SompleMovingAverageMethod(3));',
-								'smoothed.saveAsTextFile(“smoothed”);'
+								'smoothed.saveAsTextFile("smoothed");'
 								];
 	appendCode(simpleSmoothingCode);
 	appendHeading('Output:', 'h3');
@@ -299,7 +299,7 @@ var appendAll = function() {
 								'5.0',
 								'5.0'
 									];
-	appendCode(simpleSmoothingOutput);
+	appendExample(simpleSmoothingOutput);
 
 	appendHeading('By Weighted Moving Average:', 'h3');
 	appendParagraph('To smooth data by this method we need to pass  Weights to the constructor which contains the weight values according to the window position.');
@@ -320,7 +320,7 @@ var appendAll = function() {
 						'5.329',
 						'6.999'
 							];
-	appendCode(weightedOutput);		
+	appendExample(weightedOutput);		
 
 	$(".scala").click(showScalaCode)
 	$(".java").click(showJavaCode)			
