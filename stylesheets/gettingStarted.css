@@ -2,7 +2,8 @@
 	font-size: 18px;
 	background-color: #E4E3DE;
 	/*padding: 3%;*/
-	overflow: hidden;
+	/*max-height: 200px;*/
+	overflow: scroll;
 }
 body {
 	font-family: "Helvetica Neue", "Helvetica", Arial, sans-serif;

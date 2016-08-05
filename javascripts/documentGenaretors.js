@@ -31,10 +31,10 @@ var appendCode = function() {
 		var scalaHtml = ""
 		var javaHtml = ""
 		scalaCode.forEach(function(eachLine) {
-			scalaHtml += eachLine + '<br>';	
+			scalaHtml += '<p>' + eachLine + '</p>';	
 		})
 		javaCode.forEach(function(oneLine) {
-			javaHtml += oneLine + '<br>'
+			javaHtml += '<p>' + oneLine + '</p>'
 		})
 		$('.' + scalaCodeClass).append(scalaHtml)
 		$('.' + javaCodeClass).append(javaHtml)

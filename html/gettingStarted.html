@@ -12,37 +12,39 @@
 	<section class="main">
 		<header>
           <h1 class="title">Getting Started</h1>
-          <p class="prep-buddy">With Java</p>
-          <ul class="menu">
-              <div class="dropdown">
-                <li class="item dropbtn"><a href="">Download</a></li>
-              </div>
-              <div class="dropdown">
+          <p class="prep-buddy">With Prep Buddy</p>
+
+            <ul class="menu">
+              <li class="item"><a class="active" href="">Download</a></li>
+              <li class="item"><a href="http://data-commons.github.io/prep-buddy/html/gettingStarted.html">Getting Started</a></li>
+              <li class="dropdown">
+                <a href="" class="dropbtn">API Documentation</a>
                 <div class="dropdown-content">
-                    <a href="http://data-commons.github.io/prep-buddy/javadocs/" target="_blank">Java Doc</a>
+                  <a href="http://data-commons.github.io/prep-buddy/scaladocs/" target="_blank">Scala Doc</a>
                 </div>
-                <li class="item dropbtn"><a href="">Documentation</a></li>
-              </div>
-              <div class="dropdown">
-                <li class="item dropbtn"><a href="http://data-commons.github.io/prep-buddy/html/gettingStarted.html">Getting Started</a></li>
-              </div>
-              
-                <li class="item dropbtn"><a href="https://github.com/data-commons" target="_blank">Community</a></li>
-                <li class="item dropbtn"><a href="https://github.com/data-commons/prep-buddy" target="_blank">Git Hub</a></li>
-              
-          </ul>
+              </li>
+              <li class="item"><a href="https://github.com/data-commons" target="_blank">Community</a></li>
+              <li class="item"><a href="https://github.com/data-commons/prep-buddy" target="_blank">Git Hub</a></li>
+            </ul>
         </header>
         <section class="documentation">
         	<p>Download the prep-buddy jar and add it to your project library.</p>
         	<p>You can start writing spark program with prep buddy by writing the following code</p>	
         	<div class="code">
-        		<p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>
+                <div class="codeMenu"> 
+                    <button class="scala codeButton"> Scala </button> 
+                    <button class="java codeButton"> Java </button> 
+                </div>
+                <div class="ScalaDoc">
+                  <p>customRDD: TransformableRDD = new TransformableRDD(initialDataset)</p>  
+                </div>
+                <div class="JavaDoc zero hidden">
+        		  <p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>  
+                </div>
         	</div>
-        	<p>The JavaTransformableRDD is extended from JavaRDD. So, you will have all the methods available in JavaRDD in JavaTransformableRDD. You will also have the functions that are provided by prep-buddy.</p>
-        	<p>The initialDataset is a JavaRDD of string records. By default JavaTransformableRDD treats the given JavaRDD as comma separated value (csv). You can also specify the record format as tab separated value (tsv) by providing FileType.TSV as the second parameter of the JavaTransformableRDD constructor.</p>
 
         	<h3>Functionalities: </h3>
-        	<p>The JavaTransformableRDD holds all the functionality that could be done over a JavaRDD. It takes an JavaRDD object as constructor parameter. The following functionalities are available on JavaTransformableRDD.</p>
+        	<p>The TransformableRDD holds all the functionality that could be done over a RDD. It takes an RDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
         	<p></p>
         	<h4 class="method">Imputation</h4>
         	<p>It is the process of replacing missing data with substituted values. The following imputation algorithms have been implemented:</p>
