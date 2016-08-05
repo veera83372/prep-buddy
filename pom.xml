@@ -7,6 +7,38 @@
     <version>0.5.0</version>
     <packaging>jar</packaging>
     <name>prep-buddy - Data Preparation at Scale</name>
+    <description>A Scala / Java / Python library for cleaning, transforming and executing other preparation tasks for large datasets on Apache Spark</description>
+    <url>http://data-commons.github.io/</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/data-commons/prep-buddy.git</connection>
+        <url>scm:git:https://github.com/data-commons/prep-buddy.git</url>
+        <developerConnection>scm:git:https://github.com/data-commons/prep-buddy.git</developerConnection>
+        <tag>prep-buddy-0.5.0</tag>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url> https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <site>
+            <id>data-commons.website</id>
+            <name>prep-buddy documentation</name>
+            <url>http://datacommons.github.io/prep-buddy/</url>
+        </site>
+    </distributionManagement>
+
+    <licenses>
+        <license>
+            <name>Apache License version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -293,11 +325,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.12</version>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
@@ -306,6 +333,60 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
                 <version>1.9.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludePackageNames>com.thoughtworks.datacommons.prepbuddy.api.java</excludePackageNames>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -357,4 +438,30 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <developers>
+        <developer>
+            <name>Srihari Srinivasan</name>
+            <email>srihari.srinivasan@gmail.com</email>
+            <organization>Thoughtworks</organization>
+            <organizationUrl>http://thoughtworks.com/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Lalit Pandey</name>
+            <email>l.pandey007.lp@gmail.com</email>
+            <organization>Thoughtworks</organization>
+            <organizationUrl>http://thoughtworks.com/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Abhishek Gupta</name>
+            <email>jeabhishekgupta@gmail.com</email>
+            <organization>Thoughtworks</organization>
+            <organizationUrl>http://thoughtworks.com/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Rahul Nandi</name>
+            <email>maxzone0037@gmail.com</email>
+            <organization>Thoughtworks</organization>
+            <organizationUrl>http://thoughtworks.com/</organizationUrl>
+        </developer>
+    </developers>
 </project>
