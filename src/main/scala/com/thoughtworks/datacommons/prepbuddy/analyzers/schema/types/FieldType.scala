@@ -1,4 +1,4 @@
-package com.thoughtworks.datacommons.prepbuddy.analyzers.types
+package com.thoughtworks.datacommons.prepbuddy.analyzers.schema.types
 
 import java.sql.Timestamp
 
