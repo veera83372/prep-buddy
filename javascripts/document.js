@@ -379,11 +379,15 @@ var appendAll = function() {
 }
 
 var showScalaCode = function() {
+	$(".java").removeClass("btnClicked")
+	$(".scala").addClass("btnClicked")
 	$(".ScalaDoc").removeClass("zero hidden")
 	$(".JavaDoc").addClass("zero hidden")
 }
 
 var showJavaCode = function() {
+	$(".scala").removeClass("btnClicked")
+	$(".java").addClass("btnClicked")
 	$(".JavaDoc").removeClass("zero hidden")
 	$(".ScalaDoc").addClass("zero hidden")
 }

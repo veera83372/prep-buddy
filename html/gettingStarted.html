@@ -29,19 +29,22 @@
         </header>
         <section class="documentation">
         	<p>Download the prep-buddy jar and add it to your project library.</p>
-        	<p>You can start writing spark program with prep buddy by writing the following code</p>	
-        	<div class="code">
+        	<p>You can start writing spark program with prep buddy by writing the following code</p>
+            <div>
                 <div class="codeMenu"> 
-                    <button class="scala codeButton"> Scala </button> 
+                    <button class="scala codeButton btnClicked"> Scala </button> 
                     <button class="java codeButton"> Java </button> 
                 </div>
-                <div class="ScalaDoc">
-                  <p>customRDD: TransformableRDD = new TransformableRDD(initialDataset)</p>  
-                </div>
-                <div class="JavaDoc zero hidden">
-        		  <p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>  
-                </div>
-        	</div>
+                <div class="code">
+                    <div class="ScalaDoc">
+                      <p>customRDD: TransformableRDD = new TransformableRDD(initialDataset)</p>  
+                    </div>
+                    <div class="JavaDoc zero hidden">
+                      <p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>  
+                    </div>
+                </div>    
+            </div>	
+        	
 
         	<h3>Functionalities: </h3>
         	<p>The TransformableRDD holds all the functionality that could be done over a RDD. It takes an RDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>

@@ -20,13 +20,13 @@ var appendList = function(list, className) {
 	$('.documentation').append(html);
 }
 // var codeMenu =  '<ul class="menu"> <li class="item dropbtn"><div class="scala">Scala</div></li> <li class="item dropbtn"> <div class="Java">Java</div></li> </ul>'
-var codeDivWithButtons =  '<div class="codeMenu"> <button class="scala codeButton"> Scala </button> <button class="java codeButton"> Java </button> </div>'
+var codeDivWithButtons =  '<div class="codeMenu"> <button class="scala codeButton btnClicked"> Scala </button> <button class="java codeButton"> Java </button> </div>'
 var appendCode = function() {
 	var id = 0;
 	return function(scalaCode, javaCode){
 		scalaCodeClass = "scalaCode" + id
 		javaCodeClass = "javaCode" + id
-		var html = '<div class="code">' + codeDivWithButtons + '<div class="ScalaDoc ' + scalaCodeClass + '"></div><div class="JavaDoc zero hidden ' + javaCodeClass + '"></div> </div>';
+		var html = '<div class="codeMainBlock">' + codeDivWithButtons +'<div class="code"><div class="ScalaDoc ' + scalaCodeClass + '"></div><div class="JavaDoc zero hidden ' + javaCodeClass + '"></div> </div></div>';
 		$('.documentation').append(html);
 		var scalaHtml = ""
 		var javaHtml = ""
