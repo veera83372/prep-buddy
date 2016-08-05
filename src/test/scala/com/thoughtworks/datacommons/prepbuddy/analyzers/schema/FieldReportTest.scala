@@ -21,9 +21,10 @@ class FieldReportTest extends FunSuite {
         val schemaReport: FieldReport = new FieldReport(
             StructField("Other", LongType),
             callData.schema.fields(1),
-            spark
+            callData.select("other")
         )
-        val missMatches: DataFrame = schemaReport.getMissMatchedData(callData)
+        val missMatches: DataFrame = schemaReport.getMissMatchedData
+        
         assert(1807 == missMatches.count())
         
         spark.stop()
@@ -45,9 +46,9 @@ class FieldReportTest extends FunSuite {
         val schemaReport: FieldReport = new FieldReport(
             StructField("Other", LongType),
             callData.schema.fields(1),
-            spark
+            callData.select("other")
         )
-        val missMatches: DataFrame = schemaReport.getMissMatchedData(callData)
+        val missMatches: DataFrame = schemaReport.getMissMatchedData
         
         assert(callData.schema.fields(1).name == missMatches.schema.fields.head.name)
         

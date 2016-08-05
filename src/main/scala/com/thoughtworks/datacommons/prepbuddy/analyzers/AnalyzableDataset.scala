@@ -1,16 +1,11 @@
 package com.thoughtworks.datacommons.prepbuddy.analyzers
 
-import com.thoughtworks.datacommons.prepbuddy.types.FileType
 import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 
-class AnalyzableDataset(spark: SparkSession, fileName: String, fileType: FileType, header: Boolean = true) {
+class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileType, header: Boolean = true) {
     
-    private val dataset: Dataset[Row] = spark.read
-        .format("com.databricks.spark.csv")
-        .option("header", header.toString)
-        .option("inferSchema", "true")
-        .load(fileName)
+    private val dataset: Dataset[Row] = fileType.read(spark, filePath, header)
     
     def analyzeColumn(columnName: String, rules: ColumnRules): ColumnProfile = {
         new ColumnProfile()
