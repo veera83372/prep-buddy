@@ -62,7 +62,7 @@ class AnalyzableDatasetTest extends FunSuite {
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
 
         val expected: Array[(StructField, StructField)] = Array(
-            (StructField("Other", LongType), StructField("other", DecimalType.USER_DEFAULT))
+            (StructField("Other", LongType), StructField("other", LongType))
         )
 
         val mismatch: Array[(StructField, StructField)] = callRecordSchemaProfile.missmatches

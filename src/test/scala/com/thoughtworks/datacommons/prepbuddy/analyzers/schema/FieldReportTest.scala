@@ -4,7 +4,7 @@ import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Dataset, SparkSession, _}
 import org.scalatest.FunSuite
 
-class ColumnReportTest extends FunSuite {
+class FieldReportTest extends FunSuite {
     test("should return column values that did not matched the expectation") {
         val spark: SparkSession = SparkSession
             .builder()
@@ -17,8 +17,8 @@ class ColumnReportTest extends FunSuite {
             .option("header", true)
             .option("inferSchema", "true")
             .load("data/calls_with_header.csv")
-        
-        val schemaReport: ColumnReport = new ColumnReport(
+    
+        val schemaReport: FieldReport = new FieldReport(
             StructField("Other", LongType),
             callData.schema.fields(1),
             spark
@@ -29,5 +29,4 @@ class ColumnReportTest extends FunSuite {
         
         spark.stop()
     }
-    
 }

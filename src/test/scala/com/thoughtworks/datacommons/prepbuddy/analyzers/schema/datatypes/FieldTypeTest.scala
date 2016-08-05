@@ -1,6 +1,6 @@
-package com.thoughtworks.datacommons.prepbuddy.analyzers.schema.types
+package com.thoughtworks.datacommons.prepbuddy.analyzers.schema.datatypes
 
-import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.types.FieldType.inferField
+import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.datatypes.FieldType.inferField
 import org.apache.spark.sql.types._
 import org.scalatest.FunSuite
 
