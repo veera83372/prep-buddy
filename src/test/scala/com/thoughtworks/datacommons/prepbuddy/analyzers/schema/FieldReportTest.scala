@@ -30,7 +30,7 @@ class FieldReportTest extends FunSuite {
         spark.stop()
     }
     
-    test("should be able to find the actual column name from the miss matched data") {
+    test("should be able to find the actual column name from the mismatched data") {
         val spark: SparkSession = SparkSession
             .builder()
             .master("local[2]")

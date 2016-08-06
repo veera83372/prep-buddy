@@ -8,13 +8,13 @@ import scala.collection.mutable
   */
 class NGramFingerprintAlgorithm(nGram: Int) extends FingerprintAlgorithm {
     def getClusters(tuples: Array[(String, Int)]): Clusters = super.getClusters(tuples, generateNGramFingerprint)
-
+    
     def generateNGramFingerprint(value: String): String = {
         val someString: String = removeAllPunctuations(value.trim.toLowerCase)
         val set: mutable.TreeSet[String] = getNGramSetOf(someString)
         set.mkString("")
     }
-
+    
     private def getNGramSetOf(someString: String): mutable.TreeSet[String] = {
         val set: mutable.TreeSet[String] = new mutable.TreeSet[String]()
         val charArray: Array[Char] = someString.toCharArray

@@ -14,14 +14,14 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     private val DEFAULT_SAMPLE_SIZE: Int = 1000
     protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
     protected val columnLength = getNumberOfColumns
-
+    
     /**
       * Returns RDD
       *
       * @return RDD[String]
       */
     def toRDD: RDD[String] = parent
-
+    
     /**
       * Returns a double RDD of given column index
       *
@@ -37,19 +37,19 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         })
         filtered.map(record => parseDouble(fileType.parse(record).select(columnIndex)))
     }
-
+    
     protected def validateNumericColumn(columnIndex: Int): Unit = {
         if (!isNumericColumn(columnIndex)) {
             throw new ApplicationException(ErrorMessages.COLUMN_VALUES_ARE_NOT_NUMERIC)
         }
     }
-
+    
     private def isNumericColumn(columnIndex: Int): Boolean = {
         val records: Array[String] = select(columnIndex).takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE)
         val baseType: BaseDataType = new TypeAnalyzer(records.toList).getBaseType
         baseType.equals(NUMERIC)
     }
-
+    
     /**
       * Returns a RDD of given column
       *
@@ -57,9 +57,9 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       * @return RDD[String]
       */
     def select(columnIndex: Int): RDD[String] = map(fileType.parse(_).select(columnIndex))
-
+    
     protected def validateColumnIndex(columnIndex: Int): Unit = validateColumnIndex(List(columnIndex))
-
+    
     protected def validateColumnIndex(columnIndexes: List[Int]) {
         for (index <- columnIndexes) {
             if (columnLength <= index) {
@@ -70,7 +70,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
             }
         }
     }
-
+    
     /**
       * Returns inferred DataType of @columnIndex
       *
@@ -83,7 +83,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(columnSamples)
         typeAnalyzer.getType
     }
-
+    
     /**
       * Returns a List of some elements of @columnIndex
       *
@@ -91,14 +91,14 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       * @return List[String]
       */
     def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
-
+    
     @DeveloperApi
     override def compute(split: Partition, context: TaskContext): Iterator[String] = {
         parent.compute(split, context)
     }
-
+    
     override protected def getPartitions: Array[Partition] = parent.partitions
-
+    
     private def getNumberOfColumns: Int = {
         val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords.view
             .groupBy(fileType.parse(_).length)

@@ -13,14 +13,14 @@ class FunctionalTest extends App {
     protected val datasetPath = getDatasetPath
     private val testReport = new TestReport
     private var testNames: ListBuffer[String] = ListBuffer.empty
-
+    
     def test(testName: String)(testFunction: => Unit) {
         validateTestEnvironment(testName)
         testNames += testName
         val testResult: TestResult = runTest(testName, testFunction)
         testReport.add(testResult)
     }
-
+    
     def runTest(testName: String, testFunction: => Unit): TestResult = {
         val exceptionalTestFun: () => Any = testFunction _
         val testResult: TestResult = new TestResult(testName)
@@ -32,13 +32,13 @@ class FunctionalTest extends App {
         }
         testResult
     }
-
+    
     def validateTestEnvironment(testName: String) {
         if (testNames.contains(testName)) {
             throw new DuplicateTestNameException("Duplicate test name: " + testName)
         }
     }
-
+    
     def printReport() {
         testReport.show()
         shutDown()
@@ -46,9 +46,9 @@ class FunctionalTest extends App {
             throw new AssertionFailedException("Test is failing because of assertion failure")
         }
     }
-
+    
     def shutDown(): Unit = sc.stop()
-
+    
     private def getDatasetPath: String = {
         val configFile: File = new File("testConfig.properties")
         val reader: FileReader = new FileReader(configFile)

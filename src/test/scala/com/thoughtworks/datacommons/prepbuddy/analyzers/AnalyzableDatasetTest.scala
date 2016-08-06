@@ -8,6 +8,16 @@ import org.scalatest.FunSuite
 case class CallDataRecord(caller: String, callee: String, callType: String,
                           callDuration: Long, callInitiatedAt: String)
 
+object CallRecord {
+    private val user = StructField("user", LongType)
+    private val other = StructField("Other", LongType)
+    private val direction = StructField("direction", StringType)
+    private val duration = StructField("duration", IntegerType)
+    private val timestamp = StructField("timestamp", StringType)
+    
+    def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
+}
+
 class AnalyzableDatasetTest extends FunSuite {
     
     ignore("shouldValidateSchema") {
@@ -40,23 +50,16 @@ class AnalyzableDatasetTest extends FunSuite {
         sparkSession.stop()
     }
     
-    test("should be able to find the difference of schema") {
-        val spark: SparkSession = SparkSession
+    def getSpark: SparkSession = {
+        SparkSession
             .builder()
             .master("local[2]")
             .appName(getClass.getCanonicalName)
             .getOrCreate()
-        
-        object CallRecord {
-            private val user = StructField("user", LongType)
-            private val other = StructField("Other", LongType)
-            private val direction = StructField("direction", StringType)
-            private val duration = StructField("duration", IntegerType)
-            private val timestamp = StructField("timestamp", StringType)
-            
-            def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
-        }
-        
+    }
+    
+    test("should be able to find the difference of schema") {
+        val spark: SparkSession = getSpark
         val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         
@@ -70,7 +73,6 @@ class AnalyzableDatasetTest extends FunSuite {
         
         spark.stop()
     }
-    
 }
 
 

@@ -5,21 +5,21 @@ import java.util.Locale
 
 abstract class DataType {
     def isOfType(sampleData: List[String]): Boolean
-
+    
     protected def matches(regex: String, samples: List[String]): Boolean = {
         val matches: List[String] = samples.filter(_.matches(regex))
         val threshold = Math.round(samples.length * 0.75)
         matches.size > threshold
     }
-
-
+    
+    
     protected def matchInDictionary(sampleData: List[String], dictionary: Set[String]): Boolean = {
         val sampleInLowerCase: Set[String] = sampleData.map(_.toLowerCase).toSet
         val qualifyingLimit: Long = Math.round(sampleInLowerCase.size * 0.75)
         val size: Int = dictionary.intersect(sampleInLowerCase).size
         size >= qualifyingLimit
     }
-
+    
     protected def isCategorical(sampleData: List[String], categoricalSize: Int): Boolean = {
         var set: Set[String] = Set()
         set = set.++:(sampleData)
@@ -116,12 +116,12 @@ object LATITUDE extends DataType {
 }
 
 object COUNTRY_NAME extends DataType {
-
+    
     override def isOfType(sampleData: List[String]): Boolean = {
         val countryNames: Set[String] = getCountryNames
         matchInDictionary(sampleData, countryNames)
     }
-
+    
     private def getCountryNames: Set[String] = {
         val isoCountries: Array[String] = Locale.getISOCountries
         val countryList: Array[String] = isoCountries.map((country) => {
@@ -137,7 +137,7 @@ object COUNTRY_CODE_3_CHARACTER extends DataType {
         val countryNames: Set[String] = getCountryCodes
         matchInDictionary(sampleData, countryNames)
     }
-
+    
     private def getCountryCodes: Set[String] = {
         val isoCountries: Array[String] = Locale.getISOCountries
         val countryList: Array[String] = isoCountries.map((country) => {

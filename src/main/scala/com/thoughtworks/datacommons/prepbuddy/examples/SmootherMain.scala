@@ -15,12 +15,12 @@ object SmootherMain {
         val sc: SparkContext = new SparkContext(conf)
         val filePath: String = args(0)
         val expectedResultPath: String = args(1)
-
+    
         val csvInput: RDD[String] = sc.textFile(filePath, 1)
         val movingAverage: SimpleMovingAverageMethod = new SimpleMovingAverageMethod(3)
         val smooth: Array[Double] = movingAverage.smooth(csvInput.map(CSV.parse(_).select(3))).collect()
         println("Smoother Count" + smooth.length)
-
+    
         println("=========================================================")
         val expected: Array[Double] = sc.textFile(expectedResultPath).map(_.toDouble).collect()
         if (smooth sameElements expected) println("Assertion Successful") else println("Assertion Failed")

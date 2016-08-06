@@ -14,7 +14,7 @@ class SmoothingMethodTest extends SparkTestCase {
         val collected: Array[Double] = doubleRdd.collect()
         assert(5 == collected.length)
     }
-
+    
     test("should be able to smooth by simple moving average method") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array(
             "3", "4", "5",
@@ -23,7 +23,7 @@ class SmoothingMethodTest extends SparkTestCase {
             "12", "13", "14"), 3)
         val movingAverage: SimpleMovingAverageMethod = new SimpleMovingAverageMethod(3)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
-
+        
         val averages: Array[Double] = rdd.collect()
         assert(averages(0) == 4.0)
         assert(averages(1) == 5.0)
@@ -35,30 +35,30 @@ class SmoothingMethodTest extends SparkTestCase {
         assert(averages(7) == 11.0)
         assert(averages(8) == 12.0)
         assert(averages(9) == 13.0)
-
+        
         assert(!averages.contains(14.0))
     }
-
+    
     test("should smooth the values by weighted moving average method") {
         val initialDataset: RDD[String] = sparkContext.parallelize(Array(
             "10", "12", "16", "13",
             "17", "19", "15", "20",
             "22", "19", "21", "19"), 3)
-
+        
         val weights: Weights = new Weights(3)
         weights.add(0.166)
         weights.add(0.333)
         weights.add(0.5)
-
+        
         val movingAverage: WeightedMovingAverageMethod = new WeightedMovingAverageMethod(3, weights)
         val rdd: RDD[Double] = movingAverage.smooth(initialDataset)
         val collect: Array[Double] = rdd.collect()
         val collected: Array[Double] = rdd.collect().map("%1.2f".format(_).toDouble)
-
+        
         assert(collected(0) == 13.66)
         assert(collected(1) == 13.82)
         assert(collected(2) == 15.49)
         assert(collected(3) == 17.32)
-
+        
     }
 }

@@ -12,7 +12,7 @@ class SimpleMovingAverageMethod(windowSize: Int) extends SmoothingMethod {
         val duplicateRDD: RDD[Double] = prepare(singleColumnDataset, windowSize)
         duplicateRDD.mapPartitions(_.sliding(windowSize).map(average))
     }
-
+    
     private def average(windowValues: Seq[Double]) = windowValues.sum / windowSize
-
+    
 }

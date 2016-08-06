@@ -14,7 +14,7 @@ import org.apache.spark.rdd.RDD
 class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends ImputationStrategy {
     private var slope: Double = 0
     private var intercept: Double = 0
-
+    
     override def prepareSubstitute(tRdd: TransformableRDD, missingDataColumn: Int): Unit = {
         val rdd: TransformableRDD = tRdd.removeRows((row) => {
             row.select(missingDataColumn).trim.isEmpty || row.select(independentColumn).trim.isEmpty
@@ -23,27 +23,27 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
         val xSquareRDD: RDD[Double] = rdd.multiplyColumns(independentColumn, independentColumn)
         val yRDD: RDD[Double] = rdd.toDoubleRDD(missingDataColumn)
         val xRDD: RDD[Double] = rdd.toDoubleRDD(independentColumn)
-
+        
         val sumOfXY: Double = xyRDD.sum()
         val sumOfSquareRDD: Double = xSquareRDD.sum()
         val sumOfX: Double = xRDD.sum()
         val sumOfY: Double = yRDD.sum()
-
+        
         val count: Long = xSquareRDD.count()
         setSlope(sumOfX, sumOfY, sumOfXY, sumOfSquareRDD, count)
         setIntercept(sumOfX, sumOfY, count)
     }
-
+    
     def setSlope(sumOfXs: Double, sumOfYs: Double, sumOfXYs: Double, sumOfSquared: Double, count: Long): Unit = {
         val nominator: Double = (count * sumOfXYs) - (sumOfXs * sumOfYs)
         val denominator: Double = (count * sumOfSquared) - sumOfXs * sumOfXs
         slope = nominator / denominator
     }
-
+    
     def setIntercept(sumOfXs: Double, sumOfYs: Double, count: Long): Unit = {
         intercept = (sumOfYs - (slope * sumOfXs)) / count
     }
-
+    
     override def handleMissingData(record: RowRecord): String = {
         val independentValue: String = record.select(independentColumn)
         try {

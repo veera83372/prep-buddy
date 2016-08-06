@@ -5,9 +5,9 @@ import scala.collection.mutable.ListBuffer
 
 class TestReport {
     private val results: ListBuffer[TestResult] = mutable.ListBuffer.empty
-
+    
     def add(testResults: TestResult): Unit = results += testResults
-
+    
     def show(): Unit = {
         println("=====================================================================================================")
         results.foreach(result => println(result.getOutcome + "\r\n"))
@@ -16,6 +16,6 @@ class TestReport {
         println("-> " + passedCount + " Test Passed and " + failedCount + " Test has been Failed.")
         println("=====================================================================================================")
     }
-
+    
     def hasFailingTest: Boolean = results.exists(_.isFailed)
 }

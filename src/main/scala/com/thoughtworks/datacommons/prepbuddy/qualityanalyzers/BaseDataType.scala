@@ -2,7 +2,7 @@ package com.thoughtworks.datacommons.prepbuddy.qualityanalyzers
 
 abstract class BaseDataType extends Serializable {
     def actualType(sampleData: List[String]): DataType
-
+    
     protected def checkActualType(sampleData: List[String], subtypes: Array[DataType]): DataType = {
         subtypes.find(_.isOfType(sampleData)).getOrElse(ALPHANUMERIC_STRING)
     }
@@ -22,7 +22,7 @@ object STRING extends BaseDataType {
         TIMESTAMP,
         CATEGORICAL_STRING
     )
-
+    
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
     }
@@ -38,7 +38,7 @@ object NUMERIC extends BaseDataType {
         LONGITUDE,
         DECIMAL
     )
-
+    
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
     }
@@ -50,7 +50,7 @@ object ALPHANUMERIC extends BaseDataType {
         MOBILE_NUMBER,
         IP_ADDRESS
     )
-
+    
     override def actualType(sampleData: List[String]): DataType = {
         super.checkActualType(sampleData, subtypes)
     }

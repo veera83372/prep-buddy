@@ -15,13 +15,13 @@ import org.apache.spark.api.java.{JavaDoubleRDD, JavaRDD}
 import scala.collection.JavaConverters._
 
 class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends JavaRDD[String](rdd.rdd) {
-
+    
     private val tRDD: TransformableRDD = new TransformableRDD(rdd.rdd, fileType)
-
+    
     def this(rdd: JavaRDD[String]) {
         this(rdd, CSV)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD containing only the elements that satisfy the matchInDictionary.
       *
@@ -31,7 +31,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def removeRows(rowPurger: RowPurger): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.removeRows(rowPurger.evaluate).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD containing unique duplicate records of this JavaTransformableRDD
       * by considering the given columns as primary key.
@@ -43,7 +43,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.asScala.toList)
         new JavaTransformableRDD(tRDD.deduplicate(scalaList).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD containing unique duplicate records of this JavaTransformableRDD
       * by considering all the columns as primary key.
@@ -51,7 +51,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @return JavaTransformableRDD A new JavaTransformableRDD consisting unique duplicate records.
       */
     def deduplicate: JavaTransformableRDD = new JavaTransformableRDD(tRDD.deduplicate().toJavaRDD(), fileType)
-
+    
     /**
       * Returns a new JavaTransformableRDD containing unique duplicate records of this
       * JavaTransformableRDD by considering the given columns as primary key.
@@ -63,7 +63,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.asScala.toList)
         new JavaTransformableRDD(tRDD.duplicates(scalaList).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD containing unique duplicate records of this JavaTransformableRDD
       * by considering all the columns as primary key.
@@ -71,7 +71,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @return JavaTransformableRDD A new JavaTransformableRDD consisting unique duplicate records.
       */
     def duplicates: JavaTransformableRDD = new JavaTransformableRDD(tRDD.duplicates().toJavaRDD(), fileType)
-
+    
     /**
       * Returns a new JavaTransformableRDD by imputing missing values and @missingHints of the @columnIndex
       * using the @strategy
@@ -85,7 +85,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.impute(columnIndex, strategy, missingHints.asScala.toList), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by imputing missing values of the @columnIndex using the @strategy
       *
@@ -96,7 +96,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def impute(columnIndex: Int, strategy: ImputationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.impute(columnIndex, strategy).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaDoubleRDD containing smoothed values of @columnIndex using @smoothingMethod
       *
@@ -107,7 +107,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def smooth(columnIndex: Int, smoothingMethod: SmoothingMethod): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.smooth(columnIndex, smoothingMethod))
     }
-
+    
     /**
       * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
       *
@@ -118,7 +118,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def clusters(columnIndex: Int, clusteringAlgorithm: ClusteringAlgorithm): JavaClusters = {
         new JavaClusters(tRDD.clusters(columnIndex, clusteringAlgorithm))
     }
-
+    
     /**
       * Returns a new TextFacet containing the cardinal values of @columnIndex
       *
@@ -126,7 +126,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @return TextFacets
       */
     def listFacets(columnIndex: Int): TextFacets = tRDD.listFacets(columnIndex)
-
+    
     /**
       * Returns a new TextFacet containing the facets of @columnIndexes
       *
@@ -136,9 +136,9 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def listFacets(columnIndexes: util.List[Integer]): TextFacets = {
         tRDD.listFacets(asScalaIntList(columnIndexes.asScala.toList))
     }
-
+    
     private def asScalaIntList(ls: List[Integer]): List[Int] = ls.map(x => x: Int)
-
+    
     /**
       * Returns a new JavaTransformableRDD by normalizing values of the given column using different Normalizers
       *
@@ -149,7 +149,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def normalize(columnIndex: Int, normalizer: NormalizationStrategy): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.normalize(columnIndex, normalizer).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD containing values of @columnIndexes
       *
@@ -160,7 +160,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val scalaList: List[Int] = asScalaIntList(columnIndexes.asScala.toList)
         new JavaTransformableRDD(tRDD.select(scalaList).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a JavaRDD of given column
       *
@@ -170,14 +170,14 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def select(columnIndex: Int): JavaRDD[String] = {
         tRDD.select(columnIndex).toJavaRDD()
     }
-
+    
     /**
       * Returns number of column in this rdd
       *
       * @return Int
       */
     def numberOfColumns: Int = tRDD.numberOfColumns()
-
+    
     /**
       * Generates a PivotTable by pivoting data in the pivotalColumn
       *
@@ -188,7 +188,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def pivotByCount(pivotalColumn: Int, independentColumnIndexes: util.List[Integer]): PivotTable[Integer] = {
         tRDD.pivotByCount(pivotalColumn, asScalaIntList(independentColumnIndexes.asScala.toList))
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by merging @columnIndexes with default separator
       *
@@ -198,7 +198,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def mergeColumns(columnIndexes: util.List[Integer]): JavaTransformableRDD = {
         mergeColumns(columnIndexes = columnIndexes, " ", retainColumns = false)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by merging @columnIndexes
       *
@@ -213,7 +213,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val mergedRDD: JavaRDD[String] = tRDD.mergeColumns(toScalaList, separator, retainColumns).toJavaRDD()
         new JavaTransformableRDD(mergedRDD, fileType)
     }
-
+    
     /**
       * Returns a JavaTransformableRDD by splitting the @column according to the specified lengths
       *
@@ -228,7 +228,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val splitRDD: JavaRDD[String] = tRDD.splitByFieldLength(columnIndex, toScalaList, retainColumn).toJavaRDD()
         new JavaTransformableRDD(splitRDD, fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by splitting the @column by the delimiter provided
       *
@@ -241,7 +241,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val rdd: JavaRDD[String] = tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn).toJavaRDD()
         new JavaTransformableRDD(rdd, fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by splitting the @column by the delimiter provided
       *
@@ -256,7 +256,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val rdd: JavaRDD[String] = tRDD.splitByDelimiter(columnIndex, delimiter, retainColumn, maxSplit).toJavaRDD()
         new JavaTransformableRDD(rdd, fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD that contains records flagged by @symbol
       * based on the evaluation of @markerPredicate
@@ -268,7 +268,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def flag(symbol: String, markerPredicate: MarkerPredicate): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.flag(symbol, markerPredicate.evaluate).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by applying the function on all rows marked as @flag
       *
@@ -281,7 +281,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val mappedRDD: JavaRDD[String] = tRDD.mapByFlag(symbol, symbolColumnIndex, function.call).toJavaRDD()
         new JavaTransformableRDD(mappedRDD, fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by dropping the @columnIndex
       *
@@ -291,7 +291,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def drop(columnIndex: Int): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.drop(columnIndex).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaRDD[String] containing the duplicate values at the specified column
       *
@@ -299,7 +299,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @return JavaRDD[String]
       */
     def duplicatesAt(columnIndex: Int): JavaRDD[String] = tRDD.duplicatesAt(columnIndex).toJavaRDD()
-
+    
     /**
       * Zips the other JavaTransformableRDD with this TransformableRDD and
       * returns a new JavaTransformableRDD with current file format.
@@ -311,7 +311,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def addColumnsFrom(other: JavaTransformableRDD): JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.addColumnsFrom(other.tRDD).toJavaRDD(), fileType)
     }
-
+    
     /**
       * Returns a new JavaTransformableRDD by replacing the @cluster's text with specified @newValue
       *
@@ -324,7 +324,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         val replacedRDD: JavaRDD[String] = tRDD.replaceValues(cluster.scalaCluster, newValue, columnIndex).toJavaRDD()
         new JavaTransformableRDD(replacedRDD, fileType)
     }
-
+    
     /**
       * Returns a new JavaRDD containing the unique elements in the specified column
       *
@@ -332,7 +332,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @return JavaRDD[String]
       */
     def unique(columnIndex: Int): JavaRDD[String] = tRDD.unique(columnIndex).toJavaRDD()
-
+    
     /**
       * Returns a JavaDoubleRDD which is a product of the values in @firstColumn and @secondColumn
       *
@@ -343,7 +343,7 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def multiplyColumns(firstColumn: Int, secondColumn: Int): JavaDoubleRDD = {
         new JavaDoubleRDD(tRDD.multiplyColumns(firstColumn, secondColumn))
     }
-
+    
     /**
       * Returns a JavaDoubleRdd of given column index
       *

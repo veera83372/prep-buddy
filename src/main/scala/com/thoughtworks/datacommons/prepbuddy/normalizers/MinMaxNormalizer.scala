@@ -9,16 +9,16 @@ import com.thoughtworks.datacommons.prepbuddy.rdds.TransformableRDD
   * where (C,D) is the range and A is the value.
   */
 class MinMaxNormalizer(minRange: Int = 0, maxRange: Int = 1) extends NormalizationStrategy {
-
+    
     private var maxValue: Double = 0
     private var minValue: Double = 0
-
+    
     override def prepare(transformableRDD: TransformableRDD, columnIndex: Int): Unit = {
         val doubleRDD = transformableRDD.toDoubleRDD(columnIndex)
         maxValue = doubleRDD.max
         minValue = doubleRDD.min
     }
-
+    
     override def normalize(rawValue: String): String = {
         val normalizedValue: Double = (rawValue.toDouble - minValue) / (maxValue - minValue)
         val normalizedValueInRange = normalizedValue * (maxRange - minRange) + minRange

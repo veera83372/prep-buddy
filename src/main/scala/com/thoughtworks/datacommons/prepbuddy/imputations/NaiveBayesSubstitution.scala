@@ -12,7 +12,7 @@ import com.thoughtworks.datacommons.prepbuddy.utils.{NumberMap, PivotTable, Prob
 class NaiveBayesSubstitution(independentColumnIndexes: Array[Int]) extends ImputationStrategy {
     private var probs: PivotTable[Probability] = null
     private var permissibleValues: Array[String] = null
-
+    
     override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
         val trainingSet: TransformableRDD = rdd.removeRows(_.hasEmptyColumn)
         val facets: TextFacets = trainingSet.listFacets(missingDataColumn)
@@ -22,19 +22,19 @@ class NaiveBayesSubstitution(independentColumnIndexes: Array[Int]) extends Imput
             rdd.pivotByCount(missingDataColumn, independentColumnIndexes)
         }
         val totalRows: Long = trainingSet.count()
-
+        
         probs = frequencyTable.transform((eachValue) => {
             val oneProbability: Double = eachValue.toString.toDouble / totalRows
             new Probability(oneProbability)
         }, new Probability(0))
-
+        
         rowKeys.foreach((each) => {
             val probability: Probability = new Probability(each._2.toString.toDouble / totalRows)
             probs.addEntry(each._1, each._1, probability)
         })
-
+        
     }
-
+    
     override def handleMissingData(record: RowRecord): String = {
         val numbers: NumberMap = new NumberMap()
         for (permissibleValue <- permissibleValues) {

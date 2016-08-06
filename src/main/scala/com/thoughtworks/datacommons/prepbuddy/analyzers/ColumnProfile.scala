@@ -6,6 +6,6 @@ class ColumnProfile() {
     //Uniqueness check results
     //Range of values for numeric columns
     //Cardinal values for categorical columns
-
-
+    
+    
 }

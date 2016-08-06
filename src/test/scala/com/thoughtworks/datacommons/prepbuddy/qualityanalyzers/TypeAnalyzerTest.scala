@@ -14,7 +14,7 @@ class TypeAnalyzerTest extends FunSuite {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(DECIMAL eq typeAnalyzer.getType)
     }
-
+    
     test("should Be Able To Give The Type As Decimal For Decimal") {
         val dataSet = List("12", "23", "0.56", ".56", ".23", "0.7654564", "67.44", "34.23", "12.12", "-0.23", "-23.0")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
@@ -60,25 +60,25 @@ class TypeAnalyzerTest extends FunSuite {
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(MOBILE_NUMBER eq typeAnalyzer.getType)
     }
-
+    
     test("should Be Able To Give Type As Mobile Number With Code") {
         val dataSet: List[String] = List("+12 6723459812", "+92 9992345678", "+343 2424432489", "+324 5435454456")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(MOBILE_NUMBER eq typeAnalyzer.getType)
     }
-
+    
     test("should be able to give type as timestamp") {
         val dataSet = List("2010-07-21T08:52:05.222", "2016-05-20T12:51:00.282Z", "2016-05-20T13:04:41.632Z")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(TIMESTAMP eq typeAnalyzer.getType)
     }
-
+    
     test("should Be Able To Detect Longitude As Type") {
         val dataSet: List[String] = List("-122.42045568910925", "-73.9683", "-155.93665", "-107.4799714831678")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)
         assert(LONGITUDE eq typeAnalyzer.getType)
     }
-
+    
     test("should Be Able To Detect LATITUDE As Type") {
         val dataSet: List[String] = List("+40.2201", "+40.7415", "+19.05939", "+36.99409882257", "-82.180507982090035")
         val typeAnalyzer: TypeAnalyzer = new TypeAnalyzer(dataSet)

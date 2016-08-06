@@ -14,6 +14,6 @@ abstract class SmoothingMethod extends Serializable {
         })
         duplicateRDD.partitionBy(new KeyPartitioner(duplicateRDD.getNumPartitions)).map(_._2.toDouble)
     }
-
+    
     def smooth(singleColumnDataset: RDD[String]): RDD[Double]
 }

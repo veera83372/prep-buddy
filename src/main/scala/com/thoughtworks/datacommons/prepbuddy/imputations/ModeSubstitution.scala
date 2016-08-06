@@ -10,11 +10,11 @@ import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
   */
 class ModeSubstitution() extends ImputationStrategy {
     private var mode: (String, Int) = null
-
+    
     override def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int): Unit = {
         val listFacets: TextFacets = rdd.listFacets(missingDataColumn)
         mode = listFacets.highest.head
     }
-
+    
     override def handleMissingData(record: RowRecord): String = mode._1.toString
 }
