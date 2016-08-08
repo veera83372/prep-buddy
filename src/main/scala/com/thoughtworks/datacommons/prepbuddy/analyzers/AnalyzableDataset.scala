@@ -3,6 +3,7 @@ package com.thoughtworks.datacommons.prepbuddy.analyzers
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.datatypes.FieldType
 import com.thoughtworks.datacommons.prepbuddy.analyzers.types.FileType
+import com.thoughtworks.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.{StructField, StructType}
@@ -21,10 +22,14 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
     
     def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {
         val actualFields: Array[StructField] = dataset.schema.fields
+        if (actualFields.length != expectedSchema.fields.length) {
+            throw new ApplicationException(ErrorMessages.NUMBER_OF_COLUMN_DID_NOT_MATCHED)
+        }
+        
         val mismatchedFields: Array[(StructField, StructField)] = expectedSchema.fields
             .zip(actualFields)
-            .filter(fieldPair => fieldPair._1 != fieldPair._2)
-    
+            .filter { case (expected, actual) => expected != actual }
+        
         val mismatchedFieldReports: Array[FieldReport] = mismatchedFields.map {
             case (expected: StructField, actual: StructField) =>
                 new FieldReport(expected, actual, unsatisfiedValuesAt(actual, expected))

@@ -2,6 +2,7 @@ package com.thoughtworks.datacommons.prepbuddy.analyzers
 
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
 import com.thoughtworks.datacommons.prepbuddy.analyzers.types.CSV
+import com.thoughtworks.datacommons.prepbuddy.exceptions.ApplicationException
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.scalatest.FunSuite
@@ -114,6 +115,28 @@ class AnalyzableDatasetTest extends FunSuite {
         assert(reportForOther.expectedFieldName == "Callee")
         
         assert(reportForOther.unsatisfiedContents.count == 0)
+        
+        spark.stop()
+    }
+    
+    test("SCHEMA: should throw exception when original dataset schema has different number of fields than expected") {
+        val spark: SparkSession = getSpark
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
+        object CallRecord {
+            private val user = StructField("user", LongType)
+            private val other = StructField("Callee", LongType)
+            private val location = StructField("Callee", LongType)
+            private val direction = StructField("direction", StringType)
+            private val duration = StructField("duration", IntegerType)
+            
+            def getSchema: StructType = StructType(Array(user, other, direction, duration))
+        }
+        
+        val resultException: ApplicationException = intercept[ApplicationException] {
+            callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
+        }
+        assert(resultException.getMessage == "Number of fields must be same in the expected schema")
         
         spark.stop()
     }
