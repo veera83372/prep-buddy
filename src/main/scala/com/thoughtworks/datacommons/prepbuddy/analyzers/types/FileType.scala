@@ -9,9 +9,8 @@ abstract class FileType {
 object CSV extends FileType {
     override def read(spark: SparkSession, filePath: String, header: Boolean): Dataset[Row] = {
         spark.read
-            .format("com.databricks.spark.csv")
             .option("header", header.toString)
             .option("inferSchema", "true")
-            .load(filePath)
+            .csv(filePath)
     }
 }
