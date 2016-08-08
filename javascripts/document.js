@@ -1,7 +1,7 @@
 
 var appendAll = function() {
 	appendHeading("Deduplicate()", "h4", "deduplicate");
-	var aboutDeduplicate = 'It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.';
+	var aboutDeduplicate = 'It gives a new TransformableRDD with unique values by eliminating the duplicate records.';
 	appendParagraph(aboutDeduplicate);
 	var deduplicateJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
                 'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
@@ -23,7 +23,7 @@ var appendAll = function() {
 	appendExample(deduplicateOutput);
 
 	appendHeading('duplicates()', 'h4', "duplicate");
-	var aboutDuplicates = 'It gives a new JavaTransformableRDD with only the records which has a duplicate entry in the given rdd';
+	var aboutDuplicates = 'It gives a new TransformableRDD with only the records which has a duplicate entry in the given rdd';
 	appendParagraph(aboutDuplicates);
 
 	appendHeading('Example:', 'h4');
@@ -179,7 +179,8 @@ var appendAll = function() {
 	appendCode(['clusters: Clusters = transformedRDD.clusters(2 ,new LevenshteinDistance())'], ['Clusters clusters = transformedRDD.clusters(2 ,new LevenshteinDistance());']);
 	
 	appendHeading('impute(int columnIndex,  ImputationStrategy strategy)', 'h4', 'imputation');
-	appendParagraph('It takes column index and a stategy ImputationStrategy. This method replaces the missing value with the value returned by the strategy.');
+	var aboutImpute = 'It takes column index, ImputationStrategy and an optional parameter missing hints. This method replaces the missing value and given missing hints with the value determined by the strategy.'
+	appendParagraph(aboutImpute);
 	appendParagraph('We have a sample dataset missingCalls.csv: ');
 	var imputationDataset = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
 				'07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
