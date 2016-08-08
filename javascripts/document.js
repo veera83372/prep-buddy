@@ -79,10 +79,7 @@ var appendAll = function() {
 					'marked.saveAsTextFile("flagged-data");'];
 	var flagScalaCode = ['callDataset RDD[String] = sc.textFile("calls.csv")',
 					'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
-					'marked: TransformableRDD = initialRDD.flag("#", (rowRecord) => {',
-					'&nbsp;&nbsp;&nbsp;&nbsp; direction: String = row.select(2)',
-					'&nbsp;&nbsp;&nbsp;&nbsp; direction.equals("Outgoing")',
-					'});',	
+					'marked: TransformableRDD = initialRDD.flag("#", _.select(2).equals("Outgoing"));',	
 					'marked.saveAsTextFile("flagged-data");'];				
 	appendCode(flagScalaCode, flagJavaCode);
 	appendParagraph('It will save the file as "flagged-data" with the following records:');
@@ -105,7 +102,7 @@ var appendAll = function() {
 							'&nbsp;&nbsp;&nbsp;&nbsppublic boolean evaluate(RowRecord row) {',
 							'&nbsp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspString direction = row.select(2);',
 							'&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbspreturn direction.equals("Outgoing");',
-						'}',	
+						'&nbsp;&nbsp;&nbsp;&nbsp}',	
 						'});',
 						'JavaTransformableRDD mapped = marked.mapByFlag("#", 5, new Function<String, String>(){',
 							'&nbsp;&nbsp;&nbsp;&nbsp@Override',
@@ -117,11 +114,8 @@ var appendAll = function() {
 						];
 	var mapByFlagScalaCode = ['callDataset: RDD[String] = sc.textFile("calls.csv")',
 						'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
-						'marked: TransformableRDD = initialRDD.flag("#", (rowRecord) => {',
-						'&nbsp;&nbsp;&nbsp;&nbsp; direction: String = row.select(2)',
-						'&nbsp;&nbsp;&nbsp;&nbsp; direction.equals("Outgoing")',
-						'});',
-						'mapped: TransformableRDD = marked.mapByFlag("#", 5, (row) => "+" + row)',
+						'marked: TransformableRDD = initialRDD.flag("#", _.select(2).equals("Outgoing"));',
+						'mapped: TransformableRDD = marked.mapByFlag("#", 5, "+" + _)',
 						'mapped.saveAsTextFile("marked-data")'
 						];						
 	appendCode(mapByFlagScalaCode, mapByFlagJavaCode);
@@ -152,7 +146,7 @@ var appendAll = function() {
 						];
 	var removeRowScalaCode = ['callDataset: RDD[String] = sc.textFile("calls.csv")',
 						'initialRDD: TransformableRDD = new TransformableRDD(callDataset)',
-						'purged: TransformableRDD = initialRDD.removeRows((rowRecord) => row.select(2).equals("Missed"))',
+						'purged: TransformableRDD = initialRDD.removeRows((row) => row.select(2).equals("Missed"))',
 						'purged.saveAsTextFile("output");'
 						];						
 	appendCode(removeRowScalaCode, removeRowJavaCode);
@@ -180,6 +174,37 @@ var appendAll = function() {
 	appendParagraph('This algorithm groups the item of field if distance between them is very less.  ');
 	appendCode(['clusters: Clusters = transformedRDD.clusters(2 ,new LevenshteinDistance())'], ['Clusters clusters = transformedRDD.clusters(2 ,new LevenshteinDistance());']);
 	
+	appendHeading('replaceValues(Cluster: cluster, String: newValue, int columnIndex)', 'h4', 'replaceValues');
+	var aboutReplaceValues = "It replaces cluster's items with the given new value of the given column index";
+	appendParagraph(aboutReplaceValues);
+	
+	var replaceValueScalaCode = [
+								'val data = Array("one two, three","two one, four")',
+								'val initialDataset: RDD[String] = sparkContext.parallelize(data)',
+								'val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)',
+								'val clusters: Clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm())',
+								'val listOfClusters: List[Cluster] = clusters.getClustersWithSizeGreaterThan(0)',
+								'val cluster: Cluster = listOfClusters.head',
+								'val replacedRDD: TransformableRDD = initialRDD.replaceValues(cluster, "One", 0)',
+								'replacedRDD.collect().forEach(println)'
+								];
+
+	var replaceValueJavaCode = [
+								'List<Integer> data = Arrays.asList("one two, three","two one, four");',
+								'JavaRDD &ltString&gt initialDataset = sparkContext.parallelize(data);',
+								'JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset);',
+								'Clusters clusters = initialRDD.clusters(0, new SimpleFingerprintAlgorithm());',
+								'List &ltCluster&gt listOfClusters = clusters.getClustersWithSizeGreaterThan(0);',
+								'Cluster cluster = listOfClusters.get(0);',
+								'JavaTransformableRDD replacedRDD = initialRDD.replaceValues(cluster, "One", 0);',
+								'List &ltString&gt replacedValues = replacedRDD.collect();',
+								'for(String oneValue: replacedValues){',
+								'&nbsp&nbsp&nbsp&nbsp System.out.println(oneValue);',
+								'}'
+								];
+	appendCode(replaceValueScalaCode, replaceValueJavaCode);
+	appendHeading('Output:', 'h3');
+	appendExample(['One,three', 'One,four']);
 	appendHeading('impute(int columnIndex,  ImputationStrategy strategy)', 'h4', 'imputation');
 	var aboutImpute = 'It takes column index, ImputationStrategy and an optional parameter missing hints. This method replaces the missing value and given missing hints with the value determined by the strategy.'
 	appendParagraph(aboutImpute);
