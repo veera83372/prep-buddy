@@ -5,49 +5,51 @@
 	<link rel="stylesheet" type="text/css" href="../stylesheets/menuBar.css"> 
 	<link rel="stylesheet" type="text/css" href="../stylesheets/gettingStarted.css"> 
 	<script type="text/javascript" src="../javascripts/jquery-1.11.3.min.js"></script>
-	<script type="text/javascript" src="../javascripts/documentGenaretors.js"></script>
+	<script type="text/javascript" src="../javascripts/documentGenaretor.js"></script>
     <script type="text/javascript" src="../javascripts/document.js"></script>
 </head>
 <body>
 	<section class="main">
 		<header>
-          <h1 class="title">Getting Started</h1>
-          <p class="prep-buddy">With Java</p>
-          <ul class="menu">
-              <div class="dropdown">
-                <li class="item dropbtn"><a href="">Download</a></li>
-              </div>
-              <div class="dropdown">
+          <h1 class="title">Getting Started</h1>    
+          <p class="prep-buddy">With Prep Buddy</p>
+
+            <ul class="menu">
+              <li class="item"><a class="active" href="https://github.com/data-commons/prep-buddy/releases/latest" target="_blank">Download</a></li>
+              <li class="item"><a href="http://data-commons.github.io/prep-buddy/html/gettingStarted.html">Getting Started</a></li>
+              <li class="dropdown">
+                <a href="" class="dropbtn">API Documentation</a>
                 <div class="dropdown-content">
-                    <a href="http://data-commons.github.io/prep-buddy/javadocs/" target="_blank">Java Doc</a>
+                  <a href="http://data-commons.github.io/prep-buddy/scaladocs/" target="_blank">Scala Doc</a>
                 </div>
-                <li class="item dropbtn"><a href="">Documentation</a></li>
-              </div>
-              <div class="dropdown">
-                <div class="dropdown-content">
-                    <a href="http://data-commons.github.io/prep-buddy/html/gettingStarted.html" target="_blank">Java</a>
-                </div>
-                <li class="item dropbtn"><a href="">Getting Started</a></li>
-              </div>
-              
-                <li class="item dropbtn"><a href="https://github.com/data-commons" target="_blank">Community</a></li>
-                <li class="item dropbtn"><a href="https://github.com/data-commons/prep-buddy" target="_blank">Git Hub</a></li>
-              
-          </ul>
+              </li>
+              <li class="item"><a href="https://github.com/data-commons" target="_blank">Community</a></li>
+              <li class="item"><a href="https://github.com/data-commons/prep-buddy" target="_blank">Git Hub</a></li>
+            </ul>
         </header>
         <section class="documentation">
         	<p>Download the prep-buddy jar and add it to your project library.</p>
-        	<p>You can start writing spark program with prep buddy by writing the following code</p>	
-        	<div class="code">
-        		<p>TransformableRDD customRDD = new TransformableRDD(initialDataset);</p>
-        	</div>
-        	<p>The TransformableRDD is extended from JavaRDD. So, you will have all the methods available in JavaRDD in TransformableRDD. You will also have the functions that are provided by prep-buddy.</p>
-        	<p>The initialDataset is a JavaRDD of string records. By default TransformableRDD treats the given JavaRDD as comma separated value (csv). You can also specify the record format as tab separated value (tsv) by providing FileType.TSV as the second parameter of the TransformableRDD constructor.</p>
+        	<p>You can start writing spark program with prep buddy by writing the following code</p>
+            <div>
+                <div class="codeMenu"> 
+                    <button class="scala codeButton btnClicked"> Scala </button> 
+                    <button class="java codeButton"> Java </button> 
+                </div>
+                <div class="code">
+                    <div class="ScalaDoc">
+                      <p>customRDD: TransformableRDD = new TransformableRDD(initialDataset)</p>  
+                    </div>
+                    <div class="JavaDoc zero hidden">
+                      <p>JavaTransformableRDD customRDD = new JavaTransformableRDD(initialDataset);</p>  
+                    </div>
+                </div>    
+            </div>	
+        	
 
         	<h3>Functionalities: </h3>
-        	<p>The TransformableRDD holds all the functionality that could be done over a JavaRDD. It takes an JavaRDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
+        	<p>The TransformableRDD holds all the functionality that could be done over a RDD. It takes an RDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
         	<p></p>
-        	<h4 class="method">Imputation</h4>
+            <a class="method" href="#imputation">Imputation</a>
         	<p>It is the process of replacing missing data with substituted values. The following imputation algorithms have been implemented:</p>
         	<ul class="variation">
 				<li >Approx Mean Based Substitution</li>
@@ -56,51 +58,49 @@
 				<li>Univariate Linear Regression Based Substitution</li>
         		<li>Mean Based Substitution</li>
         	</ul>
-        	<h4 class="method">Faceting: </h4>
+            <a class="method" href="#facet">Faceting</a>
         	<p>It is helpful to find the number of occurrences for each value of a field.</p>
-        	<h4 class="method">Clustering:</h4>
+            <a class="method" href="#cluster">Clustering</a>
         	<p>It is the process Finding the group of different items but could be the alternative representation of the same item.The following imputation algorithms have been implemented</p>
         	<ul class="variation">
         		<li>Simple Fingerprint algorithm</li>
 				<li>N-Gram Fingerprint algorithm</li>	
 				<li>Levenshtein distance algorithm</li>
         	</ul>
-        	<h4 class="method">Deduplicate:</h4>
+            <a class="method" href="#deduplicate">Deduplicate</a>
         	<p>Is the process of removing duplicates from a dataset.</p>
 
-        	<h4 class="method">Duplicate:</h4>	
+            <a class="method" href="#duplicate">Duplicate</a>	
         	<p>It provides only the records which has duplicates entry in the given dataset</p>
 
-        	<h4 class="method">Replace:</h4>
-        	<p>Is the process of replacing given value with substituted value.</p>
 
-        	<h4 class="method">Split Column:</h4>
+            <a class="method" href="">Split Column</a>
         	<p>Is the process of split a field into multiple field.</p>
         	<ul class="variation">
         		<li>By delimiter</li>
 				<li>By length</li>
         	</ul>
 
-        	<h4 class="method">Join Column:</h4>
+            <a class="method" href="">Join Column</a>
         	<p>Is the process of merging two or more fields into one field.</p>
 
-        	<h4 class="method">Flag:</h4>
+            <a class="method" href="#flag">Flag</a>
         	<p>Mark rows by a symbol for a given condition.</p>
 
-        	<h4 class="method">Map ByFlag:</h4>
+            <a class="method" href="#mapByFlag">Map By Flag</a>
         	<p>Map on marked (flag) row.</p>
 
-        	<h4 class="method">Remove Rows:</h4>
+        	<a class="method" href="#removeRows">Remove Rows</a>
         	<p>Removes rows from dataset for a given condition</p>
 
-        	<h4 class="method">Normalization:</h4>
+        	<a class="method" href="">Normalization</a>
         	<ul class="variation">
         		<li>Min Max Normalizer</li>
 				<li>Z Score Normalizer</li>
 				<li>Decimal Scaling Normalizer</li>
         	</ul>
         	
-        	<h4 class="method">Smoothing:</h4>
+        	<a class="method" href="#smoothing">Smoothing</a>
         	<ul class="variation">
         		<li>Simple Moving Average</li>
 				<li>Weighted Moving Average	</li>
@@ -121,20 +121,7 @@
 
         		</p>
         	</div>
-            <h4>Deduplicate</h4>
-            <p>It gives a new TransformableRDD with unique values by eliminating the duplicate records.</p>
-
-            <h4>Example:</h4>
-            <div class="code">
-                JavaRDD<String> callDataset= sc.textFile("calls.csv"); 
-                TransformableRDD initialRDD = new TransformableRDD(callDataset);
-                TransformableRDD deduplicatedRDD = initialRDD.deduplicate();
-                deduplicatedRDD.saveAsTextFile("output");
-            </div>
-
         </section>
-
-
 
 		
 	</section>

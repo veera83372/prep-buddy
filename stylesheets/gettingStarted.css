@@ -1,7 +1,7 @@
 .code {
 	font-size: 18px;
 	background-color: #E4E3DE;
-	padding: 3%;
+	padding: 0% 0 0 1%;
 	overflow: hidden;
 }
 body {
@@ -16,10 +16,12 @@ body {
 
 .method {
 	cursor: pointer;
+	text-decoration: none;
+	color: black;
+	font-weight: 600;
 }
-
-.variation li {
-	cursor: pointer;
+.method:hover {
+	color: blue;
 }
 
 .light {
@@ -28,4 +30,41 @@ body {
 
 .documentation {
 
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+.doc {
+	display: block;
+}
+.zero {
+	height: 0;
+	width: 0;
+}
+.codeMenu {
+	border-bottom: 1px solid #4CAF50;
+}
+.codeButton {
+    background-color: white;
+    border: none;
+    padding: 12px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    outline: none;
+}
+.codeButton:hover {
+	background-color: #B6ACBF;
+}
+.btnClicked {
+	border: 2px solid #4CAF50;
+	border-bottom: 0;
+}
+.codeMainBlock {
+	margin: 5px, 0,0,0
 }
