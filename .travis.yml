@@ -3,7 +3,7 @@ language: scala
 scala:
   - 2.10.4
 install:
-   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Dgpg.skip=true
    - mvn test -B
    - chmod 755 ./setup-project
    - ./setup-project
