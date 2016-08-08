@@ -5,13 +5,13 @@
 	<link rel="stylesheet" type="text/css" href="../stylesheets/menuBar.css"> 
 	<link rel="stylesheet" type="text/css" href="../stylesheets/gettingStarted.css"> 
 	<script type="text/javascript" src="../javascripts/jquery-1.11.3.min.js"></script>
-	<script type="text/javascript" src="../javascripts/documentGenaretors.js"></script>
+	<script type="text/javascript" src="../javascripts/documentGenaretor.js"></script>
     <script type="text/javascript" src="../javascripts/document.js"></script>
 </head>
 <body>
 	<section class="main">
 		<header>
-          <h1 class="title">Getting Started</h1>
+          <h1 class="title">Getting Started</h1>    
           <p class="prep-buddy">With Prep Buddy</p>
 
             <ul class="menu">
@@ -49,7 +49,7 @@
         	<h3>Functionalities: </h3>
         	<p>The TransformableRDD holds all the functionality that could be done over a RDD. It takes an RDD object as constructor parameter. The following functionalities are available on TransformableRDD.</p>
         	<p></p>
-        	<h4 class="method">Imputation</h4>
+            <a class="method" href="#imputation">Imputation</a>
         	<p>It is the process of replacing missing data with substituted values. The following imputation algorithms have been implemented:</p>
         	<ul class="variation">
 				<li >Approx Mean Based Substitution</li>
@@ -58,49 +58,49 @@
 				<li>Univariate Linear Regression Based Substitution</li>
         		<li>Mean Based Substitution</li>
         	</ul>
-        	<h4 class="method">Faceting: </h4>
+            <a class="method" href="#facet">Faceting</a>
         	<p>It is helpful to find the number of occurrences for each value of a field.</p>
-        	<h4 class="method">Clustering:</h4>
+            <a class="method" href="#cluster">Clustering</a>
         	<p>It is the process Finding the group of different items but could be the alternative representation of the same item.The following imputation algorithms have been implemented</p>
         	<ul class="variation">
         		<li>Simple Fingerprint algorithm</li>
 				<li>N-Gram Fingerprint algorithm</li>	
 				<li>Levenshtein distance algorithm</li>
         	</ul>
-        	<h4 class="method">Deduplicate:</h4>
+            <a class="method" href="#deduplicate">Deduplicate</a>
         	<p>Is the process of removing duplicates from a dataset.</p>
 
-        	<h4 class="method">Duplicate:</h4>	
+            <a class="method" href="#duplicate">Duplicate</a>	
         	<p>It provides only the records which has duplicates entry in the given dataset</p>
 
 
-        	<h4 class="method">Split Column:</h4>
+            <a class="method" href="">Split Column</a>
         	<p>Is the process of split a field into multiple field.</p>
         	<ul class="variation">
         		<li>By delimiter</li>
 				<li>By length</li>
         	</ul>
 
-        	<h4 class="method">Join Column:</h4>
+            <a class="method" href="">Join Column</a>
         	<p>Is the process of merging two or more fields into one field.</p>
 
-        	<h4 class="method">Flag:</h4>
+            <a class="method" href="#flag">Flag</a>
         	<p>Mark rows by a symbol for a given condition.</p>
 
-        	<h4 class="method">Map ByFlag:</h4>
+            <a class="method" href="#mapByFlag">Map By Flag</a>
         	<p>Map on marked (flag) row.</p>
 
-        	<h4 class="method">Remove Rows:</h4>
+        	<a class="method" href="#removeRows">Remove Rows</a>
         	<p>Removes rows from dataset for a given condition</p>
 
-        	<h4 class="method">Normalization:</h4>
+        	<a class="method" href="">Normalization</a>
         	<ul class="variation">
         		<li>Min Max Normalizer</li>
 				<li>Z Score Normalizer</li>
 				<li>Decimal Scaling Normalizer</li>
         	</ul>
         	
-        	<h4 class="method">Smoothing:</h4>
+        	<a class="method" href="#smoothing">Smoothing</a>
         	<ul class="variation">
         		<li>Simple Moving Average</li>
 				<li>Weighted Moving Average	</li>
@@ -121,7 +121,6 @@
 
         		</p>
         	</div>
-
         </section>
 
 

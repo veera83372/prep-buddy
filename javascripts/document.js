@@ -1,6 +1,6 @@
 
 var appendAll = function() {
-	appendHeading("Deduplicate()", "h4");
+	appendHeading("Deduplicate()", "h4", "deduplicate");
 	var aboutDeduplicate = 'It gives a new JavaTransformableRDD with unique values by eliminating the duplicate records.';
 	appendParagraph(aboutDeduplicate);
 	var deduplicateJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
@@ -22,7 +22,7 @@ var appendAll = function() {
 							'07456622368,07331532487,Missed,24,Sat Sep 18 13:34:09 +0100 2010']
 	appendExample(deduplicateOutput);
 
-	appendHeading('duplicates()', 'h4');
+	appendHeading('duplicates()', 'h4', "duplicate");
 	var aboutDuplicates = 'It gives a new JavaTransformableRDD with only the records which has a duplicate entry in the given rdd';
 	appendParagraph(aboutDuplicates);
 
@@ -47,7 +47,7 @@ var appendAll = function() {
 	// appendHeading('SplitByDelimiter');
 	// appendParagraph(' takes a string delimiter and a boolean value flagging whether to retain the original column or not.');
 
-	appendHeading('listFacets(int columnIndex):','h4');
+	appendHeading('listFacets(int columnIndex):','h4','facet');
 	appendParagraph('In dataset we want to know the number of occurrences for each value of any field.');
 	appendParagraph('Let say we want facets on direction column. So we just need to pass the column index of direction field to listFacets. It returns a TextFacets object.');
 	var facetJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
@@ -62,7 +62,7 @@ var appendAll = function() {
 	appendParagraph('Output of the above code is:');
 	appendExample(['(Missed, 4)']);
 
-	appendHeading('flag(String symbol, new MarkerPredicate):', 'h4');
+	appendHeading('flag(String symbol, new MarkerPredicate):', 'h4', 'flag');
 	appendParagraph('Flag is useful when we want mark rows as a favorite or important row.So that we can perform some operation on those rows');
 	appendParagraph('Let say we want to mark those row on sample dataset whose field "direction" is "Outgoing" by "#" symbol.  Here is the code for it:');
 	var flagJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
@@ -94,7 +94,7 @@ var appendAll = function() {
 						];
 	appendExample(flagOutput);
 
-	appendHeading('mapByFlag(String symbol, int symbolColumnIndex, Function mapFunction) :', 'h4');
+	appendHeading('mapByFlag(String symbol, int symbolColumnIndex, Function mapFunction) :', 'h4', 'mapByFlag');
 	appendParagraph('We want map only on marked rows ');
 	var mapByFlagJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
 						'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
@@ -134,7 +134,7 @@ var appendAll = function() {
 							];
 	appendExample(mapByFlagOutput);
 
-	appendHeading('removeRows(RowPurger.Predicate predicate):', 'h4');
+	appendHeading('removeRows(RowPurger.Predicate predicate):', 'h4', 'removeRows');
 	appendParagraph('It is useful when we want to remove rows from dataset for a given condition.');
 	appendParagraph('Let say we want to remove those row whose field “direction” is Missed.Here is the code:');
 
@@ -161,7 +161,7 @@ var appendAll = function() {
 							];
 	appendExample(removeRowOutput);
 
-	appendHeading('clusters(int columnIndex, ClusteringAlgorithm algorithm)');
+	appendHeading('clusters(int columnIndex, ClusteringAlgorithm algorithm)', 'h4', 'cluster');
 	appendParagraph('In this method we have to pass the clustering algorithm by which we want to group the similar item in given column index.');
 	appendParagraph('We are introducing three algorithm for clustering');
 	var imputationList = ['Simple Fingerprint algorithm',
@@ -178,7 +178,7 @@ var appendAll = function() {
 	appendParagraph('This algorithm groups the item of field if distance between them is very less.  ');
 	appendCode(['clusters: Clusters = transformedRDD.clusters(2 ,new LevenshteinDistance())'], ['Clusters clusters = transformedRDD.clusters(2 ,new LevenshteinDistance());']);
 	
-	appendHeading('impute(int columnIndex,  ImputationStrategy strategy)', 'h4');
+	appendHeading('impute(int columnIndex,  ImputationStrategy strategy)', 'h4', 'imputation');
 	appendParagraph('It takes column index and a stategy ImputationStrategy. This method replaces the missing value with the value returned by the strategy.');
 	appendParagraph('We have a sample dataset missingCalls.csv: ');
 	var imputationDataset = ['07681546436,07289049655,Missed,11,Sat Sep 18 01:54:03 +0100 2010',
@@ -323,7 +323,7 @@ var appendAll = function() {
 									'2007,5'
 								];
 	appendExample(simpleSmoothingDataset);
-	appendHeading('Smoothing By Simple Moving Average:', 'h3');
+	appendHeading('Smoothing By Simple Moving Average:', 'h3', 'smoothing');
 	appendParagraph('To smooth data by Simple Moving Average we need to specify the window size to the constructor');
 	var simpleSmoothingJavaCode = ['JavaRDD<String> callDataset= sc.textFile("sales.csv");',
 								'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',

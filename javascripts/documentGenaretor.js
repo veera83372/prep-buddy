@@ -1,12 +1,14 @@
-var appendHeading = function(heading, headTag) {
-	var haddingHTML = '<headTag>heading</headTag>'
+var appendHeading = function(heading, headTag, id) {
+	id = id || '';
+	var haddingHTML = '<headTag id="ID">heading</headTag>';
 	var replacement = {
 		'heading' : heading,
-		'headTag' : headTag
+		'headTag' : headTag,
+		'ID' : id
 	}
-	haddingHTML = haddingHTML.replace(/heading|headTag/g, function(x) {
+	haddingHTML = haddingHTML.replace(/heading|headTag|ID/g, function(x) {
 		return 	replacement[x];
-	})
+	});
 	$('.documentation').append(haddingHTML);
 }
 
@@ -19,7 +21,7 @@ var appendList = function(list, className) {
 	html = html.replace(/className/, className);
 	$('.documentation').append(html);
 }
-// var codeMenu =  '<ul class="menu"> <li class="item dropbtn"><div class="scala">Scala</div></li> <li class="item dropbtn"> <div class="Java">Java</div></li> </ul>'
+
 var codeDivWithButtons =  '<div class="codeMenu"> <button class="scala codeButton btnClicked"> Scala </button> <button class="java codeButton"> Java </button> </div>'
 var appendCode = function() {
 	var id = 0;

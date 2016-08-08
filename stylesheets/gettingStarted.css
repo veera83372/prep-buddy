@@ -16,10 +16,12 @@ body {
 
 .method {
 	cursor: pointer;
+	text-decoration: none;
+	color: black;
+	font-weight: 600;
 }
-
-.variation li {
-	cursor: pointer;
+.method:hover {
+	color: blue;
 }
 
 .light {
