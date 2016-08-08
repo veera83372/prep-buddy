@@ -1,7 +1,8 @@
 
 var appendAll = function() {
 	appendHeading("Deduplicate()", "h4", "deduplicate");
-	var aboutDeduplicate = 'It gives a new TransformableRDD with unique values by eliminating the duplicate records.';
+	var aboutDeduplicate = 'It gives a new TransformableRDD with unique values by eliminating the duplicates considring every columns as primary key. </br>'+
+	 'Also consideres the given columns as primary key <b>if given</b>.';
 	appendParagraph(aboutDeduplicate);
 	var deduplicateJavaCode = ['JavaRDD<String> callDataset= sc.textFile("calls.csv");',
                 'JavaTransformableRDD initialRDD = new JavaTransformableRDD(callDataset);',
@@ -23,7 +24,8 @@ var appendAll = function() {
 	appendExample(deduplicateOutput);
 
 	appendHeading('duplicates()', 'h4', "duplicate");
-	var aboutDuplicates = 'It gives a new TransformableRDD with only the records which has a duplicate entry in the given rdd';
+	var aboutDuplicates = 'It gives a new TransformableRDD with only the records which has a duplicate entry in the given rdd considring every columns as primary key. </br>'+
+	 'Also consideres the given columns as primary key <b>if given</b>.';
 	appendParagraph(aboutDuplicates);
 
 	appendHeading('Example:', 'h4');
