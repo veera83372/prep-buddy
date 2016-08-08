@@ -1,4 +1,4 @@
-package com.thoughtworks.datacommons.prepbuddy.analyzers
+package com.thoughtworks.datacommons.prepbuddy.analyzers.types
 
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 

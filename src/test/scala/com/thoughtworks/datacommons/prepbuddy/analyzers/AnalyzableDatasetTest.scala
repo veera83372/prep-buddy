@@ -1,16 +1,18 @@
 package com.thoughtworks.datacommons.prepbuddy.analyzers
 
+import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
+import com.thoughtworks.datacommons.prepbuddy.analyzers.types.CSV
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.scalatest.FunSuite
 
 //07610039694,07434677419,Incoming,211,Wed Sep 15 19:17:44 +0100 2010
-case class CallDataRecord(caller: String, callee: String, callType: String,
-                          callDuration: Long, callInitiatedAt: String)
+//case class CallDataRecord(caller: String, callee: String, callType: String,
+//                          callDuration: Long, callInitiatedAt: String)
 
 object CallRecord {
     private val user = StructField("user", LongType)
-    private val other = StructField("Other", LongType)
+    private val other = StructField("Other", IntegerType)
     private val direction = StructField("direction", StringType)
     private val duration = StructField("duration", IntegerType)
     private val timestamp = StructField("timestamp", StringType)
@@ -29,11 +31,6 @@ class AnalyzableDatasetTest extends FunSuite {
         
         import sparkSession.implicits._
         val dataset: Dataset[String] = sparkSession.read.text("data/calls.csv").as[String]
-        //        val callsDataset: Dataset[CallDataRecord] = dataset.map((record: String) => {
-        //            val columns: Array[String] = record.split(",")
-        //            CallDataRecord(columns(0), columns(1), columns(2), columns(3).toLong, columns(4))
-        //        })
-        //        callsDataset.printSchema()
         
         val analyzableDataset: AnalyzableDataset = new AnalyzableDataset(sparkSession, "data/calls.csv", CSV)
         val struct =
@@ -58,18 +55,65 @@ class AnalyzableDatasetTest extends FunSuite {
             .getOrCreate()
     }
     
-    test("should be able to find the difference of schema") {
+    test("SCHEMA: should be able to find the difference of schema") {
         val spark: SparkSession = getSpark
         val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         
         val expected: Array[(StructField, StructField)] = Array(
-            (StructField("Other", LongType), StructField("other", LongType))
+            (StructField("Other", IntegerType), StructField("other", LongType))
         )
         
         val mismatch: Array[(StructField, StructField)] = callRecordSchemaProfile.schemaDifference
         assert(mismatch.head._1 == expected.head._1)
         assert(mismatch.head._2 == expected.head._2)
+        
+        spark.stop()
+    }
+    
+    test("SCHEMA: should be able to find the values that are not of expected type") {
+        val spark: SparkSession = getSpark
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
+        val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
+        val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Other")
+        
+        assert(reportForOther.unsatisfiedContents.schema.fields.head.name == "other")
+        
+        assert(reportForOther.unsatisfiedContents.count == 11224)
+        assert(reportForOther.actualDataType == LongType)
+        assert(reportForOther.expectedDataType == IntegerType)
+        assert(reportForOther.actualFieldName == "other")
+        assert(reportForOther.expectedFieldName == "Other")
+        
+        spark.stop()
+    }
+    
+    test("SCHEMA: should return empty dataframe when type matches but the column names are different") {
+        val spark: SparkSession = getSpark
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
+        object CallRecord {
+            private val user = StructField("user", LongType)
+            private val other = StructField("Callee", LongType)
+            private val direction = StructField("direction", StringType)
+            private val duration = StructField("duration", IntegerType)
+            private val timestamp = StructField("timestamp", StringType)
+            
+            def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
+        }
+        
+        val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
+        val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Callee")
+        
+        assert(reportForOther.unsatisfiedContents.schema.fields.head.name == "other")
+        
+        assert(reportForOther.actualDataType == LongType)
+        assert(reportForOther.expectedDataType == LongType)
+        assert(reportForOther.actualFieldName == "other")
+        assert(reportForOther.expectedFieldName == "Callee")
+        
+        assert(reportForOther.unsatisfiedContents.count == 0)
         
         spark.stop()
     }
