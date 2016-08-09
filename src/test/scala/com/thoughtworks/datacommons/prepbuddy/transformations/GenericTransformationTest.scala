@@ -15,7 +15,10 @@ class GenericTransformationTest extends SparkTestCase {
         )
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
-        val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(new LogicalTransformation())
+
+        val transformation: GenericTransformation = new LogicalTransformation().IF(0,1,2)
+        val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(transformation)
+
         val actual: Array[String] = appendedColumnRDD.collect()
         assert(actual(0).equals("true,standard deviation,error,standard deviation"))
         assert(actual(1).equals("false,sinFunction,cosFunction,cosFunction"))
