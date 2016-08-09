@@ -11,7 +11,7 @@ class GenericTransformationTest extends SparkTestCase {
             "true, standard deviation ,error ",
             "false, sinFunction, cosFunction",
             "False, logFunction,null",
-            ",variance,cosineFunction"
+            "xyz,variance,cosineFunction"
         )
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
@@ -23,7 +23,7 @@ class GenericTransformationTest extends SparkTestCase {
         assert(actual(0).equals("true,standard deviation,error,standard deviation"))
         assert(actual(1).equals("false,sinFunction,cosFunction,cosFunction"))
         assert(actual(2).equals("False,logFunction,null,null"))
-        assert(actual(3).equals(",variance,cosineFunction,"))
+        assert(actual(3).equals("xyz,variance,cosineFunction,null"))
     }
 
 }
