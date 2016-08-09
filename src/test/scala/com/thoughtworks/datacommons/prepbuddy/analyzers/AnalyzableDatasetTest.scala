@@ -1,8 +1,8 @@
 package com.thoughtworks.datacommons.prepbuddy.analyzers
 
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
-import com.thoughtworks.datacommons.prepbuddy.analyzers.types.CSV
 import com.thoughtworks.datacommons.prepbuddy.exceptions.ApplicationException
+import com.thoughtworks.datacommons.prepbuddy.types.CSV
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Dataset, SparkSession}
 import org.scalatest.FunSuite

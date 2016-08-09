@@ -2,8 +2,8 @@ package com.thoughtworks.datacommons.prepbuddy.analyzers
 
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.datatypes.FieldType
-import com.thoughtworks.datacommons.prepbuddy.analyzers.types.FileType
 import com.thoughtworks.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
+import com.thoughtworks.datacommons.prepbuddy.types.FileType
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.{StructField, StructType}
