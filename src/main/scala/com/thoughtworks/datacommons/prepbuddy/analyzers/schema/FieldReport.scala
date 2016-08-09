@@ -3,8 +3,8 @@ package com.thoughtworks.datacommons.prepbuddy.analyzers.schema
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataType, StructField}
 
-class FieldReport(expected: StructField, actual: StructField, unsatisfiedValues: DataFrame) extends Serializable {
-    def unsatisfiedContents: DataFrame = unsatisfiedValues
+class FieldReport(expected: StructField, actual: StructField, nonCompliantDataset: DataFrame) extends Serializable {
+    def nonCompliantValues: DataFrame = nonCompliantDataset
     
     def actualFieldName: String = actual.name
     

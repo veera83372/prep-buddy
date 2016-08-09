@@ -74,9 +74,9 @@ class AnalyzableDatasetTest extends FunSuite {
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Other")
         
-        assert(reportForOther.unsatisfiedContents.schema.fields.head.name == "other")
+        assert(reportForOther.nonCompliantValues.schema.fields.head.name == "other")
         
-        assert(reportForOther.unsatisfiedContents.count == 11224)
+        assert(reportForOther.nonCompliantValues.count == 11224)
         assert(reportForOther.actualDataType == LongType)
         assert(reportForOther.expectedDataType == IntegerType)
         assert(reportForOther.actualFieldName == "other")
@@ -99,14 +99,14 @@ class AnalyzableDatasetTest extends FunSuite {
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Callee")
         
-        assert(reportForOther.unsatisfiedContents.schema.fields.head.name == "other")
+        assert(reportForOther.nonCompliantValues.schema.fields.head.name == "other")
         
         assert(reportForOther.actualDataType == LongType)
         assert(reportForOther.expectedDataType == LongType)
         assert(reportForOther.actualFieldName == "other")
         assert(reportForOther.expectedFieldName == "Callee")
         
-        assert(reportForOther.unsatisfiedContents.count == 0)
+        assert(reportForOther.nonCompliantValues.count == 0)
     }
     
     test("SCHEMA: should throw exception when original dataset schema has different number of fields than expected") {
