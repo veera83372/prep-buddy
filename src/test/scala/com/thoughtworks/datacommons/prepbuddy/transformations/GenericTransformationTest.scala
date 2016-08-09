@@ -16,7 +16,7 @@ class GenericTransformationTest extends SparkTestCase {
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
 
-        val transformation: GenericTransformation = new LogicalTransformation().IF(0,1,2)
+        val transformation: GenericTransformation = new LogicalTransformation().IF(0, 1, 2)
         val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(transformation)
 
         val actual: Array[String] = appendedColumnRDD.collect()
@@ -25,5 +25,28 @@ class GenericTransformationTest extends SparkTestCase {
         assert(actual(2).equals("False,logFunction,null,null"))
         assert(actual(3).equals("xyz,variance,cosineFunction,null"))
     }
+
+    test("should be able to perform a operation and append a column based on and condition") {
+        val dataSet = Array(
+            "true, true ,true ",
+            "false, true, true",
+            "False,false,false",
+            "true,false,true",
+            "xyz,a,b"
+        )
+        val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
+        val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
+
+        val transformation: GenericTransformation = new LogicalTransformation().AND(0, 1, 2)
+        val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(transformation)
+
+        val actual: Array[String] = appendedColumnRDD.collect()
+        assert(actual(0).equals("true,true,true,true"))
+        assert(actual(1).equals("false,true,true,false"))
+        assert(actual(2).equals("False,false,false,false"))
+        assert(actual(3).equals("true,false,true,false"))
+        assert(actual(4).equals("xyz,a,b,null"))
+    }
+
 
 }
