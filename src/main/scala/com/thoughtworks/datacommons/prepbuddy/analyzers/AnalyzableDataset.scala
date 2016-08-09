@@ -22,6 +22,7 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
     
     def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {
         val actualFields: Array[StructField] = dataset.schema.fields
+    
         if (actualFields.length != expectedSchema.fields.length) {
             throw new ApplicationException(ErrorMessages.NUMBER_OF_COLUMN_DID_NOT_MATCHED)
         }
