@@ -5,6 +5,19 @@ import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
 import scala.util.control.Exception._
 
 class LogicalTransformation {
+    def OR(indexes: Int*): GenericTransformation = {
+        new GenericTransformation {
+            override def apply(rowRecord: RowRecord): Any = {
+                indexes.foreach(item=> {
+                    val headOption: Option[Boolean] = allCatch.opt(rowRecord(item).toBoolean)
+                    if(headOption.isEmpty) return "null"
+                    if(rowRecord(item).toBoolean) return "true"
+                })
+                "false"
+            }
+        }
+    }
+
     def AND(indexes: Int*): GenericTransformation = {
         new GenericTransformation {
             override def apply(rowRecord: RowRecord): Any = {
