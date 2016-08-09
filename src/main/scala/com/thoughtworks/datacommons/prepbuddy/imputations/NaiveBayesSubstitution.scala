@@ -41,7 +41,7 @@ class NaiveBayesSubstitution(independentColumnIndexes: Array[Int]) extends Imput
             var naiveProbability: Probability = new Probability(1)
             val permissibleProb: Probability = probs.valueAt(permissibleValue, permissibleValue)
             independentColumnIndexes.foreach((columnIndex) => {
-                val columnValue: String = record.select(columnIndex).trim
+                val columnValue: String = record(columnIndex).trim
                 val probability: Probability = probs.valueAt(permissibleValue, columnValue)
                 naiveProbability = naiveProbability.multiply(probability.divide(permissibleProb))
             })

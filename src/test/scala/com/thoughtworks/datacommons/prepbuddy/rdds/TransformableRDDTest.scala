@@ -80,7 +80,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
         val predicate = (record: RowRecord) => {
-            val valueAt: String = record.select(0)
+            val valueAt: String = record(0)
             valueAt.equals("A") || valueAt.equals("B")
         }
         val finalRDD: TransformableRDD = transformableRDD.removeRows(predicate)
@@ -205,7 +205,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         
         val flagged: TransformableRDD = initialRDD.flag("*", (rowRecord: RowRecord) => {
-            rowRecord.select(1).equals("Female")
+            rowRecord(1).equals("Female")
         })
         assert(5 == flagged.numberOfColumns())
         
@@ -227,7 +227,7 @@ class TransformableRDDTest extends SparkTestCase {
         val initialRDD: TransformableRDD = new TransformableRDD(initialDataset)
         
         val flagged: TransformableRDD = initialRDD.flag("*", (rowRecord: RowRecord) => {
-            rowRecord.select(1).equals("Female")
+            rowRecord(1).equals("Female")
         })
         assert(5 == flagged.numberOfColumns())
         

@@ -2,10 +2,7 @@ package com.thoughtworks.datacommons.prepbuddy.transformations
 
 import com.thoughtworks.datacommons.prepbuddy.SparkTestCase
 import com.thoughtworks.datacommons.prepbuddy.rdds.TransformableRDD
-import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
-
-import scala.util.control.Exception._
 
 class GenericTransformationTest extends SparkTestCase {
 
@@ -18,17 +15,7 @@ class GenericTransformationTest extends SparkTestCase {
         )
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD)
-        val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(new GenericTransformation() {
-            override def apply(rowRecord: RowRecord): Any = {
-                val firstColumn: String = rowRecord.select(0)
-                val headOption: Option[Boolean] = allCatch.opt(firstColumn.toBoolean)
-                if (headOption.isDefined) {
-                    if (firstColumn.toBoolean) rowRecord.select(1) else rowRecord.select(2)
-                } else {
-                    ""
-                }
-            }
-        })
+        val appendedColumnRDD: TransformableRDD = transformableRDD.appendNewColumn(new LogicalTransformation())
         val actual: Array[String] = appendedColumnRDD.collect()
         assert(actual(0).equals("true,standard deviation,error,standard deviation"))
         assert(actual(1).equals("false,sinFunction,cosFunction,cosFunction"))

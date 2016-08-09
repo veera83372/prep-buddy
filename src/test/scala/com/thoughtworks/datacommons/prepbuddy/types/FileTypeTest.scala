@@ -9,9 +9,9 @@ class FileTypeTest extends FunSuite {
     
         val expected: RowRecord = new RowRecord(Array("Name", "Gender", "Age"))
     
-        assert(actual.select(0) == expected.select(0))
-        assert(actual.select(1) == expected.select(1))
-        assert(actual.select(2) == expected.select(2))
+        assert(actual(0) == expected(0))
+        assert(actual(1) == expected(1))
+        assert(actual(2) == expected(2))
     }
     
     test("should generate RowRecord into CSV format") {
@@ -27,9 +27,9 @@ class FileTypeTest extends FunSuite {
         
         val expected: RowRecord = new RowRecord(Array("Name", "Gender", "Age"))
         
-        assert(actual.select(0) == expected.select(0))
-        assert(actual.select(1) == expected.select(1))
-        assert(actual.select(2) == expected.select(2))
+        assert(actual(0) == expected(0))
+        assert(actual(1) == expected(1))
+        assert(actual(2) == expected(2))
     }
     
     test("should generate RowRecord into TSV format") {
