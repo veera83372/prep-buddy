@@ -11,26 +11,30 @@ import org.scalatest.FunSuite
 //case class CallDataRecord(caller: String, callee: String, callType: String,
 //                          callDuration: Long, callInitiatedAt: String)
 
-object CallRecord {
-    private val user = StructField("user", LongType)
-    private val other = StructField("Other", IntegerType)
-    private val direction = StructField("direction", StringType)
-    private val duration = StructField("duration", IntegerType)
-    private val timestamp = StructField("timestamp", StringType)
-    
-    def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
-}
-
 class AnalyzableDatasetTest extends FunSuite {
     
-    ignore("shouldValidateSchema") {
-        val sparkSession: SparkSession = SparkSession
+    def sparkSession: SparkSession = {
+        SparkSession
             .builder()
             .master("local[2]")
             .appName(getClass.getCanonicalName)
             .getOrCreate()
+    }
+    
+    object CallRecord {
+        private val user = StructField("user", LongType)
+        private val other = StructField("Other", IntegerType)
+        private val direction = StructField("direction", StringType)
+        private val duration = StructField("duration", IntegerType)
+        private val timestamp = StructField("timestamp", StringType)
         
-        import sparkSession.implicits._
+        def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
+    }
+    
+    ignore("shouldValidateSchema") {
+        val spark = sparkSession
+        
+        import spark.implicits._
         val dataset: Dataset[String] = sparkSession.read.text("data/calls.csv").as[String]
         
         val analyzableDataset: AnalyzableDataset = new AnalyzableDataset(sparkSession, "data/calls.csv", CSV)
@@ -45,37 +49,28 @@ class AnalyzableDatasetTest extends FunSuite {
         val completenessProfile = analyzableDataset.analyzeCompleteness(new RowCompletenessRule())
         
         val columnProfile = analyzableDataset.analyzeColumn("column-name", new ColumnRules())
-        sparkSession.stop()
     }
     
-    def getSpark: SparkSession = {
-        SparkSession
-            .builder()
-            .master("local[2]")
-            .appName(getClass.getCanonicalName)
-            .getOrCreate()
-    }
     
     test("SCHEMA: should be able to find the difference of schema") {
-        val spark: SparkSession = getSpark
+        val spark = sparkSession
+        
         val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
-        val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
+        val schemaComplianceProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         
         val expected: Array[(StructField, StructField)] = Array(
             (StructField("Other", IntegerType), StructField("other", LongType))
         )
-        
-        val mismatch: Array[(StructField, StructField)] = callRecordSchemaProfile.schemaDifference
+    
+        val mismatch: Array[(StructField, StructField)] = schemaComplianceProfile.schemaDifference
         assert(mismatch.head._1 == expected.head._1)
         assert(mismatch.head._2 == expected.head._2)
-        
-        spark.stop()
     }
     
     test("SCHEMA: should be able to find the values that are not of expected type") {
-        val spark: SparkSession = getSpark
+        val spark = sparkSession
+    
         val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
-        
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Other")
         
@@ -86,14 +81,10 @@ class AnalyzableDatasetTest extends FunSuite {
         assert(reportForOther.expectedDataType == IntegerType)
         assert(reportForOther.actualFieldName == "other")
         assert(reportForOther.expectedFieldName == "Other")
-        
-        spark.stop()
     }
     
     test("SCHEMA: should return empty dataframe when type matches but the column names are different") {
-        val spark: SparkSession = getSpark
-        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
-        
+        val spark = sparkSession
         object CallRecord {
             private val user = StructField("user", LongType)
             private val other = StructField("Callee", LongType)
@@ -103,6 +94,7 @@ class AnalyzableDatasetTest extends FunSuite {
             
             def getSchema: StructType = StructType(Array(user, other, direction, duration, timestamp))
         }
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
         
         val callRecordSchemaProfile: SchemaComplianceProfile = callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Callee")
@@ -115,14 +107,10 @@ class AnalyzableDatasetTest extends FunSuite {
         assert(reportForOther.expectedFieldName == "Callee")
         
         assert(reportForOther.unsatisfiedContents.count == 0)
-        
-        spark.stop()
     }
     
     test("SCHEMA: should throw exception when original dataset schema has different number of fields than expected") {
-        val spark: SparkSession = getSpark
-        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
-        
+        val spark: SparkSession = sparkSession
         object CallRecord {
             private val user = StructField("user", LongType)
             private val other = StructField("Callee", LongType)
@@ -132,13 +120,13 @@ class AnalyzableDatasetTest extends FunSuite {
             
             def getSchema: StructType = StructType(Array(user, other, direction, duration))
         }
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
         
         val resultException: ApplicationException = intercept[ApplicationException] {
             callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         }
         assert(resultException.getMessage == "Number of fields must be same in the expected schema")
-        
-        spark.stop()
     }
 }
 
