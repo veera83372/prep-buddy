@@ -2,7 +2,7 @@ package com.thoughtworks.datacommons.prepbuddy.transformations
 
 import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
 
-trait GenericTransformation {
+trait GenericTransformation extends Serializable{
     def apply(rowRecord: RowRecord): Any
 }
 

@@ -1,10 +1,10 @@
 package com.thoughtworks.datacommons.prepbuddy.rdds
 
 import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
-import com.thoughtworks.datacommons.prepbuddy.transformations.GenericTransformation
 import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import com.thoughtworks.datacommons.prepbuddy.smoothers.SmoothingMethod
+import com.thoughtworks.datacommons.prepbuddy.transformations.GenericTransformation
 import com.thoughtworks.datacommons.prepbuddy.types.{CSV, FileType}
 import com.thoughtworks.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
@@ -457,8 +457,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val transformedValues: RDD[String] = map(record => {
             val rowRecord: RowRecord = fileType.parse(record)
             val output: Any = formula.apply(rowRecord)
-            rowRecord.appendColumns(Array(output.toString))
-            fileType.join(rowRecord)
+            val newRecord: RowRecord = rowRecord.appendColumns(Array(output.toString))
+            fileType.join(newRecord)
         })
         new TransformableRDD(transformedValues, fileType)
     }
