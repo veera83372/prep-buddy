@@ -16,8 +16,6 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
         new ColumnProfile()
     }
     
-    private val first: Row = dataset.first()
-    
     def analyzeCompleteness(definition: RowCompletenessRule): RowCompletenessProfile = {
         val totalNumberOfRows: Long = dataset.count
         val numberOfIncomplete: Long = dataset.filter(!definition.isComplete(_)).count
