@@ -10,7 +10,7 @@ import org.apache.spark.sql.types.{StructField, StructType}
 
 class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileType, header: Boolean = true) {
     
-    private val dataset: Dataset[Row] = fileType.read(spark, filePath, header)
+    private val dataset: Dataset[Row] = fileType.read(spark, filePath, header).cache
     
     def analyzeColumn(columnName: String, rules: ColumnRules): ColumnProfile = {
         new ColumnProfile()
@@ -19,7 +19,9 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
     private val first: Row = dataset.first()
     
     def analyzeCompleteness(definition: RowCompletenessRule): RowCompletenessProfile = {
-        new RowCompletenessProfile(100, 20)
+        val totalNumberOfRows: Long = dataset.count
+        val numberOfIncomplete: Long = dataset.filter(!definition.isComplete(_)).count
+        new RowCompletenessProfile(numberOfIncomplete, totalNumberOfRows)
     }
     
     def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {

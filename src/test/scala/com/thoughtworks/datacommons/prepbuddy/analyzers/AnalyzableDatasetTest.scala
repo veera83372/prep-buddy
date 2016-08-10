@@ -129,16 +129,29 @@ class AnalyzableDatasetTest extends FunSuite {
         assert("Number of fields must be same in the expected schema" == resultException.getMessage)
     }
     
-    //    test("ROW_COMPLETENESS: should give percentage of row completeness when the all the columns are null") {
-    //        val spark = sparkSession
-    //
-    //        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
-    //
-    //        val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
-    //        val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
-    //
-    //        assert(20 == callRecordCompleteness.percentage)
-    //    }
+    test("ROW_COMPLETENESS: should give percentage of row completeness when any column is null") {
+        val spark = sparkSession
+        
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
+        val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
+        completenessRule.incompleteWhenAnyNull()
+        val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
+        
+        assert(0.023 == callRecordCompleteness.percentage)
+    }
+    
+    test("ROW_COMPLETENESS: should give percentage of row completeness when specified columns is/are null") {
+        val spark = sparkSession
+        
+        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+        
+        val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
+        completenessRule.incompleteWhenNullAt("other")
+        val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
+        
+        assert(0.0077 == callRecordCompleteness.percentage)
+    }
 }
 
 

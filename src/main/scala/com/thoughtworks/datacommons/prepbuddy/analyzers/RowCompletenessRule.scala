@@ -3,7 +3,7 @@ package com.thoughtworks.datacommons.prepbuddy.analyzers
 import org.apache.spark.sql._
 import org.apache.spark.sql.types.StructType
 
-class RowCompletenessRule(possibleNullValues: List[String] = Nil) {
+class RowCompletenessRule(possibleNullValues: List[String] = Nil) extends Serializable {
     private val nullValues = possibleNullValues :+ ""
     private var incompleteWhenAnyColumnIsNull = false
     private var specifiedColumns: List[String] = _
@@ -22,7 +22,7 @@ class RowCompletenessRule(possibleNullValues: List[String] = Nil) {
     private def getColumnIndexesToConsider(schema: StructType): List[Int] = {
         if (columnIndexesToConsider != null) return columnIndexesToConsider
     
-        columnIndexesToConsider = if (incompleteWhenAnyColumnIsNull) {
+        columnIndexesToConsider = if (incompleteWhenAnyColumnIsNull || specifiedColumns == null) {
             schema.fieldNames.indices.toList
         } else {
             specifiedColumns.map(schema.fieldNames.indexOf(_))
