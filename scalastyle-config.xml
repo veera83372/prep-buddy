@@ -98,7 +98,7 @@ var notAtAllAMagicNumber = 1234
             <parameter name="maxLength">50</parameter>
         </parameters>
     </check>
-    <check level="warning" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="true">
+    <check level="warning" class="org.scalastyle.scalariform.MethodNamesChecker" enabled="false">
         <parameters>
             <parameter name="regex">^[a-z][A-Za-z0-9]*$</parameter>
         </parameters>

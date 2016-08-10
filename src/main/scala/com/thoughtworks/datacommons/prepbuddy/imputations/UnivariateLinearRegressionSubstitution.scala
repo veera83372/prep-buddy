@@ -17,7 +17,7 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
     
     override def prepareSubstitute(tRdd: TransformableRDD, missingDataColumn: Int): Unit = {
         val rdd: TransformableRDD = tRdd.removeRows((row) => {
-            row.select(missingDataColumn).trim.isEmpty || row.select(independentColumn).trim.isEmpty
+            row(missingDataColumn).trim.isEmpty || row(independentColumn).trim.isEmpty
         })
         val xyRDD: RDD[Double] = rdd.multiplyColumns(missingDataColumn, independentColumn)
         val xSquareRDD: RDD[Double] = rdd.multiplyColumns(independentColumn, independentColumn)
@@ -45,7 +45,7 @@ class UnivariateLinearRegressionSubstitution(independentColumn: Int) extends Imp
     }
     
     override def handleMissingData(record: RowRecord): String = {
-        val independentValue: String = record.select(independentColumn)
+        val independentValue: String = record(independentColumn)
         try {
             val value: Double = independentValue.toDouble
             val imputedValue: Double = intercept + slope * value

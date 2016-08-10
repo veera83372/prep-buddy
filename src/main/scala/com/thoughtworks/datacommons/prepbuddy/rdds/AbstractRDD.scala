@@ -32,10 +32,10 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         validateColumnIndex(columnIndex)
         validateNumericColumn(columnIndex)
         val filtered: RDD[String] = filter(record => {
-            val value: String = fileType.parse(record).select(columnIndex)
+            val value: String = fileType.parse(record)(columnIndex)
             NumberUtils.isNumber(value)
         })
-        filtered.map(record => parseDouble(fileType.parse(record).select(columnIndex)))
+        filtered.map(record => parseDouble(fileType.parse(record)(columnIndex)))
     }
     
     protected def validateNumericColumn(columnIndex: Int): Unit = {
@@ -56,7 +56,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       * @param columnIndex Column index
       * @return RDD[String]
       */
-    def select(columnIndex: Int): RDD[String] = map(fileType.parse(_).select(columnIndex))
+    def select(columnIndex: Int): RDD[String] = map(fileType.parse(_)(columnIndex))
     
     protected def validateColumnIndex(columnIndex: Int): Unit = validateColumnIndex(List(columnIndex))
     
@@ -90,7 +90,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       * @param columnIndex
       * @return List[String]
       */
-    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
+    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_)(columnIndex))
     
     @DeveloperApi
     override def compute(split: Partition, context: TaskContext): Iterator[String] = {

@@ -12,7 +12,7 @@ class RowRecordTest extends SparkTestCase {
     test("should return the value at the given column index") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
         
-        assert("z" == rowRecord.select(2))
+        assert("z" == rowRecord(2))
     }
     
     test("should return a new RowRecord excluding the given columns") {
@@ -20,8 +20,8 @@ class RowRecordTest extends SparkTestCase {
         val newRowRecord: RowRecord = rowRecord.valuesNotAt(List(0, 2, 3, 4))
         
         assert(2 == newRowRecord.length)
-        assert("b" == newRowRecord.select(0))
-        assert("z" == newRowRecord.select(1))
+        assert("b" == newRowRecord(0))
+        assert("z" == newRowRecord(1))
     }
     
     test("should not modify the original row record while calling valueNotAt method") {
@@ -29,7 +29,7 @@ class RowRecordTest extends SparkTestCase {
         rowRecord.valuesNotAt(List(0, 2, 3, 4))
         
         assert(6 == rowRecord.length)
-        assert("a" == rowRecord.select(0))
+        assert("a" == rowRecord(0))
     }
     
     test("should gives back a string by joining all the columns by the given delimiter") {
@@ -56,29 +56,29 @@ class RowRecordTest extends SparkTestCase {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
         val newRecord: RowRecord = rowRecord.replace(1, "Y")
         
-        assert("Y" == newRecord.select(1))
+        assert("Y" == newRecord(1))
     }
     
     test("should not modify the original row record while calling replace method") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
         val newRecord: RowRecord = rowRecord.replace(1, "Y")
         
-        assert("y" == rowRecord.select(1))
-        assert("Y" == newRecord.select(1))
+        assert("y" == rowRecord(1))
+        assert("Y" == newRecord(1))
     }
     
     test("should return a new RowRecord containing the columns at the specified index") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
-        val newRecord: RowRecord = rowRecord.select(List(0, 2))
+        val newRecord: RowRecord = rowRecord(List(0, 2))
         
         assert(2 == newRecord.length)
-        assert("x" == newRecord.select(0))
-        assert("z" == newRecord.select(1))
+        assert("x" == newRecord(0))
+        assert("z" == newRecord(1))
     }
     
     test("should not modify the original row record while calling valuesAt method") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
-        val newRecord: RowRecord = rowRecord.select(List(0, 2))
+        val newRecord: RowRecord = rowRecord(List(0, 2))
         
         assert(3 == rowRecord.length)
         assert(2 == newRecord.length)

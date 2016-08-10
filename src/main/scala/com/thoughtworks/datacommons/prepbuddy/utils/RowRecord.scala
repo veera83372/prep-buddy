@@ -7,7 +7,7 @@ import org.apache.commons.lang.math.NumberUtils
 class RowRecord(columnValues: Array[String]) {
     def length: Int = columnValues.length
     
-    def select(columnIndexes: List[Int]): RowRecord = {
+    def apply(columnIndexes: List[Int]): RowRecord = {
         val filteredValues: Array[String] = columnIndexes.map(columnValues(_)).toArray
         new RowRecord(filteredValues)
     }
@@ -36,14 +36,14 @@ class RowRecord(columnValues: Array[String]) {
     }
     
     def fingerprintBy(columnIndexes: List[Int]): Long = {
-        val keyValues: List[String] = if (columnIndexes.isEmpty) columnValues.toList else columnIndexes.map(select)
+        val keyValues: List[String] = if (columnIndexes.isEmpty) columnValues.toList else columnIndexes.map(apply)
         val concatenatedString: String = keyValues.mkString("")
         val algorithm: MessageDigest = MessageDigest.getInstance("MD5")
         algorithm.update(concatenatedString.getBytes, 0, concatenatedString.length)
         BigInt(algorithm.digest()).longValue()
     }
-    
-    def select(columnIndex: Int): String = columnValues(columnIndex)
+
+    def apply(columnIndex: Int): String = columnValues(columnIndex)
     
     def isNumberAt(columnIndex: Int): Boolean = NumberUtils.isNumber(columnValues(columnIndex))
 }
