@@ -297,6 +297,7 @@ class TransformableRDDTest extends SparkTestCase {
             "14.5", "14.5", "14.6", "14.7",
             "14.7", "14.7", "14.9", "15.1"
         )
+        actual.foreach(println)
         assert(expected.sameElements(actual))
     }
 
