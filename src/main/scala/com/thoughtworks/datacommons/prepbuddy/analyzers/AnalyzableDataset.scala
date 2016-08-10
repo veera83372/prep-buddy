@@ -18,8 +18,8 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
     
     def analyzeCompleteness(definition: RowCompletenessRule): RowCompletenessProfile = {
         val totalNumberOfRows: Long = dataset.count
-        val numberOfIncomplete: Long = dataset.filter(!definition.isComplete(_)).count
-        new RowCompletenessProfile(numberOfIncomplete, totalNumberOfRows)
+        val numberOfCompleteRow: Long = dataset.filter(definition.isComplete(_)).count
+        new RowCompletenessProfile(numberOfCompleteRow, totalNumberOfRows)
     }
     
     def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {

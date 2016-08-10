@@ -137,8 +137,8 @@ class AnalyzableDatasetTest extends FunSuite {
         val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
         completenessRule.incompleteWhenAnyNull()
         val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
-        
-        assert(0.023 == callRecordCompleteness.percentage)
+    
+        assert(99.977 == callRecordCompleteness.percentageOfCompleteness)
     }
     
     test("ROW_COMPLETENESS: should give percentage of row completeness when specified columns is/are null") {
@@ -149,8 +149,8 @@ class AnalyzableDatasetTest extends FunSuite {
         val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
         completenessRule.incompleteWhenNullAt("other")
         val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
-        
-        assert(0.0077 == callRecordCompleteness.percentage)
+    
+        assert(99.9923 == callRecordCompleteness.percentageOfCompleteness)
     }
 }
 
