@@ -41,7 +41,7 @@ class RowCompletenessRuleTest extends FunSuite {
     private val ramlal = persons(3)
     private val babulal = persons(4)
     
-    test("should return true when the specified column values is/are null") {
+    test("should return false when the specified column values is/are null") {
         val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
         completenessRule.incompleteWhenNullAt("middleName", "age")
     
@@ -53,7 +53,7 @@ class RowCompletenessRuleTest extends FunSuite {
         assert(completenessRule.isComplete(babulal))
     }
     
-    test("should return true when any of the column value is null") {
+    test("should return false when any of the column value is null") {
         val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
         completenessRule.incompleteWhenAnyNull()
         

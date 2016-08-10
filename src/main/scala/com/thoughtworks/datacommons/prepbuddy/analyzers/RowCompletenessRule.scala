@@ -7,8 +7,11 @@ class RowCompletenessRule(possibleNullValues: List[String] = Nil) {
     private val nullValues = possibleNullValues :+ ""
     private var incompleteWhenAnyColumnIsNull = false
     private var specifiedColumns: List[String] = _
+    private var columnIndexesToConsider: List[Int] = _ //For optimization purpose
     
-    def incompleteWhenAnyNull(): Unit = incompleteWhenAnyColumnIsNull = true
+    def incompleteWhenAnyNull(): Unit = {
+        incompleteWhenAnyColumnIsNull = true
+    }
     
     def incompleteWhenNullAt(column: String, columns: String*): Unit = specifiedColumns = column :: columns.toList
     
@@ -17,11 +20,14 @@ class RowCompletenessRule(possibleNullValues: List[String] = Nil) {
     }
     
     private def getColumnIndexesToConsider(schema: StructType): List[Int] = {
-        if (incompleteWhenAnyColumnIsNull) {
+        if (columnIndexesToConsider != null) return columnIndexesToConsider
+    
+        columnIndexesToConsider = if (incompleteWhenAnyColumnIsNull) {
             schema.fieldNames.indices.toList
         } else {
             specifiedColumns.map(schema.fieldNames.indexOf(_))
         }
+        columnIndexesToConsider
     }
     
     def isComplete(record: Row): Boolean = {
