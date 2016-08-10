@@ -10,7 +10,6 @@ import com.thoughtworks.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
-
     /**
       * Returns a new RDD containing smoothed values of @columnIndex using @smoothingMethod
       *
@@ -39,6 +38,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         new TransformableRDD(filteredRDD, fileType)
     }
+
 
     /**
       * Returns a new TransformableRDD by replacing the @cluster's text with specified @newValue
@@ -463,4 +463,41 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformedValues, fileType)
     }
 
+    def removeOutliers(index: Int): TransformableRDD = {
+        val indexKey = indexableRDD(index)
+        val interQuartileRange = this.interQuartileRange(indexKey)
+        val secondQuartileIndex = getMedianIndex(count)
+        val firstQuartileIndex = getMedianIndex(secondQuartileIndex - 1)
+        val thirdQuartileIndex = secondQuartileIndex + firstQuartileIndex
+        val firstQuartileValue = indexKey.lookup(firstQuartileIndex).head
+        val thirdQuartileValue = indexKey.lookup(thirdQuartileIndex).head
+        val lowerThreshold = firstQuartileValue - (1.5 * interQuartileRange)
+        val maximumThreshold = thirdQuartileValue + (1.5 * interQuartileRange)
+        removeRows((rowRecord) => {
+            (rowRecord(index).toDouble < lowerThreshold) || (rowRecord(index).toDouble > maximumThreshold)
+        })
+    }
+
+    private def indexableRDD(index:Int):RDD[(Long, Double)]={
+        val sortedRDD: RDD[Double] = toDoubleRDD(index).sortBy(x => x, ascending = true)
+        val withIndex = sortedRDD.zipWithIndex
+        withIndex.map { case (key, value) => (value, key) }.cache()
+    }
+
+    private def interQuartileRange(indexableRDD :RDD[(Long, Double)]): Double = {
+        val secondQuartileIndex = getMedianIndex(count)
+        val firstQuartileIndex = getMedianIndex(secondQuartileIndex - 1)
+        val thirdQuartileIndex = secondQuartileIndex + firstQuartileIndex
+        val firstQuartileValue = indexableRDD.lookup(firstQuartileIndex).head
+        val thirdQuartileValue = indexableRDD.lookup(thirdQuartileIndex).head
+        thirdQuartileValue - firstQuartileValue
+    }
+
+
+    private def getMedianIndex(totalCount: Long): Long = {
+        def isOdd(num: Long): Boolean = num % 2 != 0
+        val middleIndex = totalCount / 2
+        if (isOdd(totalCount)) return middleIndex
+        middleIndex + 1
+    }
 }
