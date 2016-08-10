@@ -465,9 +465,9 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     def removeOutliers(index: Int): TransformableRDD = {
         val indexKey = indexableRDD(index)
-        val interQuartileRangeIndexes = this.interQuartileRange()
-        val firstQuartileValue = indexKey.lookup(interQuartileRangeIndexes.head).head
-        val thirdQuartileValue = indexKey.lookup(interQuartileRangeIndexes(2)).head
+        val iqrIndexes = this.interQuartileIndexes()
+        val firstQuartileValue = indexKey.lookup(iqrIndexes.head).head
+        val thirdQuartileValue = indexKey.lookup(iqrIndexes(2)).head
         val iqr = thirdQuartileValue - firstQuartileValue
         val lowerThreshold = firstQuartileValue - (1.5 * iqr)
         val maximumThreshold = thirdQuartileValue + (1.5 * iqr)
@@ -482,7 +482,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         withIndex.map { case (key, value) => (value, key) }.cache()
     }
 
-    private def interQuartileRange(): List[Long] = {
+    private def interQuartileIndexes(): List[Long] = {
         val secondQuartileIndex = getMedianIndex(count)
         val firstQuartileIndex = getMedianIndex(secondQuartileIndex - 1)
         val thirdQuartileIndex = secondQuartileIndex + firstQuartileIndex
