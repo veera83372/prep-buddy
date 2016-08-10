@@ -6,54 +6,54 @@ import org.scalatest.FunSuite
 
 class FieldTypeTest extends FunSuite {
     test("String fields types are inferred correctly") {
-        assert(inferField("test") == StringType)
-        assert(inferField("test") != IntegerType)
-        assert(inferField("12-23-32") == StringType)
-        assert(inferField("2015-08 14:49:00") == StringType)
-        assert(inferField("2015-08-20 14") == StringType)
-        assert(inferField("2015-08-20 14:10") == StringType)
+        assert(StringType == inferField("test"))
+        assert(IntegerType != inferField("test"))
+        assert(StringType == inferField("12-23-32"))
+        assert(StringType == inferField("2015-08 14:49:00"))
+        assert(StringType == inferField("2015-08-20 14"))
+        assert(StringType == inferField("2015-08-20 14:10"))
     }
     
     test("Integer fields types are inferred correctly") {
-        assert(inferField("60") == IntegerType)
-        assert(inferField(" 01") == IntegerType)
-        assert(inferField(" 01.5") != IntegerType)
+        assert(IntegerType == inferField("60"))
+        assert(IntegerType == inferField(" 01"))
+        assert(IntegerType != inferField(" 01.5"))
     }
     
     test("Double fields types are inferred correctly") {
-        assert(inferField("3.5") == DoubleType)
-        assert(inferField("1.0") == DoubleType)
-        assert(inferField("1.0") == DoubleType)
-        assert(inferField("32.322") != LongType)
+        assert(DoubleType == inferField("3.5"))
+        assert(DoubleType == inferField("1.0"))
+        assert(DoubleType == inferField("1.0"))
+        assert(LongType != inferField("32.322"))
     }
     
     test("Long fields types are inferred correctly") {
-        assert(inferField("100000000000") == LongType)
-        assert(inferField("  492347943247   ") == LongType)
-        assert(inferField("492347.943247") != LongType)
+        assert(LongType == inferField("100000000000"))
+        assert(LongType == inferField("  492347943247   "))
+        assert(LongType != inferField("492347.943247"))
     }
     
     test("Null fields are handled properly") {
-        assert(inferField(" null", "null") == NullType)
-        assert(inferField("\\N", "\\N") == NullType)
-        assert(inferField(" empty ", "empty") == NullType)
-        assert(inferField(" \t \t ") == NullType)
-        assert(inferField("") == NullType)
-        assert(inferField(null) == NullType)
-        assert(inferField("x") != NullType)
+        assert(NullType == inferField(" null", "null"))
+        assert(NullType == inferField("\\N", "\\N"))
+        assert(NullType == inferField(" empty ", "empty"))
+        assert(NullType == inferField(" \t \t "))
+        assert(NullType == inferField(""))
+        assert(NullType == inferField(null))
+        assert(NullType != inferField("x"))
     }
     
     test("Boolean fields types are inferred correctly") {
-        assert(inferField("False") == BooleanType)
-        assert(inferField("True ") == BooleanType)
-        assert(inferField("TRue") == BooleanType)
-        assert(inferField(" FALSe ") == BooleanType)
-        assert(inferField(" ") != BooleanType)
+        assert(BooleanType == inferField("False"))
+        assert(BooleanType == inferField("True "))
+        assert(BooleanType == inferField("TRue"))
+        assert(BooleanType == inferField(" FALSe "))
+        assert(BooleanType != inferField(" "))
     }
     
     test("Timestamp fields are infered correctly") {
-        assert(inferField("2015-08-20 14:57:00") == TimestampType)
-        assert(inferField("2015-08-20 15:57:00") == TimestampType)
-        assert(inferField("2015-08-20 15:57:00") != StringType)
+        assert(TimestampType == inferField("2015-08-20 14:57:00"))
+        assert(TimestampType == inferField("2015-08-20 15:57:00"))
+        assert(StringType != inferField("2015-08-20 15:57:00"))
     }
 }

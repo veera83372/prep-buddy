@@ -11,13 +11,15 @@ import org.apache.spark.sql.types.{StructField, StructType}
 class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileType, header: Boolean = true) {
     
     private val dataset: Dataset[Row] = fileType.read(spark, filePath, header)
-    
+
     def analyzeColumn(columnName: String, rules: ColumnRules): ColumnProfile = {
         new ColumnProfile()
     }
     
+    private val first: Row = dataset.first()
+    print(first.schema)
     def analyzeCompleteness(definition: RowCompletenessRule): RowCompletenessProfile = {
-        new RowCompletenessProfile()
+        new RowCompletenessProfile(100, 20)
     }
     
     def analyzeSchemaCompliance(expectedSchema: StructType): SchemaComplianceProfile = {
@@ -42,8 +44,7 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
     private def getMismatchedRecords(actual: StructField, expected: StructField): DataFrame = {
         if (actual.dataType == expected.dataType) {
             spark.emptyDataFrame.withColumn(actual.name, lit(null: String))
-        }
-        else {
+        } else {
             dataset
                 .select(actual.name)
                 .filter(record => FieldType.inferField(record(0).toString) != expected.dataType)

@@ -15,9 +15,9 @@ class FileType(delimiter: String) extends Serializable {
     
     def read(spark: SparkSession, filePath: String, hasHeader: Boolean): Dataset[Row] = {
         spark.read
-            .option("header", hasHeader.toString)
+            .option("header", hasHeader)
             .option("delimiter", delimiter)
-            .option("inferSchema", "true")
+            .option("inferSchema", true)
             .csv(filePath)
     }
 }

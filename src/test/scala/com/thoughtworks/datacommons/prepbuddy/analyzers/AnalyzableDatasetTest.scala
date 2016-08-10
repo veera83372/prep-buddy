@@ -45,8 +45,9 @@ class AnalyzableDatasetTest extends FunSuite {
                     StructField("c", BooleanType, nullable = false) :: Nil)
         
         val schemaComplianceProfile = analyzableDataset.analyzeSchemaCompliance(struct)
-        
-        val completenessProfile = analyzableDataset.analyzeCompleteness(new RowCompletenessRule())
+    
+        val completenessRule: RowCompletenessRule = new RowCompletenessRule()
+        val completenessProfile = analyzableDataset.analyzeCompleteness(completenessRule)
         
         val columnProfile = analyzableDataset.analyzeColumn("column-name", new ColumnRules())
     }
@@ -63,8 +64,8 @@ class AnalyzableDatasetTest extends FunSuite {
         )
     
         val mismatch: Array[(StructField, StructField)] = schemaComplianceProfile.schemaDifference
-        assert(mismatch.head._1 == expected.head._1)
-        assert(mismatch.head._2 == expected.head._2)
+        assert(expected.head._1 == mismatch.head._1)
+        assert(expected.head._2 == mismatch.head._2)
     }
     
     test("SCHEMA: should be able to find the values that are not of expected type") {
@@ -75,12 +76,12 @@ class AnalyzableDatasetTest extends FunSuite {
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Other")
         
         assert(reportForOther.nonCompliantValues.schema.fields.head.name == "other")
-        
-        assert(reportForOther.nonCompliantValues.count == 11224)
-        assert(reportForOther.actualDataType == LongType)
-        assert(reportForOther.expectedDataType == IntegerType)
-        assert(reportForOther.actualFieldName == "other")
-        assert(reportForOther.expectedFieldName == "Other")
+    
+        assert(11224 == reportForOther.nonCompliantValues.count)
+        assert(LongType == reportForOther.actualDataType)
+        assert(IntegerType == reportForOther.expectedDataType)
+        assert("other" == reportForOther.actualFieldName)
+        assert("Other" == reportForOther.expectedFieldName)
     }
     
     test("SCHEMA: should return empty dataframe when type matches but the column names are different") {
@@ -105,12 +106,12 @@ class AnalyzableDatasetTest extends FunSuite {
         assert(reportForOther.expectedDataType == LongType)
         assert(reportForOther.actualFieldName == "other")
         assert(reportForOther.expectedFieldName == "Callee")
-        
-        assert(reportForOther.nonCompliantValues.count == 0)
+    
+        assert(0 == reportForOther.nonCompliantValues.count)
     }
     
     test("SCHEMA: should throw exception when original dataset schema has different number of fields than expected") {
-        val spark: SparkSession = sparkSession
+        val spark = sparkSession
         object CallRecord {
             private val user = StructField("user", LongType)
             private val other = StructField("Callee", LongType)
@@ -126,8 +127,19 @@ class AnalyzableDatasetTest extends FunSuite {
         val resultException: ApplicationException = intercept[ApplicationException] {
             callRecord.analyzeSchemaCompliance(CallRecord.getSchema)
         }
-        assert(resultException.getMessage == "Number of fields must be same in the expected schema")
+        assert("Number of fields must be same in the expected schema" == resultException.getMessage)
     }
+    
+    //    test("ROW_COMPLETENESS: should give percentage of row completeness when the all the columns are null") {
+    //        val spark = sparkSession
+    //
+    //        val callRecord: AnalyzableDataset = new AnalyzableDataset(spark, "data/calls_with_header.csv", CSV)
+    //
+    //        val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
+    //        val callRecordCompleteness: RowCompletenessProfile = callRecord.analyzeCompleteness(completenessRule)
+    //
+    //        assert(20 == callRecordCompleteness.percentage)
+    //    }
 }
 
 
