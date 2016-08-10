@@ -11,13 +11,13 @@ import org.apache.spark.sql.types.{StructField, StructType}
 class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileType, header: Boolean = true) {
     
     private val dataset: Dataset[Row] = fileType.read(spark, filePath, header)
-
+    
     def analyzeColumn(columnName: String, rules: ColumnRules): ColumnProfile = {
         new ColumnProfile()
     }
     
     private val first: Row = dataset.first()
-    print(first.schema)
+    
     def analyzeCompleteness(definition: RowCompletenessRule): RowCompletenessProfile = {
         new RowCompletenessProfile(100, 20)
     }
@@ -47,8 +47,10 @@ class AnalyzableDataset(spark: SparkSession, filePath: String, fileType: FileTyp
         } else {
             dataset
                 .select(actual.name)
-                .filter(record => FieldType.inferField(record(0).toString) != expected.dataType)
-                .toDF
+                .filter(record => {
+                    val stringValue: String = if (record.anyNull) null else record(0).toString
+                    FieldType.inferField(stringValue) != expected.dataType
+                }).toDF
         }
     }
 }

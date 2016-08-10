@@ -24,9 +24,10 @@ class RowCompletenessRuleTest extends FunSuite {
         
         val data: List[Row] = List(
             Row("John", "", "", 28, true),
-            Row("Stiven", "", "Smith", 23, true),
+            Row("Stiven", "", "Smith", null, true),
             Row("Prasun", "Kumar", "Pal", 20, true),
-            Row("Ram", null, "Lal", 50, true)
+            Row("Ram", "Lal", "Panwala", null, true),
+            Row("Babu", "Lal", "Phoolwala", 57, null)
         )
         val personData: DataFrame = spark.createDataFrame(spark.sparkContext.parallelize(data), Person.getSchema)
         personData.collect()
@@ -37,16 +38,29 @@ class RowCompletenessRuleTest extends FunSuite {
     private val john = persons(0)
     private val stiven = persons(1)
     private val prasun = persons(2)
-    private val ram = persons(3)
+    private val ramlal = persons(3)
+    private val babulal = persons(4)
     
     test("should return true when the specified column values is/are null") {
         val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
-        completenessRule.incompleteWhenNullAt("middleName", "lastName")
-        
+        completenessRule.incompleteWhenNullAt("middleName", "age")
+    
+        assert(!completenessRule.isComplete(john))
+        assert(!completenessRule.isComplete(stiven))
+        assert(!completenessRule.isComplete(ramlal))
+    
+        assert(completenessRule.isComplete(prasun))
+        assert(completenessRule.isComplete(babulal))
+    }
+    
+    test("should return true when any of the column value is null") {
+        val completenessRule: RowCompletenessRule = new RowCompletenessRule("empty" :: "-" :: Nil)
+        completenessRule.incompleteWhenAnyNull()
         
         assert(!completenessRule.isComplete(john))
         assert(!completenessRule.isComplete(stiven))
-        assert(!completenessRule.isComplete(ram))
+        assert(!completenessRule.isComplete(ramlal))
+        assert(!completenessRule.isComplete(babulal))
         
         assert(completenessRule.isComplete(prasun))
     }

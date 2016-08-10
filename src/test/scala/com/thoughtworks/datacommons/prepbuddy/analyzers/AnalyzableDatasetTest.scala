@@ -76,7 +76,6 @@ class AnalyzableDatasetTest extends FunSuite {
         val reportForOther: FieldReport = callRecordSchemaProfile.reportFor("Other")
         
         assert(reportForOther.nonCompliantValues.schema.fields.head.name == "other")
-    
         assert(11224 == reportForOther.nonCompliantValues.count)
         assert(LongType == reportForOther.actualDataType)
         assert(IntegerType == reportForOther.expectedDataType)
