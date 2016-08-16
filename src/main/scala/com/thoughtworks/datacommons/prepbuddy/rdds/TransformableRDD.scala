@@ -478,40 +478,18 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * Returns a Transformable RDD by removing the outlier records on the basis of interQuartileRange
       *
       * @param columnIndex of the record on which interQuartileRange will be calculated
+      * @param outlierFactor default 1.5 for calculating the threshold
       * @return TransformableRDD
       */
 
-    def removeOutliers(columnIndex: Int): TransformableRDD = {
+    def removeOutliers(columnIndex: Int, outlierFactor: Double = 1.5): TransformableRDD = {
         validateColumnIndex(columnIndex)
-        val indexKey = indexableRDD(columnIndex)
-        val iqrIndexes = this.interQuartileIndexes()
-        val firstQuartileValue = indexKey.lookup(iqrIndexes.head).head
-        val thirdQuartileValue = indexKey.lookup(iqrIndexes(2)).head
-        val iqr = thirdQuartileValue - firstQuartileValue
-        val lowerThreshold = firstQuartileValue - (1.5 * iqr)
-        val maximumThreshold = thirdQuartileValue + (1.5 * iqr)
+        val numericIndexedRDD: NumericIndexedRDD = new NumericIndexedRDD(toDoubleRDD(columnIndex))
+        val iqr = numericIndexedRDD.interQuartileRange
+        val lowerThreshold = numericIndexedRDD.firstQuartileValue - (outlierFactor * iqr)
+        val maximumThreshold = numericIndexedRDD.thirdQuartileValue + (outlierFactor * iqr)
         removeRows((rowRecord) => {
             (rowRecord(columnIndex).toDouble < lowerThreshold) || (rowRecord(columnIndex).toDouble > maximumThreshold)
         })
-    }
-
-    private def indexableRDD(index: Int): RDD[(Long, Double)] = {
-        val sortedRDD: RDD[Double] = toDoubleRDD(index).sortBy(x => x, ascending = true)
-        val withIndex = sortedRDD.zipWithIndex
-        withIndex.map { case (key, value) => (value, key) }.cache()
-    }
-
-    private def interQuartileIndexes(): List[Long] = {
-        val secondQuartileIndex = getMedianIndex(count)
-        val firstQuartileIndex = getMedianIndex(secondQuartileIndex - 1)
-        val thirdQuartileIndex = secondQuartileIndex + firstQuartileIndex
-        firstQuartileIndex :: secondQuartileIndex :: thirdQuartileIndex :: Nil
-    }
-
-    private def getMedianIndex(totalCount: Long): Long = {
-        def isOdd(num: Long): Boolean = num % 2 != 0
-        val middleIndex = totalCount / 2
-        if (isOdd(totalCount)) return middleIndex
-        middleIndex + 1
     }
 }
