@@ -1,6 +1,5 @@
-package com.thoughtworks.datacommons.prepbuddy.analyzers
+package com.thoughtworks.datacommons.prepbuddy.analyzers.schema
 
-import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
 import org.apache.spark.sql.types.StructField
 
 class SchemaComplianceProfile(nonCompliantSchema: Array[(StructField, StructField)], fieldReports: Array[FieldReport]) {

@@ -1,7 +1,8 @@
 package com.thoughtworks.datacommons.prepbuddy.analyzers
 
-import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.FieldReport
+import com.thoughtworks.datacommons.prepbuddy.analyzers.completeness.{RowCompletenessProfile, RowCompletenessRule}
 import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.datatypes.FieldType
+import com.thoughtworks.datacommons.prepbuddy.analyzers.schema.{FieldReport, SchemaComplianceProfile}
 import com.thoughtworks.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import com.thoughtworks.datacommons.prepbuddy.types.FileType
 import org.apache.spark.sql._

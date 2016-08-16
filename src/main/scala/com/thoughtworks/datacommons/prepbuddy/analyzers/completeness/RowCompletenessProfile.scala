@@ -1,4 +1,4 @@
-package com.thoughtworks.datacommons.prepbuddy.analyzers
+package com.thoughtworks.datacommons.prepbuddy.analyzers.completeness
 
 class RowCompletenessProfile(numberOfCompleteRow: Long, totalNumberOfRow: Long) {
     def percentageOfCompleteness: Double = {
