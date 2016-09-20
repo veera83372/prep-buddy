@@ -501,14 +501,27 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return
       */
     def addSurrogateKey(offset: Long): TransformableRDD = {
-        val keyedRecords: RDD[String] = zipWithIndex()
+        val keyedRecords: RDD[(String, String)] = zipWithIndex()
             .map {
                 case (record, index) =>
-                    val rowRecords: RowRecord = fileType.parse(record)
                     val surrogateKey: Long = index + offset + 1
-                    val recordWithPrependedKey: RowRecord = rowRecords.prependColumns(Array(surrogateKey.toString))
-                    fileType.join(recordWithPrependedKey)
+                    (surrogateKey.toString, record)
             }
-        new TransformableRDD(keyedRecords, fileType)
+        new TransformableRDD(prependKeyToRecord(keyedRecords), fileType)
     }
+
+    def addSurrogateKey(): TransformableRDD = {
+        val keyedRecords: RDD[(String, String)] = map((java.util.UUID.randomUUID().toString, _))
+        new TransformableRDD(prependKeyToRecord(keyedRecords), fileType)
+    }
+
+    private def prependKeyToRecord(recordWithKey: RDD[(String, String)]): RDD[String] = {
+        recordWithKey.map {
+            case (surrogateKey, record) =>
+                val rowRecords: RowRecord = fileType.parse(record)
+                val recordWithPrependedKey: RowRecord = rowRecords.prependColumns(Array(surrogateKey))
+                fileType.join(recordWithPrependedKey)
+        }
+    }
+
 }
