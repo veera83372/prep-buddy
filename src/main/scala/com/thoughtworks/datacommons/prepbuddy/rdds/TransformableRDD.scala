@@ -10,6 +10,7 @@ import com.thoughtworks.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
     /**
       * Returns a new RDD containing smoothed values of @columnIndex using @smoothingMethod
       *
@@ -477,7 +478,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     /**
       * Returns a Transformable RDD by removing the outlier records on the basis of interQuartileRange
       *
-      * @param columnIndex of the record on which interQuartileRange will be calculated
+      * @param columnIndex   of the record on which interQuartileRange will be calculated
       * @param outlierFactor default 1.5 for calculating the threshold
       * @return TransformableRDD
       */
@@ -491,5 +492,23 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         removeRows((rowRecord) => {
             (rowRecord(columnIndex).toDouble < lowerThreshold) || (rowRecord(columnIndex).toDouble > maximumThreshold)
         })
+    }
+
+    /**
+      * Returns a new TransformableRDD after prepending incremental surrogate key to each record
+      *
+      * @param offset The surrogate keys that are going to be generated are followed by this number
+      * @return
+      */
+    def addSurrogateKey(offset: Long): TransformableRDD = {
+        val keyedRecords: RDD[String] = zipWithIndex()
+            .map {
+                case (record, index) =>
+                    val rowRecords: RowRecord = fileType.parse(record)
+                    val surrogateKey: Long = index + offset + 1
+                    val recordWithPrependedKey: RowRecord = rowRecords.prependColumns(Array(surrogateKey.toString))
+                    fileType.join(recordWithPrependedKey)
+            }
+        new TransformableRDD(keyedRecords, fileType)
     }
 }

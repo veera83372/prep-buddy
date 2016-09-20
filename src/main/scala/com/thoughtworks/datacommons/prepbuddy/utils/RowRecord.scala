@@ -6,12 +6,12 @@ import org.apache.commons.lang.math.NumberUtils
 
 class RowRecord(columnValues: Array[String]) {
     def length: Int = columnValues.length
-    
+
     def apply(columnIndexes: List[Int]): RowRecord = {
         val filteredValues: Array[String] = columnIndexes.map(columnValues(_)).toArray
         new RowRecord(filteredValues)
     }
-    
+
     def valuesNotAt(columnIndexes: List[Int]): RowRecord = {
         val valuesExcludingGivenIndexes: Array[String] = columnValues.view.zipWithIndex
             .filterNot { case (value, index) => columnIndexes.contains(index) }
@@ -19,22 +19,27 @@ class RowRecord(columnValues: Array[String]) {
             .toArray
         new RowRecord(valuesExcludingGivenIndexes)
     }
-    
+
     def mkString(delimiter: String): String = columnValues.mkString(delimiter)
-    
+
     def hasEmptyColumn: Boolean = columnValues.exists(_.trim.isEmpty)
-    
+
     def replace(columnIndex: Int, newValue: String): RowRecord = {
         val newRecord: Array[String] = columnValues.clone()
         newRecord(columnIndex) = newValue
         new RowRecord(newRecord)
     }
-    
+
     def appendColumns(values: Array[String]): RowRecord = {
         val recordWithAppendedColumn: Array[String] = (columnValues.toList ::: values.toList).toArray
         new RowRecord(recordWithAppendedColumn)
     }
-    
+
+    def prependColumns(values: Array[String]): RowRecord = {
+        val recordWithPrependedColumn: Array[String] = (values.toList ::: columnValues.toList).toArray
+        new RowRecord(recordWithPrependedColumn)
+    }
+
     def fingerprintBy(columnIndexes: List[Int]): Long = {
         val keyValues: List[String] = if (columnIndexes.isEmpty) columnValues.toList else columnIndexes.map(apply)
         val concatenatedString: String = keyValues.mkString("")
@@ -44,6 +49,6 @@ class RowRecord(columnValues: Array[String]) {
     }
 
     def apply(columnIndex: Int): String = columnValues(columnIndex)
-    
+
     def isNumberAt(columnIndex: Int): Boolean = NumberUtils.isNumber(columnValues(columnIndex))
 }

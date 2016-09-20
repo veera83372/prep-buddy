@@ -299,5 +299,4 @@ class TransformableRDDTest extends SparkTestCase {
         )
         assert(expected.sameElements(actual))
     }
-
 }

@@ -12,7 +12,7 @@ class SparkTestCase extends FunSuite with BeforeAndAfterEach {
         val spark: SparkSession = SparkSession
             .builder()
             .appName(getClass.getCanonicalName)
-            .master("local[2]")
+            .master("local[*]")
             .getOrCreate()
         sparkContext = spark.sparkContext
         Logger.getLogger("org").setLevel(Level.OFF)
