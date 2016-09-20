@@ -1,5 +1,7 @@
 package com.thoughtworks.datacommons.prepbuddy.rdds
 
+import java.util.UUID.randomUUID
+
 import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
 import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.normalizers.NormalizationStrategy
@@ -507,15 +509,20 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
                     val surrogateKey: Long = index + offset + 1
                     (surrogateKey.toString, record)
             }
-        new TransformableRDD(prependKeyToRecord(keyedRecords), fileType)
+        new TransformableRDD(prependSurrogateKeyToRecord(keyedRecords), fileType)
     }
 
+    /**
+      * Returns a new TransformableRDD after prepending UUID as surrogate key to each record
+      *
+      * @return
+      */
     def addSurrogateKey(): TransformableRDD = {
-        val keyedRecords: RDD[(String, String)] = map((java.util.UUID.randomUUID().toString, _))
-        new TransformableRDD(prependKeyToRecord(keyedRecords), fileType)
+        val keyedRecords: RDD[(String, String)] = map((randomUUID().toString, _))
+        new TransformableRDD(prependSurrogateKeyToRecord(keyedRecords), fileType)
     }
 
-    private def prependKeyToRecord(recordWithKey: RDD[(String, String)]): RDD[String] = {
+    private def prependSurrogateKeyToRecord(recordWithKey: RDD[(String, String)]): RDD[String] = {
         recordWithKey.map {
             case (surrogateKey, record) =>
                 val rowRecords: RowRecord = fileType.parse(record)
