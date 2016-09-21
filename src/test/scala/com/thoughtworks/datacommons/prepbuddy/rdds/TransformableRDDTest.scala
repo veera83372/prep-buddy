@@ -4,7 +4,7 @@ import com.thoughtworks.datacommons.prepbuddy.SparkTestCase
 import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
 import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.qualityanalyzers.DECIMAL
-import com.thoughtworks.datacommons.prepbuddy.types.{CSV, TSV}
+import com.thoughtworks.datacommons.prepbuddy.types.{CSV, CustomFileType, TSV}
 import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
 import org.apache.spark.rdd.RDD
 
@@ -298,5 +298,19 @@ class TransformableRDDTest extends SparkTestCase {
             "14.7", "14.7", "14.9", "15.1"
         )
         assert(expected.sameElements(actual))
+    }
+
+    test("should be able to use custom delimeter for file type") {
+        val dataset: RDD[String] = sparkContext.parallelize(Array(
+            "One Two Three",
+            "Four Five Six",
+            "Seven Eight Nine",
+            "Ten Eleven Twelve"
+        ))
+
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataset, CustomFileType(" "))
+        val firstColumnValues: Set[String] = transformableRDD.select(0).collect().toSet
+
+        assertResult(Set("One", "Four", "Seven", "Ten"))(firstColumnValues)
     }
 }

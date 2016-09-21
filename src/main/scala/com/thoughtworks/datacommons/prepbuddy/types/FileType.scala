@@ -22,7 +22,19 @@ class FileType(delimiter: String) extends Serializable {
     }
 }
 
+/**
+  * Used to parse the record with comma(,) separated values
+  */
 object CSV extends FileType(",")
 
+/**
+  * Used to parse the record with tab separated values
+  */
 object TSV extends FileType("\t")
 
+/**
+  * Can be used to set custom delimiter
+  *
+  * @param delimiter A string or regex that will be used to parse each record
+  */
+case class CustomFileType(delimiter: String) extends FileType(delimiter)
