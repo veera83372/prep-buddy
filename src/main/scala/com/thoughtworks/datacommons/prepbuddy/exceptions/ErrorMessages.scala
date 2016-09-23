@@ -55,4 +55,22 @@ object ErrorMessages {
         val key = "REQUIREMENT_NOT_MATCHED"
         new ErrorMessage(key, message)
     }
+
+    var SCHEMA_NOT_SET: ErrorMessage = {
+        val messages = "Schema is not set"
+        val key = "SCHEMA_NOT_SET"
+        new ErrorMessage(key, messages)
+    }
+
+    val NO_SUCH_COLUMN_NAME_FOUND: ErrorMessage = {
+        val messages = "No such column name is found in the schema"
+        val key = "NO_SUCH_COLUMN_NAME_FOUND"
+        new ErrorMessage(key, messages)
+    }
+
+    val INVALID_COLUMN_REFERENCE_FOUND: ErrorMessage = {
+        val messages = "Invalid column reference found in the schema"
+        val key = "INVALID_COLUMN_REFERENCE_FOUND"
+        new ErrorMessage(key, messages)
+    }
 }

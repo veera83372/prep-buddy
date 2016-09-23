@@ -3,6 +3,7 @@ package com.thoughtworks.datacommons.prepbuddy.rdds
 import java.util.UUID.randomUUID
 
 import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
+import com.thoughtworks.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.normalizers.NormalizationStrategy
 import com.thoughtworks.datacommons.prepbuddy.smoothers.SmoothingMethod
@@ -12,6 +13,18 @@ import com.thoughtworks.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+    private var schema: Map[String, Int] = _
+
+    /**
+      * Need to be set to use column name while calling other operations instead of column index
+      *
+      * @param schema Map between column name and column index
+      * @return
+      */
+    def useSchema(schema: Map[String, Int]): TransformableRDD = {
+        this.schema = schema
+        this
+    }
 
     /**
       * Returns a new RDD containing smoothed values of @columnIndex using @smoothingMethod
@@ -42,7 +55,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(filteredRDD, fileType)
     }
 
-
     /**
       * Returns a new TransformableRDD by replacing the @cluster's text with specified @newValue
       *
@@ -60,6 +72,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         new TransformableRDD(mapped, fileType)
     }
+
 
     /**
       * Returns a new TransformableRDD by applying the function on all rows marked as @flag
@@ -246,6 +259,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     private def arrangeRecords(rowRecord: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
+
 
     /**
       * Returns a new TransformableRDD by merging 2 or more columns together
@@ -461,6 +475,20 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
+      * Selects a single column based on the column name only when schema is set
+      *
+      * @param columnName Name of the column in the Schema
+      * @return
+      */
+    def select(columnName: String): RDD[String] = {
+        if (schema == null) throw new ApplicationException(ErrorMessages.SCHEMA_NOT_SET)
+        val columnIndex: Int = schema.getOrElse(columnName, -1)
+        if (columnIndex == -1) throw new ApplicationException(ErrorMessages.NO_SUCH_COLUMN_NAME_FOUND)
+        if (columnLength <= columnIndex) throw new ApplicationException(ErrorMessages.INVALID_COLUMN_REFERENCE_FOUND)
+        select(schema.get(columnName).head)
+    }
+
+    /**
       * Returns a Transformable RDD by appending a new column using @formula
       *
       * @param formula implementation of GenericTransformation interface
@@ -522,6 +550,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(prependSurrogateKeyToRecord(keyedRecords), fileType)
     }
 
+
     private def prependSurrogateKeyToRecord(recordWithKey: RDD[(String, String)]): RDD[String] = {
         recordWithKey.map {
             case (surrogateKey, record) =>
@@ -530,5 +559,4 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
                 fileType.join(recordWithPrependedKey)
         }
     }
-
 }

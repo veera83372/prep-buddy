@@ -299,4 +299,21 @@ class TransformableRDDTest extends SparkTestCase {
         )
         assert(expected.sameElements(actual))
     }
+
+    test("should be able to select columns by column name") {
+        val dataSet: RDD[String] = sparkContext.parallelize(Array(
+            "2, 1, 4, 4",
+            "4, 5, 5, 6",
+            "7, 7, 7, 9",
+            "1, 9, 4, 9"
+        ))
+        val schema: Map[String, Int] = Map("First" -> 0, "Second" -> 1, "Third" -> 2, "Fourth" -> 3)
+
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet).useSchema(schema)
+        val secondColumnValues: RDD[String] = transformableRDD.select("Second")
+
+        val actual: Array[String] = secondColumnValues.collect()
+        val expected = Array("1", "5", "7", "9")
+        assertResult(expected)(actual)
+    }
 }
