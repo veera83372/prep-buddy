@@ -26,15 +26,9 @@ object ErrorMessages {
         new ErrorMessage(key, message)
     }
 
-    val COLUMN_INDEX_OUT_OF_BOUND: ErrorMessage = {
-        val key = "COLUMN_INDEX_OUT_OF_BOUND"
-        val message = "Column index is out of bound."
-        new ErrorMessage(key, message)
-    }
-
-    val NEGATIVE_COLUMN_INDEX: ErrorMessage = {
-        val key = "NEGATIVE_COLUMN_INDEX"
-        val message = "Column index can not be negative."
+    val COLUMN_NOT_FOUND: ErrorMessage = {
+        val key = "COLUMN_NOT_FOUND"
+        val message = "No such column found for the current data set"
         new ErrorMessage(key, message)
     }
 
@@ -59,12 +53,6 @@ object ErrorMessages {
     var SCHEMA_NOT_SET: ErrorMessage = {
         val messages = "Schema is not set"
         val key = "SCHEMA_NOT_SET"
-        new ErrorMessage(key, messages)
-    }
-
-    val NO_SUCH_COLUMN_NAME_FOUND: ErrorMessage = {
-        val messages = "No such column name is found in the schema"
-        val key = "NO_SUCH_COLUMN_NAME_FOUND"
         new ErrorMessage(key, messages)
     }
 

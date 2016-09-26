@@ -69,7 +69,7 @@ class RowRecordTest extends SparkTestCase {
     
     test("should return a new RowRecord containing the columns at the specified index") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
-        val newRecord: RowRecord = rowRecord(List(0, 2))
+        val newRecord: RowRecord = rowRecord(0, 2)
         
         assert(2 == newRecord.length)
         assert("x" == newRecord(0))
@@ -78,7 +78,7 @@ class RowRecordTest extends SparkTestCase {
     
     test("should not modify the original row record while calling valuesAt method") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
-        val newRecord: RowRecord = rowRecord(List(0, 2))
+        val newRecord: RowRecord = rowRecord(0, 2)
         
         assert(3 == rowRecord.length)
         assert(2 == newRecord.length)

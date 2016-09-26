@@ -2,7 +2,7 @@ package com.thoughtworks.datacommons.prepbuddy.rdds
 
 import java.util.UUID.randomUUID
 
-import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, ClusteringAlgorithm, Clusters, TextFacets}
+import com.thoughtworks.datacommons.prepbuddy.clusterers._
 import com.thoughtworks.datacommons.prepbuddy.exceptions.{ApplicationException, ErrorMessages}
 import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.normalizers.NormalizationStrategy
@@ -12,8 +12,12 @@ import com.thoughtworks.datacommons.prepbuddy.types.{CSV, FileType}
 import com.thoughtworks.datacommons.prepbuddy.utils.{PivotTable, RowRecord}
 import org.apache.spark.rdd.RDD
 
+import scala.reflect.ClassTag
+
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
     private var schema: Map[String, Int] = _
+
+    private def getFileType: FileType = fileType
 
     /**
       * Need to be set to use column name while calling other operations instead of column index
@@ -24,6 +28,11 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def useSchema(schema: Map[String, Int]): TransformableRDD = {
         this.schema = schema
         this
+    }
+
+    private def getColumnIndexes(columnNames: String*): List[Int] = {
+        if (schema == null) throw new ApplicationException(ErrorMessages.SCHEMA_NOT_SET)
+        columnNames.map(schema.getOrElse(_, -1)).toList
     }
 
     /**
@@ -133,6 +142,17 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
+      * Returns Clusters that has all cluster of text of @columnName according to @algorithm only when schema is set
+      *
+      * @param columnName          Column Name
+      * @param clusteringAlgorithm Algorithm to be used to form clusters
+      * @return Clusters
+      */
+    def clusters(columnName: String, clusteringAlgorithm: ClusteringAlgorithm): Clusters = {
+        clusters(getColumnIndexes(columnName).head, clusteringAlgorithm)
+    }
+
+    /**
       * Returns a new TextFacet containing the cardinal values of @columnIndex
       *
       * @param columnIndex index of the column
@@ -141,6 +161,31 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def listFacets(columnIndex: Int): TextFacets = {
         validateColumnIndex(columnIndex)
         val columnValuePair: RDD[(String, Int)] = map(record => (fileType.parse(record)(columnIndex), 1))
+        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
+        new TextFacets(facets)
+    }
+
+    /**
+      * Returns a new TextFacet containing the cardinal values of @columnName when Schema is set
+      *
+      * @param columnName Name of the column
+      * @return TextFacets
+      */
+    def listFacets(columnName: String): TextFacets = listFacets(getColumnIndexes(columnName).head)
+
+    /**
+      * Returns a new TextFacet containing the facets of @columnIndexes
+      *
+      * @param columnIndexes List of column index
+      * @return TextFacets
+      */
+    def listFacets(columnIndexes: List[Int]): TextFacets = {
+        validateColumnIndex(columnIndexes)
+        val columnValuePair: RDD[(String, Int)] = map((record) => {
+            val rowRecord: RowRecord = fileType.parse(record)
+            val joinedValue: String = rowRecord(columnIndexes: _*).mkString("\n")
+            (joinedValue, 1)
+        })
         val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
         new TextFacets(facets)
     }
@@ -186,23 +231,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a new TextFacet containing the facets of @columnIndexes
-      *
-      * @param columnIndexes List of column index
-      * @return TextFacets
-      */
-    def listFacets(columnIndexes: List[Int]): TextFacets = {
-        validateColumnIndex(columnIndexes)
-        val columnValuePair: RDD[(String, Int)] = map((record) => {
-            val rowRecord: RowRecord = fileType.parse(record)
-            val joinedValue: String = rowRecord(columnIndexes).mkString("\n")
-            (joinedValue, 1)
-        })
-        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
-        new TextFacets(facets)
-    }
-
-    /**
       * Returns a TransformableRDD by splitting the @column according to the specified lengths
       *
       * @param column       Column index of the value to be split
@@ -235,6 +263,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
+
     /**
       * Returns a new TransformableRDD by splitting the @column by the delimiter provided
       *
@@ -260,7 +289,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
 
-
     /**
       * Returns a new TransformableRDD by merging 2 or more columns together
       *
@@ -273,7 +301,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         validateColumnIndex(columns)
         val transformedRDD: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val mergedValue: String = rowRecord(columns).mkString(separator)
+            val mergedValue: String = rowRecord(columns: _*).mkString(separator)
             val result: RowRecord = arrangeRecords(rowRecord, columns, Array(mergedValue), retainColumns)
             fileType.join(result)
         })
@@ -456,23 +484,29 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(recordsWithAddedColumns, fileType)
     }
 
-    private def getFileType: FileType = fileType
-
     /**
       * Returns a new TransformableRDD containing values of @columnIndexes
       *
       * @param columnIndexes A number of integer values specifying the columns that will be used to create the new table
       * @return TransformableRDD
       */
-    def select(columnIndexes: List[Int]): TransformableRDD = {
+    def select[X: ClassTag](columnIndexes: List[Int]): TransformableRDD = {
         validateColumnIndex(columnIndexes)
         val selectedColumnValues: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val resultValues: RowRecord = rowRecord(columnIndexes)
+            val resultValues: RowRecord = rowRecord(columnIndexes: _*)
             fileType.join(resultValues)
         })
         new TransformableRDD(selectedColumnValues, fileType)
     }
+
+    /**
+      * Returns a new TransformableRDD containing values of @columnNames
+      *
+      * @param columnNames List of column names to be selected
+      * @return TransformableRDD
+      */
+    def select(columnNames: List[String]): TransformableRDD = select(getColumnIndexes(columnNames: _*))
 
     /**
       * Selects a single column based on the column name only when schema is set
@@ -480,13 +514,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnName Name of the column in the Schema
       * @return
       */
-    def select(columnName: String): RDD[String] = {
-        if (schema == null) throw new ApplicationException(ErrorMessages.SCHEMA_NOT_SET)
-        val columnIndex: Int = schema.getOrElse(columnName, -1)
-        if (columnIndex == -1) throw new ApplicationException(ErrorMessages.NO_SUCH_COLUMN_NAME_FOUND)
-        if (columnLength <= columnIndex) throw new ApplicationException(ErrorMessages.INVALID_COLUMN_REFERENCE_FOUND)
-        select(schema.get(columnName).head)
-    }
+    def select(columnName: String): RDD[String] = select(List(columnName)).toRDD
 
     /**
       * Returns a Transformable RDD by appending a new column using @formula

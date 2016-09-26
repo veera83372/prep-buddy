@@ -58,16 +58,14 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       */
     def select(columnIndex: Int): RDD[String] = map(fileType.parse(_)(columnIndex))
 
-    protected def validateColumnIndex(columnIndex: Int): Unit = validateColumnIndex(List(columnIndex))
+    protected def validateColumnIndex(columnIndex: Int, otherIndexes: Int*) {
+        val allIndexes: List[Int] = columnIndex :: otherIndexes.toList
+        validateColumnIndex(allIndexes)
+    }
 
     protected def validateColumnIndex(columnIndexes: List[Int]) {
         for (index <- columnIndexes) {
-            if (columnLength <= index) {
-                throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND)
-            }
-            else if (index < 0) {
-                throw new ApplicationException(ErrorMessages.NEGATIVE_COLUMN_INDEX)
-            }
+            if (index < 0 || columnLength <= index) throw new ApplicationException(ErrorMessages.COLUMN_NOT_FOUND)
         }
     }
 

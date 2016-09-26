@@ -7,7 +7,7 @@ import org.apache.commons.lang.math.NumberUtils
 class RowRecord(columnValues: Array[String]) {
     def length: Int = columnValues.length
 
-    def apply(columnIndexes: List[Int]): RowRecord = {
+    def apply(columnIndexes: Int*): RowRecord = {
         val filteredValues: Array[String] = columnIndexes.map(columnValues(_)).toArray
         new RowRecord(filteredValues)
     }

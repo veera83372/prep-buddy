@@ -1,6 +1,7 @@
 package com.thoughtworks.datacommons.prepbuddy.exceptions
 
 import com.thoughtworks.datacommons.prepbuddy.SparkTestCase
+import com.thoughtworks.datacommons.prepbuddy.clusterers.SimpleFingerprintAlgorithm
 import com.thoughtworks.datacommons.prepbuddy.rdds.TransformableRDD
 import com.thoughtworks.datacommons.prepbuddy.smoothers.{SimpleMovingAverageMethod, WeightedMovingAverageMethod, Weights}
 import com.thoughtworks.datacommons.prepbuddy.utils.Probability
@@ -93,7 +94,7 @@ class ExceptionTest extends SparkTestCase {
         assert(thrown.getMessage == "Schema is not set")
     }
 
-    test("should throw an exception while selecting column by column name when there is no such column name") {
+    test("should throw COLUMN_NOT_FOUND exception when column name does not exists in the schema") {
         val dataSet: RDD[String] = sparkContext.parallelize(Array(
             "2, 1, 4, 4",
             "4, 5, 5, 6",
@@ -107,10 +108,10 @@ class ExceptionTest extends SparkTestCase {
         val thrown = intercept[ApplicationException] {
             val secondColumnValues: RDD[String] = transformableRDD.select("Tenth")
         }
-        assert(thrown.getMessage == "No such column name is found in the schema")
+        assert(thrown.getMessage == "No such column found for the current data set")
     }
 
-    test("should throw an exception while selecting column by column name when the column name points to a invalid index") {
+    test("should throw COLUMN_NOT_FOUND exception while selecting column by name with invalid index reference") {
         val dataSet: RDD[String] = sparkContext.parallelize(Array(
             "2, 1, 4, 4",
             "4, 5, 5, 6",
@@ -124,6 +125,34 @@ class ExceptionTest extends SparkTestCase {
         val thrown = intercept[ApplicationException] {
             val secondColumnValues: RDD[String] = transformableRDD.select("Fourth")
         }
-        assert(thrown.getMessage == "Invalid column reference found in the schema")
+        assert(thrown.getMessage == "No such column found for the current data set")
+    }
+
+    test("should throw COLUMN_NOT_FOUND exception when the given index is out of the column length in the data set") {
+        val initialDataSet: RDD[String] = sparkContext.parallelize(Array(
+            "1,NULL,2,3,4", "2,N/A,23,21,23",
+            "3,N/A,21,32,32", "4,-,2,3,4",
+            "5,,54,32,54", "6,32,22,33,23"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+
+        val thrown: ApplicationException = intercept[ApplicationException] {
+            initialRDD.clusters(5, new SimpleFingerprintAlgorithm())
+        }
+
+        assert(thrown.getMessage == "No such column found for the current data set")
+    }
+
+    test("should throw COLUMN_NOT_FOUND exception when negative column index is passed to cluster") {
+        val initialDataSet: RDD[String] = sparkContext.parallelize(Array(
+            "1,NULL,2,3,4", "2,N/A,23,21,23",
+            "3,N/A,21,32,32", "4,-,2,3,4",
+            "5,,54,32,54", "6,32,22,33,23"))
+        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
+
+        val thrown: ApplicationException = intercept[ApplicationException] {
+            initialRDD.clusters(-10, new SimpleFingerprintAlgorithm())
+        }
+
+        assert(thrown.getMessage == "No such column found for the current data set")
     }
 }
