@@ -1,7 +1,7 @@
-from utils.python_test_case import PySparkTestCase
 from pyprepbuddy.cluster.clustering_algorithm import SimpleFingerprint, NGramFingerprintAlgorithm
 from pyprepbuddy.exceptions.application_exception import ApplicationException
 from pyprepbuddy.rdds.transformable_rdd import TransformableRDD
+from utils.python_test_case import PySparkTestCase
 
 
 class ClusterTest(PySparkTestCase):
@@ -41,7 +41,7 @@ class ClusterTest(PySparkTestCase):
         transformable_rdd = TransformableRDD(rdd, 'csv')
         duplicates = transformable_rdd.list_facets([0, 1, 2])
         highest = duplicates.highest()
-        self.assertEqual("Ram\n23\nMale", highest[0]._1())
+        self.assertEqual("Ram,23,Male", highest[0]._1())
 
     def test_replace_values_should_replace_cluster_values_with_given_text(self):
         initial_dataset = self.sc.parallelize(["XA,Y", "A,B", "AX,Z", "A,Q", "A,E"])
