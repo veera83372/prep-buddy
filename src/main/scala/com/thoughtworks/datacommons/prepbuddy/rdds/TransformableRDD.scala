@@ -15,7 +15,6 @@ import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
-
     private var schema: Map[String, Int] = _
 
     private def getFileType: FileType = fileType
@@ -100,7 +99,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(mappedRDD, fileType)
     }
 
-
     /**
       * Returns a new TransformableRDD that contains records flagged by @symbol
       * based on the evaluation of @markerPredicate
@@ -125,6 +123,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return int
       */
     def numberOfColumns(): Int = columnLength
+
 
     /**
       * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
@@ -283,7 +282,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
-
     private def arrangeRecords(rowRecord: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
     }
@@ -306,6 +304,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         new TransformableRDD(transformedRDD, fileType)
     }
+
 
     /**
       * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
@@ -390,12 +389,20 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
+      * Returns a new RDD containing the duplicate values at the specified column
+      *
+      * @param columnName Column where to look for duplicates
+      * @return RDD
+      */
+    def duplicatesAt(columnName: String): RDD[String] = duplicatesAt(getColumnIndexes(columnName).head)
+
+    /**
       * Returns a new TransformableRDD containing duplicate records of this TransformableRDD by considering
       * all the columns as primary key.
       *
       * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
       */
-    def duplicates(): TransformableRDD = duplicates(List.empty)
+    def duplicates(): TransformableRDD = duplicates(List.empty[Int])
 
     /**
       * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
@@ -404,7 +411,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param primaryKeyColumns list of integers specifying the columns that will be combined to create the primary key
       * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
       */
-    def duplicates(primaryKeyColumns: List[Int]): TransformableRDD = {
+    def duplicates[X: ClassTag](primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
         val fingerprintedRecord: RDD[(Long, String)] = generateFingerprintedRDD(primaryKeyColumns)
         val recordsGroupedByKey: RDD[(Long, List[String])] = fingerprintedRecord.aggregateByKey(List.empty[String])(
@@ -413,6 +420,17 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         )
         val duplicateRecords: RDD[String] = recordsGroupedByKey.filter(_._2.size != 1).flatMap(_._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
+    }
+
+    /**
+      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
+      * the given columns as primary key.
+      *
+      * @param primaryKeyColumns list of integers specifying the columns that will be combined to create the primary key
+      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      */
+    def duplicates(primaryKeyColumns: List[String]): TransformableRDD = {
+        duplicates(getColumnIndexes(primaryKeyColumns: _*))
     }
 
     /**
