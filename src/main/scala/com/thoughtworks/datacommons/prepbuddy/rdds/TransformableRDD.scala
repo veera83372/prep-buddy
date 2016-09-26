@@ -222,7 +222,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             val facets: TextFacets = listFacets(pivotalColumn :: index :: Nil)
             val tuples = facets.rdd.collect()
             tuples.foreach((tuple) => {
-                val split: Array[String] = tuple._1.split("\n")
+                val split: RowRecord = fileType.parse(tuple._1)
                 table.addEntry(split(0), split(1), tuple._2)
             })
         })
