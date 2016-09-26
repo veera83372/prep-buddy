@@ -56,14 +56,17 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
       * @param columnIndex Column index
       * @return RDD[String]
       */
-    def select(columnIndex: Int): RDD[String] = map(fileType.parse(_)(columnIndex))
+    def select(columnIndex: Int): RDD[String] = {
+        validateColumnIndex(columnIndex)
+        map(fileType.parse(_)(columnIndex))
+    }
 
     protected def validateColumnIndex(columnIndex: Int, otherIndexes: Int*) {
-        val allIndexes: List[Int] = columnIndex :: otherIndexes.toList
+        val allIndexes: Seq[Int] = columnIndex :: otherIndexes.toList
         validateColumnIndex(allIndexes)
     }
 
-    protected def validateColumnIndex(columnIndexes: List[Int]) {
+    protected def validateColumnIndex(columnIndexes: Seq[Int]) {
         for (index <- columnIndexes) {
             if (index < 0 || columnLength <= index) throw new ApplicationException(ErrorMessages.COLUMN_NOT_FOUND)
         }
@@ -85,22 +88,29 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
     /**
       * Returns a List of some elements of @columnIndex
       *
-      * @param columnIndex
+      * @param columnIndex Column from where sample is required
       * @return List[String]
       */
-    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_)(columnIndex))
+    def sampleColumnValues(columnIndex: Int): List[String] = {
+        validateColumnIndex(columnIndex)
+        sampleRecords.map(fileType.parse(_)(columnIndex))
+    }
 
     @DeveloperApi
     override def compute(split: Partition, context: TaskContext): Iterator[String] = {
         parent.compute(split, context)
     }
 
-    override protected def getPartitions: Array[Partition] = parent.partitions
-
     private def getNumberOfColumns: Int = {
         val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords.view
             .groupBy(fileType.parse(_).length)
             .mapValues(_.length)
-        if (columnLengthWithOccurrence.isEmpty) 0 else columnLengthWithOccurrence.maxBy(_._2)._1
+        if (columnLengthWithOccurrence.isEmpty) {
+            0
+        } else {
+            columnLengthWithOccurrence.maxBy { case (lengthOfColumn, occurrence) => occurrence }._1
+        }
     }
+
+    override protected def getPartitions: Array[Partition] = parent.partitions
 }

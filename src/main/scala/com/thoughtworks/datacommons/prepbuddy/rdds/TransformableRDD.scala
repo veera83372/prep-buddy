@@ -15,6 +15,7 @@ import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
     private var schema: Map[String, Int] = _
 
     private def getFileType: FileType = fileType
@@ -82,7 +83,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(mapped, fileType)
     }
 
-
     /**
       * Returns a new TransformableRDD by applying the function on all rows marked as @flag
       *
@@ -99,6 +99,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         new TransformableRDD(mappedRDD, fileType)
     }
+
 
     /**
       * Returns a new TransformableRDD that contains records flagged by @symbol
@@ -153,17 +154,32 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
+      * Returns a new TextFacet containing the facets of @columnIndexes
+      *
+      * @param columnIndexes List of column index
+      * @return TextFacets
+      */
+    def listFacets(columnIndexes: List[Int]): TextFacets = {
+        val columnValuePair: RDD[(String, Int)] = select(columnIndexes).map((_, 1))
+        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
+        new TextFacets(facets)
+    }
+
+    /**
+      * Returns a new TextFacet containing the facets of @columnNames
+      *
+      * @param columnNames List of column names
+      * @return TextFacets
+      */
+    def listFacets[X: ClassTag](columnNames: List[String]): TextFacets = listFacets(getColumnIndexes(columnNames: _*))
+
+    /**
       * Returns a new TextFacet containing the cardinal values of @columnIndex
       *
       * @param columnIndex index of the column
       * @return TextFacets
       */
-    def listFacets(columnIndex: Int): TextFacets = {
-        validateColumnIndex(columnIndex)
-        val columnValuePair: RDD[(String, Int)] = map(record => (fileType.parse(record)(columnIndex), 1))
-        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
-        new TextFacets(facets)
-    }
+    def listFacets(columnIndex: Int): TextFacets = listFacets(List(columnIndex))
 
     /**
       * Returns a new TextFacet containing the cardinal values of @columnName when Schema is set
@@ -172,23 +188,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return TextFacets
       */
     def listFacets(columnName: String): TextFacets = listFacets(getColumnIndexes(columnName).head)
-
-    /**
-      * Returns a new TextFacet containing the facets of @columnIndexes
-      *
-      * @param columnIndexes List of column index
-      * @return TextFacets
-      */
-    def listFacets(columnIndexes: List[Int]): TextFacets = {
-        validateColumnIndex(columnIndexes)
-        val columnValuePair: RDD[(String, Int)] = map((record) => {
-            val rowRecord: RowRecord = fileType.parse(record)
-            val joinedValue: String = rowRecord(columnIndexes: _*).mkString("\n")
-            (joinedValue, 1)
-        })
-        val facets: RDD[(String, Int)] = columnValuePair.reduceByKey(_ + _)
-        new TextFacets(facets)
-    }
 
     /**
       * Returns a RDD of double which is a product of the values in @firstColumn and @secondColumn
@@ -263,7 +262,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         new TransformableRDD(transformed, fileType)
     }
 
-
     /**
       * Returns a new TransformableRDD by splitting the @column by the delimiter provided
       *
@@ -284,6 +282,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         })
         new TransformableRDD(transformed, fileType)
     }
+
 
     private def arrangeRecords(rowRecord: RowRecord, cols: List[Int], result: Array[String], retainColumn: Boolean) = {
         if (retainColumn) rowRecord.appendColumns(result) else rowRecord.valuesNotAt(cols).appendColumns(result)
@@ -417,16 +416,22 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     }
 
     /**
-      * Returns a new TransformableRDD containing the unique elements in the specified column
+      * Returns a new RDD containing the unique elements in the specified column
       *
       * @param columnIndex Column Index
       * @return RDD<String>
       */
     def unique(columnIndex: Int): RDD[String] = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.parse(_)(columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).deduplicate()
+        new TransformableRDD(select(columnIndex), fileType).deduplicate()
     }
+
+    /**
+      * Returns a new RDD containing the unique elements in the specified column
+      *
+      * @param columnName Column Name
+      * @return RDD<String>
+      */
+    def unique(columnName: String): RDD[String] = unique(getColumnIndexes(columnName).head)
 
     /**
       * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
@@ -434,14 +439,14 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       *
       * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
       */
-    def deduplicate(): TransformableRDD = deduplicate(List.empty)
+    def deduplicate(): TransformableRDD = deduplicate(List.empty[Int])
 
     /**
-      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
+      * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
       * the given columns as primary key.
       *
       * @param primaryKeyColumns A list of integers specifying the columns that will be combined to create the primary key
-      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      * @return TransformableRDD A new TransformableRDD consisting unique records.
       */
     def deduplicate(primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
@@ -449,6 +454,15 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         val reducedRDD: RDD[(Long, String)] = fingerprintedRDD.reduceByKey((accumulator, record) => record)
         new TransformableRDD(reducedRDD.values, fileType)
     }
+
+    /**
+      * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
+      * the given columns as primary key.
+      *
+      * @param primaryKeyColumns Columns that will be combined to create the primary key
+      * @return TransformableRDD A new TransformableRDD consisting unique records.
+      */
+    def deduplicate[X: ClassTag](primaryKeyColumns: List[String]): TransformableRDD = deduplicate(getColumnIndexes(primaryKeyColumns: _*))
 
     private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
         map(record => {
