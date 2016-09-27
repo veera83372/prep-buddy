@@ -32,11 +32,11 @@ class DecimalScalingNormalizerTest extends SparkTestCase {
 
 
         val initialRDD: RDD[String] = sparkContext.parallelize(dataSet)
-        val schema: Map[String, Int] = Map("First" -> 0, "Second" -> 1, "Third" -> 2, "Fourth" -> 3, "Fifth" -> 4)
+        val schema = Map("user" -> 0, "other" -> 1, "direction" -> 2, "duration" -> 3, "timestamp" -> 4)
         val transformableRDD: TransformableRDD = new TransformableRDD(initialRDD).useSchema(schema)
 
-        val finalRDD: TransformableRDD = transformableRDD.normalize("Fourth", new DecimalScalingNormalizer)
-        val normalizedDurations = finalRDD.select("Fourth").collect
+        val finalRDD: TransformableRDD = transformableRDD.normalize("duration", new DecimalScalingNormalizer)
+        val normalizedDurations = finalRDD.select("duration").collect
         val expected = Array("2.11", "0.0", "0.45", "0.45", "0.12")
 
         assertResult(expected)(normalizedDurations)

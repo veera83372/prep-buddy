@@ -23,6 +23,11 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
         this(rdd, CSV)
     }
 
+    def useSchema(schema: util.Map[String, Integer]): JavaTransformableRDD = {
+        tRDD.useSchema(schema.asScala.map { case (columnName, columnIndex) => (columnName, columnIndex.toInt) }.toMap)
+        this
+    }
+
     /**
       * Returns a new JavaTransformableRDD containing only the elements that satisfy the matchInDictionary.
       *
@@ -40,8 +45,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @param primaryKeyColumns List of integers specifying the columns that will be combined to create the primary key
       * @return JavaTransformableRDD A new JavaTransformableRDD consisting unique duplicate records.
       */
-    def deduplicate(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
-        val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.asScala.toList)
+    def deduplicate(primaryKeyColumns: Array[Integer]): JavaTransformableRDD = {
+        val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.toList)
+        new JavaTransformableRDD(tRDD.deduplicate(scalaList).toJavaRDD(), fileType)
+    }
+
+    def deduplicate(primaryKeyColumns: Array[String]): JavaTransformableRDD = {
+        val scalaList: List[String] = primaryKeyColumns.toList
         new JavaTransformableRDD(tRDD.deduplicate(scalaList).toJavaRDD(), fileType)
     }
 
@@ -60,9 +70,13 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
       * @param primaryKeyColumns List of integers specifying the columns that will be combined to create the primary key
       * @return JavaTransformableRDD A new JavaTransformableRDD consisting unique duplicate records.
       */
-    def duplicates(primaryKeyColumns: util.List[Integer]): JavaTransformableRDD = {
-        val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.asScala.toList)
+    def duplicates(primaryKeyColumns: Array[Integer]): JavaTransformableRDD = {
+        val scalaList: List[Int] = asScalaIntList(primaryKeyColumns.toList)
         new JavaTransformableRDD(tRDD.duplicates(scalaList).toJavaRDD(), fileType)
+    }
+
+    def duplicates(primaryKeyColumns: Array[String]): JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.duplicates(primaryKeyColumns.toList).toJavaRDD(), fileType)
     }
 
     /**
@@ -74,8 +88,9 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def duplicates: JavaTransformableRDD = new JavaTransformableRDD(tRDD.duplicates().toJavaRDD(), fileType)
 
     /**
-      * Returns a new JavaTransformableRDD by imputing missing values and @missingHints of the @columnIndex
-      * using the @strategy
+      * Returns a new JavaTransformableRDD by imputing missing values using using the @strategy
+      * on the given columnIndex
+      * using missingHints which is optional
       *
       * @param columnIndex  Column Index
       * @param strategy     Imputation Strategy
@@ -85,6 +100,23 @@ class JavaTransformableRDD(rdd: JavaRDD[String], fileType: FileType) extends Jav
     def impute(columnIndex: Int, strategy: ImputationStrategy, missingHints: util.List[String]):
     JavaTransformableRDD = {
         new JavaTransformableRDD(tRDD.impute(columnIndex, strategy, missingHints.asScala.toList), fileType)
+    }
+
+    /**
+      * Returns a new JavaTransformableRDD by imputing missing values using using the @strategy
+      * on the given columnName
+      * using missingHints which is optional
+      *
+      * @param columnName   columnIndex Name
+      * @param strategy     Imputation Strategy
+      * @param missingHints List of Strings that may mean empty
+      * @return JavaTransformableRDD
+      */
+
+
+    def impute(columnName: String, strategy: ImputationStrategy, missingHints: util.List[String]):
+    JavaTransformableRDD = {
+        new JavaTransformableRDD(tRDD.impute(columnName, strategy, missingHints.asScala.toList), fileType)
     }
 
     /**

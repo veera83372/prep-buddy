@@ -11,6 +11,7 @@ import org.apache.spark.api.java.function.Function;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -53,7 +54,26 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
                 "Smith,Male,USA,12342"
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
-        List<Integer> primaryKeyColumns = Arrays.asList(0, 3);
+        Integer[] primaryKeyColumns = new Integer[]{0,3};
+        JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate(primaryKeyColumns);
+        assertEquals(3, deduplicatedRDD.count());
+    }
+
+    @Test
+    public void shouldBeAbleToDeduplicateRecordsByConsideringTheGivenColumnsAsPrimaryKeyAndUsingFieldName() {
+        JavaRDD<String> initialDataset = javaSparkContext.parallelize(Arrays.asList(
+                "Smith,Male,USA,12345",
+                "John,Male,USA,12343",
+                "John,Male,India,12343",
+                "Smith,Male,USA,12342"
+        ));
+        HashMap<String, Integer> schema = new HashMap<String, Integer>();
+        schema.put("First",0);
+        schema.put("Second",1);
+        schema.put("Third",2);
+        schema.put("Fourth",3);
+        JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV).useSchema(schema);
+        String[] primaryKeyColumns = {"First", "Fourth"};
         JavaTransformableRDD deduplicatedRDD = initialRDD.deduplicate(primaryKeyColumns);
         assertEquals(3, deduplicatedRDD.count());
     }
@@ -67,7 +87,7 @@ public class JavaTransformableRDDTest extends JavaSparkTestCase {
                 "Smith,Male,USA,12342"
         ));
         JavaTransformableRDD initialRDD = new JavaTransformableRDD(initialDataset, FileType.CSV);
-        JavaTransformableRDD duplicates = initialRDD.duplicates(Arrays.asList(0, 3));
+        JavaTransformableRDD duplicates = initialRDD.duplicates(new Integer[]{0,3});
         assertEquals(2, duplicates.count());
 
         List<String> listOfDuplicates = duplicates.collect();
