@@ -383,9 +383,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return RDD
       */
     def duplicatesAt(columnIndex: Int): RDD[String] = {
-        validateColumnIndex(columnIndex)
-        val specifiedColumnValues: RDD[String] = map(fileType.parse(_)(columnIndex))
-        new TransformableRDD(specifiedColumnValues, fileType).duplicates()
+        new TransformableRDD(select(columnIndex), fileType).duplicates().toRDD
     }
 
     /**
@@ -397,19 +395,19 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
     def duplicatesAt(columnName: String): RDD[String] = duplicatesAt(getColumnIndexes(columnName).head)
 
     /**
-      * Returns a new TransformableRDD containing duplicate records of this TransformableRDD by considering
-      * all the columns as primary key.
+      * Returns a new TransformableRDD containing only the records which has duplicate in the current data set by
+      * considering all the columns as primary key.
       *
-      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      * @return TransformableRDD A new TransformableRDD consisting only the duplicate records.
       */
     def duplicates(): TransformableRDD = duplicates(List.empty[Int])
 
     /**
-      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
-      * the given columns as primary key.
+      * Returns a new TransformableRDD containing only the records which has duplicate in the current data set by
+      * considering the given columns as primary key.
       *
       * @param primaryKeyColumns list of integers specifying the columns that will be combined to create the primary key
-      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      * @return TransformableRDD A new TransformableRDD consisting only the duplicate records.
       */
     def duplicates[X: ClassTag](primaryKeyColumns: List[Int]): TransformableRDD = {
         validateColumnIndex(primaryKeyColumns)
@@ -418,16 +416,18 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             (accumulatorValues, currentValue) => accumulatorValues.::(currentValue),
             (aggregator1, aggregator2) => aggregator1 ::: aggregator2
         )
-        val duplicateRecords: RDD[String] = recordsGroupedByKey.filter(_._2.size != 1).flatMap(_._2)
+        val duplicateRecords: RDD[String] = recordsGroupedByKey
+            .filter { case (recordKey, allRecords) => allRecords.size != 1 }
+            .flatMap(_._2)
         new TransformableRDD(duplicateRecords, fileType).deduplicate()
     }
 
     /**
-      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
-      * the given columns as primary key.
+      * Returns a new TransformableRDD containing only the records which has duplicate in the current data set by
+      * considering the given columns as primary key.
       *
-      * @param primaryKeyColumns list of integers specifying the columns that will be combined to create the primary key
-      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
+      * @param primaryKeyColumns list of column names which will be combined to create the primary key
+      * @return TransformableRDD A new TransformableRDD consisting duplicate records only.
       */
     def duplicates(primaryKeyColumns: List[String]): TransformableRDD = {
         duplicates(getColumnIndexes(primaryKeyColumns: _*))
@@ -439,9 +439,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnIndex Column Index
       * @return RDD<String>
       */
-    def unique(columnIndex: Int): RDD[String] = {
-        new TransformableRDD(select(columnIndex), fileType).deduplicate()
-    }
+    def unique(columnIndex: Int): RDD[String] = new TransformableRDD(select(columnIndex), fileType).deduplicate().toRDD
 
     /**
       * Returns a new RDD containing the unique elements in the specified column
@@ -450,14 +448,6 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return RDD<String>
       */
     def unique(columnName: String): RDD[String] = unique(getColumnIndexes(columnName).head)
-
-    /**
-      * Returns a new TransformableRDD containing unique duplicate records of this TransformableRDD by considering
-      * all the columns as primary key.
-      *
-      * @return TransformableRDD A new TransformableRDD consisting unique duplicate records.
-      */
-    def deduplicate(): TransformableRDD = deduplicate(List.empty[Int])
 
     /**
       * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
@@ -475,12 +465,22 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
     /**
       * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
+      * all the columns as primary key.
+      *
+      * @return TransformableRDD A new TransformableRDD consisting unique records.
+      */
+    def deduplicate(): TransformableRDD = deduplicate(List.empty[Int])
+
+    /**
+      * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
       * the given columns as primary key.
       *
       * @param primaryKeyColumns Columns that will be combined to create the primary key
       * @return TransformableRDD A new TransformableRDD consisting unique records.
       */
-    def deduplicate[X: ClassTag](primaryKeyColumns: List[String]): TransformableRDD = deduplicate(getColumnIndexes(primaryKeyColumns: _*))
+    def deduplicate[X: ClassTag](primaryKeyColumns: List[String]): TransformableRDD = {
+        deduplicate(getColumnIndexes(primaryKeyColumns: _*))
+    }
 
     private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
         map(record => {
