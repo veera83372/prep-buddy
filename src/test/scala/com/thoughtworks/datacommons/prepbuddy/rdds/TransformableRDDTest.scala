@@ -2,7 +2,6 @@ package com.thoughtworks.datacommons.prepbuddy.rdds
 
 import com.thoughtworks.datacommons.prepbuddy.SparkTestCase
 import com.thoughtworks.datacommons.prepbuddy.clusterers.{Cluster, SimpleFingerprintAlgorithm, TextFacets}
-import com.thoughtworks.datacommons.prepbuddy.imputations.ImputationStrategy
 import com.thoughtworks.datacommons.prepbuddy.qualityanalyzers.DECIMAL
 import com.thoughtworks.datacommons.prepbuddy.types.{CSV, TSV}
 import com.thoughtworks.datacommons.prepbuddy.utils.RowRecord
@@ -170,30 +169,6 @@ class TransformableRDDTest extends SparkTestCase {
         assert(DECIMAL equals transformableRDD.inferType(1))
     }
 
-    test("should impute the missing values by considering missing hints") {
-        val initialDataSet: RDD[String] = sparkContext.parallelize(Array(
-            "1,NULL,2,3,4", "2,N/A,23,21,23",
-            "3,N/A,21,32,32", "4,-,2,3,4",
-            "5,,54,32,54", "6,32,22,33,23"))
-        val initialRDD: TransformableRDD = new TransformableRDD(initialDataSet)
-
-        val imputed: Array[String] = initialRDD.impute(1, new ImputationStrategy() {
-            def prepareSubstitute(rdd: TransformableRDD, missingDataColumn: Int) {
-            }
-
-            def handleMissingData(record: RowRecord): String = {
-                "X"
-            }
-        }, List("N/A", "-", "NA", "NULL")).collect
-
-        assert(imputed.contains("1,X,2,3,4"))
-        assert(imputed.contains("2,X,23,21,23"))
-        assert(imputed.contains("3,X,21,32,32"))
-        assert(imputed.contains("4,X,2,3,4"))
-        assert(imputed.contains("5,X,54,32,54"))
-        assert(imputed.contains("6,32,22,33,23"))
-    }
-
     test("should mark by given symbol to predicated row") {
         val data = Array(
             "Smith,Male,USA,12345",
@@ -313,6 +288,23 @@ class TransformableRDDTest extends SparkTestCase {
         val secondColumnValues: RDD[String] = transformableRDD.select("Second")
 
         val actual: Array[String] = secondColumnValues.collect()
+        val expected = Array("1", "5", "7", "9")
+        assertResult(expected)(actual)
+    }
+
+    test("when column is selected by name, new RDD should have column names by default from previous rdd") {
+        val dataSet: RDD[String] = sparkContext.parallelize(Array(
+            "2, 1, 4, 4",
+            "4, 5, 5, 6",
+            "7, 7, 7, 9",
+            "1, 9, 4, 9"
+        ))
+        val schema: Map[String, Int] = Map("First" -> 0, "Second" -> 1, "Third" -> 2, "Fourth" -> 3)
+
+        val transformableRDD: TransformableRDD = new TransformableRDD(dataSet).useSchema(schema)
+        val secondThirdColumnValues: TransformableRDD = transformableRDD.select(List("Second", "Third"))
+
+        val actual: Array[String] = secondThirdColumnValues.select("Second").collect()
         val expected = Array("1", "5", "7", "9")
         assertResult(expected)(actual)
     }

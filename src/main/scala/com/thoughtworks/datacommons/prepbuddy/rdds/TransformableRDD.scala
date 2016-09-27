@@ -15,6 +15,7 @@ import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 
 class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends AbstractRDD(parent, fileType) {
+
     private var schema: Map[String, Int] = _
 
     private def getFileType: FileType = fileType
@@ -30,7 +31,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         this
     }
 
-    private def getColumnIndexes(columnNames: String*): List[Int] = {
+    private def getIndex(columnNames: String*): List[Int] = {
         if (schema == null) throw new ApplicationException(ErrorMessages.SCHEMA_NOT_SET)
         columnNames.map(schema.getOrElse(_, -1)).toList
     }
@@ -149,7 +150,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return Clusters
       */
     def clusters(columnName: String, clusteringAlgorithm: ClusteringAlgorithm): Clusters = {
-        clusters(getColumnIndexes(columnName).head, clusteringAlgorithm)
+        clusters(getIndex(columnName).head, clusteringAlgorithm)
     }
 
     /**
@@ -170,7 +171,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnNames List of column names
       * @return TextFacets
       */
-    def listFacets[X: ClassTag](columnNames: List[String]): TextFacets = listFacets(getColumnIndexes(columnNames: _*))
+    def listFacets[X: ClassTag](columnNames: List[String]): TextFacets = listFacets(getIndex(columnNames: _*))
 
     /**
       * Returns a new TextFacet containing the cardinal values of @columnIndex
@@ -186,7 +187,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnName Name of the column
       * @return TextFacets
       */
-    def listFacets(columnName: String): TextFacets = listFacets(getColumnIndexes(columnName).head)
+    def listFacets(columnName: String): TextFacets = listFacets(getIndex(columnName).head)
 
     /**
       * Returns a RDD of double which is a product of the values in @firstColumn and @secondColumn
@@ -322,17 +323,19 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             val normalizedRecord: RowRecord = columns.replace(columnIndex, normalizedColumn)
             fileType.join(normalizedRecord)
         })
-        new TransformableRDD(rdd, fileType)
+        new TransformableRDD(rdd, fileType).useSchema(schema)
     }
 
     /**
-      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+      * Returns a new TransformableRDD by normalizing values of the given column using different Normalizers
       *
-      * @param column   Column index
-      * @param strategy Imputation strategy
+      * @param columnName Column Name
+      * @param normalizer Normalization Strategy
       * @return TransformableRDD
       */
-    def impute(column: Int, strategy: ImputationStrategy): TransformableRDD = impute(column, strategy, List.empty)
+    def normalize(columnName: String, normalizer: NormalizationStrategy): TransformableRDD = {
+        normalize(getIndex(columnName).head, normalizer)
+    }
 
     /**
       * Returns a TransformableRDD by imputing missing values and @missingHints of the @columnIndex using the @strategy
@@ -347,9 +350,8 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
         strategy.prepareSubstitute(this, columnIndex)
         val transformed: RDD[String] = map((record) => {
             val rowRecord: RowRecord = fileType.parse(record)
-            val value: String = rowRecord(columnIndex)
-            var replacementValue: String = value
-            if (value == null || value.isEmpty || missingHints.contains(value)) {
+            var replacementValue: String = rowRecord(columnIndex)
+            if (replacementValue == null || replacementValue.isEmpty || missingHints.contains(replacementValue)) {
                 replacementValue = strategy.handleMissingData(rowRecord)
             }
 
@@ -358,6 +360,38 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
 
         new TransformableRDD(transformed, fileType)
     }
+
+    /**
+      * Returns a TransformableRDD by imputing missing values @columnName with help of @missingHints by using the @strategy
+      *
+      * @param columnName   Column name
+      * @param strategy     Imputation Strategy
+      * @param missingHints List of Strings that may mean empty
+      * @return TransformableRDD
+      */
+    def impute(columnName: String, strategy: ImputationStrategy, missingHints: List[String]): TransformableRDD = {
+        impute(getIndex(columnName).head, strategy, missingHints)
+    }
+
+    /**
+      * Returns a new TransformableRDD by imputing missing values @columnName using the @strategy
+      *
+      * @param columnName Column name
+      * @param strategy   Imputation strategy
+      * @return TransformableRDD
+      */
+    def impute(columnName: String, strategy: ImputationStrategy): TransformableRDD = {
+        impute(getIndex(columnName).head, strategy)
+    }
+
+    /**
+      * Returns a new TransformableRDD by imputing missing values of the @columnIndex using the @strategy
+      *
+      * @param column   Column index
+      * @param strategy Imputation strategy
+      * @return TransformableRDD
+      */
+    def impute(column: Int, strategy: ImputationStrategy): TransformableRDD = impute(column, strategy, List.empty)
 
     /**
       * Returns a new TransformableRDD by dropping the @columnIndex
@@ -392,7 +426,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnName Column where to look for duplicates
       * @return RDD
       */
-    def duplicatesAt(columnName: String): RDD[String] = duplicatesAt(getColumnIndexes(columnName).head)
+    def duplicatesAt(columnName: String): RDD[String] = duplicatesAt(getIndex(columnName).head)
 
     /**
       * Returns a new TransformableRDD containing only the records which has duplicate in the current data set by
@@ -430,7 +464,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return TransformableRDD A new TransformableRDD consisting duplicate records only.
       */
     def duplicates(primaryKeyColumns: List[String]): TransformableRDD = {
-        duplicates(getColumnIndexes(primaryKeyColumns: _*))
+        duplicates(getIndex(primaryKeyColumns: _*))
     }
 
     /**
@@ -447,7 +481,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnName Column Name
       * @return RDD<String>
       */
-    def unique(columnName: String): RDD[String] = unique(getColumnIndexes(columnName).head)
+    def unique(columnName: String): RDD[String] = unique(getIndex(columnName).head)
 
     /**
       * Returns a new TransformableRDD containing unique records of this TransformableRDD by considering
@@ -479,7 +513,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @return TransformableRDD A new TransformableRDD consisting unique records.
       */
     def deduplicate[X: ClassTag](primaryKeyColumns: List[String]): TransformableRDD = {
-        deduplicate(getColumnIndexes(primaryKeyColumns: _*))
+        deduplicate(getIndex(primaryKeyColumns: _*))
     }
 
     private def generateFingerprintedRDD(primaryKeyColumns: List[Int]): RDD[(Long, String)] = {
@@ -529,8 +563,24 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
             val resultValues: RowRecord = rowRecord(columnIndexes: _*)
             fileType.join(resultValues)
         })
-        new TransformableRDD(selectedColumnValues, fileType)
+
+        setSchemaIfRequired(columnIndexes, new TransformableRDD(selectedColumnValues, fileType))
     }
+
+    private def setSchemaIfRequired(columnIndexes: List[Int], rdd: TransformableRDD): TransformableRDD = {
+        if (schema == null) {
+            new TransformableRDD(rdd, fileType)
+        } else {
+            val newSchema: Map[String, Int] = columnIndexes.view
+                .zipWithIndex
+                .map { case (prevIndex, currentIndex) =>
+                    val columnName: String = schema.find(_._2 == prevIndex).get._1
+                    (columnName, currentIndex)
+                }.toMap
+            new TransformableRDD(rdd, fileType).useSchema(newSchema)
+        }
+    }
+
 
     /**
       * Returns a new TransformableRDD containing values of @columnNames
@@ -538,7 +588,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       * @param columnNames List of column names to be selected
       * @return TransformableRDD
       */
-    def select(columnNames: List[String]): TransformableRDD = select(getColumnIndexes(columnNames: _*))
+    def select(columnNames: List[String]): TransformableRDD = select(getIndex(columnNames: _*))
 
     /**
       * Selects a single column based on the column name only when schema is set
