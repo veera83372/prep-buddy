@@ -3,7 +3,7 @@ from py4j.protocol import Py4JJavaError
 from pyspark import RDD, StorageLevel
 from pyspark.mllib.common import _java2py
 
-from pyprepbuddy import py2java_int_list
+from pyprepbuddy import py2java_int_list, py2java_integer_array
 from pyprepbuddy.class_names import ClassNames
 from pyprepbuddy.cluster.clusters import Clusters
 from pyprepbuddy.cluster.text_facets import TextFacets
@@ -61,7 +61,8 @@ class TransformableRDD(RDD):
         if column_indexes is None:
             return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(),
                                     sc=self.spark_context)
-        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(column_indexes),
+        java_array = py2java_integer_array(self.spark_context, column_indexes)
+        return TransformableRDD(None, self.__file_type, self._transformable_rdd.deduplicate(java_array),
                                 sc=self.spark_context)
 
     def impute(self, column_index, imputation_strategy):
@@ -194,8 +195,9 @@ class TransformableRDD(RDD):
             return TransformableRDD(None, self.__file_type,
                                     self._transformable_rdd.duplicates(),
                                     sc=self.spark_context)
+        integer_array = py2java_integer_array(self.spark_context, column_indexes)
         return TransformableRDD(None, self.__file_type,
-                                self._transformable_rdd.duplicates(column_indexes),
+                                self._transformable_rdd.duplicates(integer_array),
                                 sc=self.spark_context)
 
     def drop_column(self, column_index):
