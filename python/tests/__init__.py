@@ -12,7 +12,7 @@ os.system(CHECK_SPARK_HOME)
 
 # Dynamically load project root dir and jars.
 project_root = os.getcwd() + "/.."
-jars = run_cmd("ls %s/target/prep-buddy-?.?.?.jar" % project_root)
+jars = run_cmd("ls %s/target/prep-buddy-?.?.?-jar-with-dependencies.jar" % project_root)
 
 # Set environment variables.
 os.environ["PYSPARK_SUBMIT_ARGS"] = "--jars %s --driver-class-path %s pyspark-shell" % (jars, jars)

@@ -3,8 +3,6 @@ import os
 import sys
 from glob import glob
 
-from utils.runCommand import run_cmd
-
 
 def add_pyspark_path():
     """Add PySpark to the library path based on the value of SPARK_HOME. """
@@ -36,5 +34,6 @@ def quiet_py4j():
 
 def add_jars():
     project_root = os.getcwd() + "/../../.."
-    jars = ("%s/target/prep-buddy-0.5.0.jar" % project_root)
+
+    jars = ("%s/target/prep-buddy-0.5.0-jar-with-dependencies.jar" % project_root)
     os.environ["PYSPARK_SUBMIT_ARGS"] = "--jars %s --driver-class-path %s pyspark-shell" % (jars, jars)
