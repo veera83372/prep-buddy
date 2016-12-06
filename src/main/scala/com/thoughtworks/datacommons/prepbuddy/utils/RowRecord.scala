@@ -5,6 +5,8 @@ import java.security.MessageDigest
 import org.apache.commons.lang.math.NumberUtils
 
 class RowRecord(columnValues: Array[String]) {
+    def map(function: (String) => String): Seq[String] = columnValues.map(function)
+
     def length: Int = columnValues.length
 
     def select(columnIndex: Int): String = columnValues(columnIndex)

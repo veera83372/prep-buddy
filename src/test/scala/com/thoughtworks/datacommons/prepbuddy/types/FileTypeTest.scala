@@ -50,4 +50,13 @@ class FileTypeTest extends FunSuite {
 
         assert(expected == TSV.join(record))
     }
+
+    test("should join the RowRecord into CSV format") {
+
+        val record: RowRecord = new RowRecord(Array("6 - 10 years","8.0", "$40,000 - $50,000", "45000.0"))
+
+        val expected = "6 - 10 years,8.0,\"$40,000 - $50,000\",45000.0"
+
+        assert(expected == CSV.join(record))
+    }
 }
