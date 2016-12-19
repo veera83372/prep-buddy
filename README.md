@@ -24,7 +24,7 @@ inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 - Slack channel: Coming soon!
 
 #### Usage!
-To use this library, add a maven dependency to datacommons prep-buddy in your project:
+To use this library, add a maven dependency to datacommons in your project:
 ```
 <dependency>
     <groupId>com.thoughtworks.datacommons</groupId>
@@ -39,14 +39,15 @@ For other build tools check on [Maven Repositry](https://mvnrepository.com/artif
 If you don't have pip. Intsall [pip](https://pip.pypa.io/en/stable/installing/).
 ```
 pip install prep-buddy
-
 ```
 
 For using pyspark on command-line
 Download the [Jar](https://github.com/data-commons/prep-buddy/releases/tag/v0.5.0).
 ```
 pyspark --jars [PATH-TO-JAR]
-
+```
+```
+spark-submit --driver-class-path [PATH-TO-JAR] [Your python file.]
 ```
 
 This library is currently built for Spark 1.6.x, but is also compatible with 1.4.x. 
@@ -63,4 +64,4 @@ The library depends on a few other libraries.
 - http://data-commons.github.io/prep-buddy
 
 #### Contributing
-- Coming Soon!
+- Create a pull request.
