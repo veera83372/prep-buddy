@@ -11,7 +11,7 @@ Post questions and comments to the Google group, or email them directly to data-
 Docs are available at http://data-commons.github.io/prep-buddy
 Or check out the [Scaladocs](http://data-commons.github.io/prep-buddy/scaladocs).
 
-Our aim is to provide a set of algorithms for cleaning and transforming very large data sets, 
+Our aim is to provide a set of algorithms for cleaning and transforming very large data sets,                
 inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 
 #### Important links
@@ -23,8 +23,8 @@ inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 - Mailing list: data-commons-toolchain@googlegroups.com
 - Slack channel: Coming soon!
 
-#### Usage - Coming Soon!
-To use this library, add a maven dependency to data-commons-prep in your project:
+#### Usage!
+To use this library, add a maven dependency to datacommons prep-buddy in your project:
 ```
 <dependency>
     <groupId>com.thoughtworks.datacommons</groupId>
@@ -32,13 +32,29 @@ To use this library, add a maven dependency to data-commons-prep in your project
     <version>0.5.0</version>
 </dependency>
 ```
-This library is currently built for Spark 1.6.0, but is also compatible with 1.4.1. 
+For other build tools check on [Maven Repositry](https://mvnrepository.com/artifact/com.thoughtworks.datacommons/prep-buddy/0.5.0)
 
+##Python
+
+If you don't have pip. Intsall [pip](https://pip.pypa.io/en/stable/installing/).
+```
+pip install prep-buddy
+
+```
+
+For using pyspark on command-line
+Download the [Jar](https://github.com/data-commons/prep-buddy/releases/tag/v0.5.0).
+```
+pyspark --jars [PATH-TO-JAR]
+
+```
+
+This library is currently built for Spark 1.6.x, but is also compatible with 1.4.x. 
 #### Dependencies
 The library depends on a few other libraries.
 - Apache Commons Math for general math and statistics functionality.
 - Apache Spark for all the distributed computation capabilities.
-
+- Open CSS for parsing the files.
 #### Download
 
 - Stable [0.5.0(Beta)](https://github.com/data-commons/prep-buddy/releases/tag/v0.5.0).
