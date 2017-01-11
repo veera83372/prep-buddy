@@ -5,6 +5,11 @@ import java.security.MessageDigest
 import org.apache.commons.lang.math.NumberUtils
 
 class RowRecord(columnValues: Array[String]) {
+    def drop(numberOfElements: Int): RowRecord = {
+        val newValues: Array[String] = columnValues.drop(numberOfElements)
+        new RowRecord(newValues)
+    }
+
     def length: Int = columnValues.length
 
     def apply(columnIndexes: Int*): RowRecord = {
