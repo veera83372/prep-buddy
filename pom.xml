@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.thoughtworks.datacommons</groupId>
     <artifactId>prep-buddy</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <packaging>jar</packaging>
     <name>prep-buddy - Data Preparation at Scale</name>
     <description>A Scala / Java / Python library for cleaning, transforming and executing other preparation tasks for large datasets on Apache Spark</description>
