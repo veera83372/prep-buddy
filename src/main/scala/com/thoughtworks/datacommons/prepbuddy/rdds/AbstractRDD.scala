@@ -12,8 +12,7 @@ import org.apache.spark.{Partition, TaskContext}
 
 abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extends RDD[String](parent) {
     private val DEFAULT_SAMPLE_SIZE: Int = 1000
-    protected val sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
-    protected val columnLength = getNumberOfColumns
+    protected var sampleRecords: List[String] = _
 
     /**
       * Returns RDD
@@ -36,7 +35,8 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         baseType.equals(NUMERIC)
     }
 
-    private def getNumberOfColumns: Int = {
+    private[prepbuddy] def getNumberOfColumns: Int = {
+        getSampleRecords
         val columnLengthWithOccurrence: Map[Int, Int] = sampleRecords.view
             .groupBy(fileType.parse(_).length)
             .mapValues(_.length)
@@ -47,7 +47,7 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
 
     protected def validateColumnIndex(columnIndexes: List[Int]) {
         for (index <- columnIndexes) {
-            if (columnLength <= index) {
+            if (getNumberOfColumns <= index) {
                 throw new ApplicationException(ErrorMessages.COLUMN_INDEX_OUT_OF_BOUND)
             }
             else if (index < 0) {
@@ -78,13 +78,22 @@ abstract class AbstractRDD(parent: RDD[String], fileType: FileType = CSV) extend
         }
     }
 
+    private def getSampleRecords = {
+        if (sampleRecords == null) {
+            sampleRecords = takeSample(withReplacement = false, num = DEFAULT_SAMPLE_SIZE).toList
+        }
+    }
+
     /**
       * Returns a List of some elements of @columnIndex
       *
       * @param columnIndex column Index for the sample
       * @return List[String]
       */
-    def sampleColumnValues(columnIndex: Int): List[String] = sampleRecords.map(fileType.parse(_).select(columnIndex))
+    def sampleColumnValues(columnIndex: Int): List[String] = {
+        getSampleRecords
+        sampleRecords.map(fileType.parse(_).select(columnIndex))
+    }
 
     /**
       * Returns inferred DataType of @columnIndex

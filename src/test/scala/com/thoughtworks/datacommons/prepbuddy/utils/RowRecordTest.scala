@@ -1,8 +1,8 @@
 package com.thoughtworks.datacommons.prepbuddy.utils
 
-import com.thoughtworks.datacommons.prepbuddy.SparkTestCase
+import org.scalatest.FunSuite
 
-class RowRecordTest extends SparkTestCase {
+class RowRecordTest extends FunSuite {
     test("should return number of columns in the record") {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
 
@@ -106,5 +106,17 @@ class RowRecordTest extends SparkTestCase {
         val rowRecord: RowRecord = new RowRecord(Array("x", "y", "z"))
 
         assert(-7382504379390136226L == rowRecord.fingerprintBy(List.empty))
+    }
+    test("should remove given number of elements from starting") {
+        val rowRecord: RowRecord = new RowRecord(Array("first", "second", "third"))
+        val newRecords: RowRecord = rowRecord.drop(2)
+        assertResult(1)(newRecords.length)
+        assertResult("third")(newRecords.select(0))
+    }
+    test("should append the columns in rowRecord") {
+        val rowRecord: RowRecord = new RowRecord(Array("first", "second", "third"))
+        val newRecords: RowRecord = new RowRecord(Array("fourth"))
+        val expected = new RowRecord(Array("first", "second", "third", "fourth"))
+        assertResult(expected)(rowRecord.appendColumns(newRecords))
     }
 }

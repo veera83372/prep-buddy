@@ -4,8 +4,17 @@ import java.security.MessageDigest
 
 import org.apache.commons.lang.math.NumberUtils
 
-class RowRecord(columnValues: Array[String]) {
+class RowRecord(columnValues: Array[String]) extends Serializable {
+    def drop(numberOfElements: Int): RowRecord = {
+        val newValues: Array[String] = columnValues.drop(numberOfElements)
+        new RowRecord(newValues)
+    }
+
+    private def getColumnValues = columnValues
+
     def map(function: (String) => String): Seq[String] = columnValues.map(function)
+
+    def filter(function: (String) => String): Seq[String] = columnValues.map(function)
 
     def length: Int = columnValues.length
 
@@ -18,7 +27,7 @@ class RowRecord(columnValues: Array[String]) {
 
     def valuesNotAt(columnIndexes: List[Int]): RowRecord = {
         val valuesExcludingGivenIndexes: Array[String] = columnValues.view.zipWithIndex
-            .filterNot { case (value, index) => columnIndexes.contains(index) }
+            .filterNot { case (_, index) => columnIndexes.contains(index) }
             .map(_._1)
             .toArray
         new RowRecord(valuesExcludingGivenIndexes)
@@ -37,6 +46,19 @@ class RowRecord(columnValues: Array[String]) {
     def appendColumns(values: Array[String]): RowRecord = {
         val recordWithAppendedColumn: Array[String] = (columnValues.toList ::: values.toList).toArray
         new RowRecord(recordWithAppendedColumn)
+    }
+
+    def appendColumns(values: RowRecord): RowRecord = {
+        val recordWithAppendedColumn: Array[String] = (columnValues.toList ::: values.getColumnValues.toList).toArray
+        new RowRecord(recordWithAppendedColumn)
+    }
+
+    override def hashCode(): Int = columnValues.hashCode()
+
+    override def equals(obj: Any): Boolean = {
+        if (super.equals(obj)) return true
+        val values = obj.asInstanceOf[RowRecord].getColumnValues
+        values.sameElements(columnValues)
     }
 
     def fingerprintBy(columnIndexes: List[Int]): Long = {

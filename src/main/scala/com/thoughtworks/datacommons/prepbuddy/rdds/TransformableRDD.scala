@@ -99,7 +99,7 @@ class TransformableRDD(parent: RDD[String], fileType: FileType = CSV) extends Ab
       *
       * @return int
       */
-    def numberOfColumns(): Int = columnLength
+    def numberOfColumns(): Int = getNumberOfColumns
 
     /**
       * Returns Clusters that has all cluster of text of @columnIndex according to @algorithm
