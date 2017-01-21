@@ -29,7 +29,7 @@ To use this library, add a maven dependency to datacommons in your project:
 <dependency>
     <groupId>com.thoughtworks.datacommons</groupId>
     <artifactId>prep-buddy</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
 </dependency>
 ```
 For other build tools check on [Maven Repositry](https://mvnrepository.com/artifact/com.thoughtworks.datacommons/prep-buddy/0.5.0)
@@ -42,7 +42,7 @@ pip install prep-buddy
 ```
 
 For using pyspark on command-line
-Download the [Jar](https://github.com/data-commons/prep-buddy/releases/tag/v0.5.0).
+Download the [Jar](https://github.com/data-commons/prep-buddy/releases/tag/v-0.5.1).
 ```
 pyspark --jars [PATH-TO-JAR]
 ```
@@ -58,7 +58,7 @@ The library depends on a few other libraries.
 - Open CSS for parsing the files.
 #### Download
 
-- Stable [0.5.0(Beta)](https://github.com/data-commons/prep-buddy/releases/tag/v0.5.0).
+- Stable [0.5.1(Beta)](https://github.com/data-commons/prep-buddy/releases/tag/v-0.5.1).
 
 #### Documentation Wiki
 - http://data-commons.github.io/prep-buddy
