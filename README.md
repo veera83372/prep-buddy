@@ -21,7 +21,6 @@ inspired by predecessors such as Open Refine, Pandas and Scikit-learn packages.
 - Download releases: [Latest Release](https://github.com/data-commons/prep-buddy/releases/latest)
 - Issue tracker: [Github](https://github.com/data-commons/prep-buddy/issues)
 - Mailing list: data-commons-toolchain@googlegroups.com
-- Slack channel: Coming soon!
 
 #### Usage!
 To use this library, add a maven dependency to datacommons in your project:
@@ -55,7 +54,7 @@ This library is currently built for Spark 1.6.x, but is also compatible with 1.4
 The library depends on a few other libraries.
 - Apache Commons Math for general math and statistics functionality.
 - Apache Spark for all the distributed computation capabilities.
-- Open CSS for parsing the files.
+- Open CSV for parsing the files.
 #### Download
 
 - Stable [0.5.1(Beta)](https://github.com/data-commons/prep-buddy/releases/tag/v-0.5.1).
